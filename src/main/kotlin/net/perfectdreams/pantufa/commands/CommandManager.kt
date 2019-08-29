@@ -15,5 +15,18 @@ class CommandManager {
 		commands.add(RegistrarCommand())
 		commands.add(TpsCommand())
 		commands.add(ExecuteCommand())
+
+		commands.add(BanCommand())
+		commands.add(UnbanCommand())
+		commands.add(KickCommand())
+		commands.add(WarnCommand())
+		commands.add(UnwarnCommand())
+		commands.add(CheckBanCommand())
+		commands.add(DupeIpCommand())
+		commands.add(FingerprintCommand())
+		commands.add(GeoIpCommand())
+
+		commands.add(IpBanCommand())
+		commands.add(IpUnbanCommand())
 	}
 }

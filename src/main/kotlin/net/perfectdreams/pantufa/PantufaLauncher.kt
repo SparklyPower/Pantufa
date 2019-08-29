@@ -14,6 +14,11 @@ object PantufaLauncher {
 		val postgreSqlUsername = config[3]
 		val postgreSqlPassword = config[4]
 
+		val postgreSqlCraftConomyIp = config[5]
+		val postgreSqlCraftConomyPort = config[6]
+		val postgreSqlCraftConomyUsername = config[7]
+		val postgreSqlCraftConomyPassword = config[8]
+
 		val pantufa = Pantufa(
 				PantufaConfig(
 						token,
@@ -22,6 +27,12 @@ object PantufaLauncher {
 								postgreSqlPort.toInt(),
 								postgreSqlUsername,
 								postgreSqlPassword
+						),
+						PantufaConfig.PostgreSqlConfig(
+								postgreSqlCraftConomyIp,
+								postgreSqlCraftConomyPort.toInt(),
+								postgreSqlCraftConomyUsername,
+								postgreSqlCraftConomyPassword
 						)
 				)
 		)

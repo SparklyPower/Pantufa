@@ -35,7 +35,7 @@ class RegistrarCommand : AbstractCommand("registrar", listOf("register", "conect
 					return@transaction false
 				}
 
-				val connectedAccounts = DiscordAccount.find {
+				/* val connectedAccounts = DiscordAccount.find {
 					DiscordAccounts.minecraftId eq user.id.value and (DiscordAccounts.isConnected eq true)
 				}.count()
 
@@ -47,7 +47,7 @@ class RegistrarCommand : AbstractCommand("registrar", listOf("register", "conect
 							)
 					)
 					return@transaction false
-				}
+				} */
 
 				DiscordAccount.new {
 					this.minecraftId = user.id.value

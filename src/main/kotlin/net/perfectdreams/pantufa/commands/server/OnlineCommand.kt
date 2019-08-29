@@ -17,9 +17,12 @@ class OnlineCommand : AbstractCommand("online") {
 
 			val replies = mutableListOf<PantufaReply>()
 
+			val totalPlayersOnline = servers.sumBy {
+				it["players"].array.size()
+			}
 			replies.add(
 					PantufaReply(
-							message = "**Players Online no SparklyPower Network**",
+							message = "**Players Online no SparklyPower Network ($totalPlayersOnline players online)**",
 							prefix = "<:pocketdreams:333655151871000576>"
 					)
 			)
@@ -33,14 +36,14 @@ class OnlineCommand : AbstractCommand("online") {
 				if (players.isNotEmpty()) {
 					replies.add(
 							PantufaReply(
-									"`${name}`: ${players.joinToString(", ", transform = { "**`$it`**" })}",
+									"`${name}` (${players.size}): ${players.joinToString(", ", transform = { "**`$it`**" })}",
 									mentionUser = false
 							)
 					)
 				} else {
 					replies.add(
 							PantufaReply(
-									"`${name}`: Ninguém online... \uD83D\uDE2D",
+									"`${name}` (0): Ninguém online... \uD83D\uDE2D",
 									mentionUser = false
 							)
 					)

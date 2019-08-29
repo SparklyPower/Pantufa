@@ -3,9 +3,10 @@ package net.perfectdreams.pantufa.commands
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.MessageEmbed
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
+import net.perfectdreams.pantufa.dao.DiscordAccount
 import net.perfectdreams.pantufa.utils.PantufaReply
 
-class CommandContext(val event: MessageReceivedEvent, val minecraftUsername: String? = null) {
+class CommandContext(val event: MessageReceivedEvent, val discordAccount: DiscordAccount?, val minecraftAccountInfo: AbstractCommand.MinecraftAccountInfo?) {
 	val member = event.member
 	val user = event.author
 	val args: List<String>

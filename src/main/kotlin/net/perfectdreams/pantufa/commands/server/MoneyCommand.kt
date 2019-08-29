@@ -45,7 +45,7 @@ class MoneyCommand : AbstractCommand("money", requiresMinecraftAccount = true) {
 
 		SocketUtils.sendAsync(jsonObject, port = Constants.PERFECTDREAMS_SURVIVAL_PORT, success = {
 			response ->
-			if (username == context.minecraftUsername) {
+			if (username == context.minecraftAccountInfo!!.username) {
 				context.reply(
 						PantufaReply(
 								message = "Você possui **${response["balance"].double} Sonhos**!",
