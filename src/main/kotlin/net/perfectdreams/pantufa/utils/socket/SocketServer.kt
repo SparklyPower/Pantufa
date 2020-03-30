@@ -31,6 +31,8 @@ class SocketServer(val socketPort: Int) {
 					val out = PrintWriter(socket.getOutputStream(), true)
 					out.println(response.toString() + "\n")
 					out.flush()
+				} catch (e: Exception) {
+					e.printStackTrace()
 				} finally {
 					socket.close()
 				}

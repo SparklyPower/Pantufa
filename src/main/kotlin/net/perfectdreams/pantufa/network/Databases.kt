@@ -42,7 +42,7 @@ object Databases {
 
     val hikariConfigLoritta by lazy {
         val config = HikariConfig()
-        config.jdbcUrl = "jdbc:postgresql://10.0.0.51:${pantufa.config.postgreSql.port}/loritta"
+        config.jdbcUrl = "jdbc:postgresql://158.69.121.127:${pantufa.config.postgreSql.port}/loritta"
         config.username = pantufa.config.postgreSql.username
         config.password = pantufa.config.postgreSql.password
         config.driverClassName = "org.postgresql.Driver"

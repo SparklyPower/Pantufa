@@ -17,7 +17,7 @@ class PantufaReply(
 			send = Constants.LEFT_PADDING + " **|** "
 		}
 		if (mentionUser) {
-			send = send + commandContext.member.asMention + " "
+			send = send + commandContext.user.asMention + " "
 		}
 		send += message
 		return send

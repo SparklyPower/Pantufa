@@ -14,6 +14,7 @@ import net.perfectdreams.pantufa.pantufa
 import net.perfectdreams.pantufa.tables.CraftConomyAccounts
 import net.perfectdreams.pantufa.tables.CraftConomyBalance
 import net.perfectdreams.pantufa.utils.Constants
+import net.perfectdreams.pantufa.utils.CraftConomyUtils
 import net.perfectdreams.pantufa.utils.PantufaReply
 import net.perfectdreams.pantufa.utils.socket.SocketUtils
 import org.jetbrains.exposed.sql.SqlExpressionBuilder
@@ -28,22 +29,6 @@ class LSXCommand : AbstractCommand("transferir", listOf("transfer", "lsx", "llsx
 		} ?: throw RuntimeException()
 	}
 
-	private fun getCraftConomyAccountId(context: CommandContext): Int {
-		return transaction(Databases.craftConomy) {
-			CraftConomyAccounts.select {
-				CraftConomyAccounts.uuid eq context.discordAccount!!.minecraftId.toString()
-			}.firstOrNull()?.get(CraftConomyAccounts.id)
-		} ?: throw RuntimeException()
-	}
-
-	private fun getCraftConomyBalance(accountId: Int): Double {
-		return transaction(Databases.craftConomy) {
-			CraftConomyBalance.select {
-				CraftConomyBalance.id eq accountId
-			}.firstOrNull()?.get(CraftConomyBalance.balance)
-		} ?: throw RuntimeException()
-	}
-
 	override fun run(context: CommandContext) {
 		val arg0 = context.args.getOrNull(0)
 		val arg1 = context.args.getOrNull(1)
@@ -52,9 +37,9 @@ class LSXCommand : AbstractCommand("transferir", listOf("transfer", "lsx", "llsx
 		if (arg0 == null) {
 			val profile = getLorittaProfile(context)
 
-			val serverAccountId = getCraftConomyAccountId(context)
+			val serverAccountId = CraftConomyUtils.getCraftConomyAccountId(context)
 
-			val ccBalance = getCraftConomyBalance(serverAccountId)
+			val ccBalance = CraftConomyUtils.getCraftConomyBalance(serverAccountId)
 
 			context.sendMessage(
 					PantufaReply(
@@ -93,12 +78,9 @@ class LSXCommand : AbstractCommand("transferir", listOf("transfer", "lsx", "llsx
 				val to = TransferOptions.values().firstOrNull { it.codename == arg1 }
 
 				if (from != null && to != null && arg2 != null) {
-					val quantity = arg2.toDouble()
+					val quantity = arg2.toLong()
 
 					if (from == to)
-						return
-
-					if (quantity.isInfinite() || quantity.isNaN())
 						return
 
 					if (0 >= quantity)
@@ -146,7 +128,7 @@ class LSXCommand : AbstractCommand("transferir", listOf("transfer", "lsx", "llsx
 		}
 	}
 
-	fun withdraw(option: TransferOptions, context: CommandContext, quantity: Double): Boolean? {
+	fun withdraw(option: TransferOptions, context: CommandContext, quantity: Long): Boolean? {
 		return when (option) {
 			TransferOptions.LORITTA -> {
 				val profile = getLorittaProfile(context)
@@ -161,8 +143,8 @@ class LSXCommand : AbstractCommand("transferir", listOf("transfer", "lsx", "llsx
 				}
 			}
 			TransferOptions.PERFECTDREAMS_SURVIVAL -> {
-				val serverAccountId = getCraftConomyAccountId(context)
-				val ccBalance = getCraftConomyBalance(serverAccountId)
+				val serverAccountId = CraftConomyUtils.getCraftConomyAccountId(context)
+				val ccBalance = CraftConomyUtils.getCraftConomyBalance(serverAccountId)
 
 				return if (quantity > ccBalance)
 					false
@@ -170,7 +152,7 @@ class LSXCommand : AbstractCommand("transferir", listOf("transfer", "lsx", "llsx
 					transaction(Databases.craftConomy) {
 						CraftConomyBalance.update({ CraftConomyBalance.id eq serverAccountId }) {
 							with(SqlExpressionBuilder) {
-								it.update(balance, balance - quantity)
+								it.update(balance, balance - quantity.toDouble())
 							}
 						}
 					}
@@ -181,7 +163,7 @@ class LSXCommand : AbstractCommand("transferir", listOf("transfer", "lsx", "llsx
 		}
 	}
 
-	fun give(option: TransferOptions, context: CommandContext, quantity: Double): Boolean? {
+	fun give(option: TransferOptions, context: CommandContext, quantity: Long): Boolean? {
 		return when (option) {
 			TransferOptions.LORITTA -> {
 				val profile = getLorittaProfile(context)
@@ -192,12 +174,12 @@ class LSXCommand : AbstractCommand("transferir", listOf("transfer", "lsx", "llsx
 				return true
 			}
 			TransferOptions.PERFECTDREAMS_SURVIVAL -> {
-				val serverAccountId = getCraftConomyAccountId(context)
+				val serverAccountId = CraftConomyUtils.getCraftConomyAccountId(context)
 
 				transaction(Databases.craftConomy) {
 					CraftConomyBalance.update({ CraftConomyBalance.id eq serverAccountId }) {
 						with(SqlExpressionBuilder) {
-							it.update(balance, balance + quantity)
+							it.update(balance, balance + quantity.toDouble())
 						}
 					}
 				}

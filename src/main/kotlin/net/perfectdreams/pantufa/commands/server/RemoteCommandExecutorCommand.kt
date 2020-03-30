@@ -34,7 +34,7 @@ open class RemoteCommandExecutorCommand(label: String,
 			return
 		}
 
-		if (entry[LuckPermsPlayers.primaryGroup] !in arrayOf("dono", "admin", "moderador")) {
+		if (entry[LuckPermsPlayers.primaryGroup] !in arrayOf("dono", "admin", "moderador", "suporte")) {
 			context.reply(
 					PantufaReply(
 							"Você por o acaso tem permissão para fazer isso? Não, né. Então pare de fazer perder meu tempo! Seu grupo é ${entry[LuckPermsPlayers.primaryGroup]}"

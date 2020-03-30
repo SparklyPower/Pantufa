@@ -136,7 +136,7 @@ class Pantufa(val config: PantufaConfig) {
 
 						println("textChannelId: ${textChannelId}")
 
-						textChannel.sendMessage(messageBuilder.build()).complete()
+						textChannel?.sendMessage(messageBuilder.build())?.complete()
 						return
 					}
 					if (type == "panelinhaPrivateMessage") {
@@ -149,7 +149,7 @@ class Pantufa(val config: PantufaConfig) {
 						val textChannelId = panelaChannel.textChannelId
 						val textChannel = jda.getTextChannelById(textChannelId) ?: return
 
-						val webhook = textChannel.webhooks.complete().firstOrNull() ?: textChannel.createWebhook("$tag Relay").complete()
+						val webhook = textChannel.retrieveWebhooks().complete().firstOrNull() ?: textChannel.createWebhook("$tag Relay").complete()
 						val url = webhook.url
 						val webhookClient = DiscordWebhook(url)
 						webhookClient.send(
@@ -167,14 +167,10 @@ class Pantufa(val config: PantufaConfig) {
 							val channelId = json["channelId"].string
 							val eventName = json["eventName"].string
 
-							val role = guild.getRoleById(roleId)
-							val channel = guild.getTextChannelById(channelId)
+							val role = guild.getRoleById(roleId) ?: return
+							val channel = guild.getTextChannelById(channelId) ?: return
 
-							role.manager.setMentionable(true).queue {
-								channel.sendMessage("${role.asMention} Evento $eventName irá iniciar em 60 segundos!").queue {
-									role.manager.setMentionable(false).queue()
-								}
-							}
+							channel.sendMessage("${role.asMention} Evento $eventName irá iniciar em 60 segundos!").queue()
 						}
 					}
 				}

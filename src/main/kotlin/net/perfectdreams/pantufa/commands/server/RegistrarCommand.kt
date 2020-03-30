@@ -35,19 +35,19 @@ class RegistrarCommand : AbstractCommand("registrar", listOf("register", "conect
 					return@transaction false
 				}
 
-				/* val connectedAccounts = DiscordAccount.find {
+				val connectedAccounts = DiscordAccount.find {
 					DiscordAccounts.minecraftId eq user.id.value and (DiscordAccounts.isConnected eq true)
 				}.count()
 
 				if (connectedAccounts != 0) {
 					context.reply(
 							PantufaReply(
-									"A conta que você deseja conectar já tem uma conta conectada no Discord!",
+									"A conta que você deseja conectar já tem uma conta conectada no Discord! Para desregistrar, utilize `/discord desregistrar` no servidor!",
 									Constants.ERROR
 							)
 					)
 					return@transaction false
-				} */
+				}
 
 				DiscordAccount.new {
 					this.minecraftId = user.id.value

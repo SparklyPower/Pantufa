@@ -31,6 +31,7 @@ class DiscordWebhook(val url: String) {
 				val json = jsonParser.parse(response).obj
 
 				if (json.contains("retry_after")) { // Rate limited, vamos colocar o request dentro de uma queue
+					println("Message is rate limited! Retry-After: ${json["retry_after"].long}")
 					requestQueue.add(message)
 					isRateLimited = true
 					thread {

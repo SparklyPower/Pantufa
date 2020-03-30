@@ -15,7 +15,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 class CheckDreamPresenceThread : Thread("Check Dream Presence Thread") {
 	override fun run() {
 		while (true) {
-			for (member in pantufa.jda.guilds.flatMap { it.members }.distinctBy { it.user.id }) {
+			/* for (member in pantufa.jda.guilds.flatMap { it.members }.distinctBy { it.user.id }) {
 				val game = member.activities.firstOrNull() ?: continue
 
 				if (game.isRich) {
@@ -44,7 +44,7 @@ class CheckDreamPresenceThread : Thread("Check Dream Presence Thread") {
 						}
 					}
 				}
-			}
+			} */
 			Thread.sleep(60_000)
 		}
 	}
