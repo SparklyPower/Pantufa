@@ -1,14 +1,25 @@
 package net.perfectdreams.pantufa.commands
 
 import net.perfectdreams.pantufa.commands.server.*
-import net.perfectdreams.pantufa.commands.vanilla.utils.PingCommand
+import net.perfectdreams.pantufa.commands.server.administration.BanCommand
+import net.perfectdreams.pantufa.commands.server.administration.CheckBanCommand
+import net.perfectdreams.pantufa.commands.server.administration.DupeIpCommand
+import net.perfectdreams.pantufa.commands.server.administration.ExecuteCommand
+import net.perfectdreams.pantufa.commands.server.administration.FingerprintCommand
+import net.perfectdreams.pantufa.commands.server.administration.GeoIpCommand
+import net.perfectdreams.pantufa.commands.server.administration.IpBanCommand
+import net.perfectdreams.pantufa.commands.server.administration.IpUnbanCommand
+import net.perfectdreams.pantufa.commands.server.administration.KickCommand
+import net.perfectdreams.pantufa.commands.server.administration.TpsCommand
+import net.perfectdreams.pantufa.commands.server.administration.UnbanCommand
+import net.perfectdreams.pantufa.commands.server.administration.UnwarnCommand
+import net.perfectdreams.pantufa.commands.server.administration.WarnCommand
 
 class CommandManager {
 	val commands = mutableListOf<AbstractCommand>()
 
 	init {
-		commands.add(PingCommand())
-		commands.add(MoneyCommand())
+		// commands.add(XPingCommand())
 		commands.add(OnlineCommand())
 		commands.add(PanelaCommand())
 		commands.add(LSXCommand())

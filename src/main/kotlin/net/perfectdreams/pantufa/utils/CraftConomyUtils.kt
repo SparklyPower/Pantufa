@@ -6,6 +6,7 @@ import net.perfectdreams.pantufa.tables.CraftConomyAccounts
 import net.perfectdreams.pantufa.tables.CraftConomyBalance
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
+import java.util.*
 
 object CraftConomyUtils {
 	fun getCraftConomyAccountId(context: CommandContext): Int {
@@ -14,6 +15,14 @@ object CraftConomyUtils {
 				CraftConomyAccounts.uuid eq context.discordAccount!!.minecraftId.toString()
 			}.firstOrNull()?.get(CraftConomyAccounts.id)
 		} ?: throw RuntimeException()
+	}
+
+	fun getCraftConomyAccountId(minecraftId: UUID): Int? {
+		return transaction(Databases.craftConomy) {
+			CraftConomyAccounts.select {
+				CraftConomyAccounts.uuid eq minecraftId.toString()
+			}.firstOrNull()?.getOrNull(CraftConomyAccounts.id)
+		}
 	}
 
 	fun getCraftConomyBalance(accountId: Int): Double {

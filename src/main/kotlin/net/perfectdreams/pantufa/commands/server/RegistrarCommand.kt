@@ -39,7 +39,7 @@ class RegistrarCommand : AbstractCommand("registrar", listOf("register", "conect
 					DiscordAccounts.minecraftId eq user.id.value and (DiscordAccounts.isConnected eq true)
 				}.count()
 
-				if (connectedAccounts != 0) {
+				if (connectedAccounts != 0L) {
 					context.reply(
 							PantufaReply(
 									"A conta que você deseja conectar já tem uma conta conectada no Discord! Para desregistrar, utilize `/discord desregistrar` no servidor!",
@@ -63,7 +63,7 @@ class RegistrarCommand : AbstractCommand("registrar", listOf("register", "conect
 			context.reply(
 					PantufaReply(
 							"Falta pouco! Para terminar a integração, vá no SparklyPower e utilize `/discord registrar` para terminar o registro!",
-							"<:lori_wow:540944393692119040>"
+							"<:lori_wow:626942886432473098>"
 					)
 			)
 		} else {

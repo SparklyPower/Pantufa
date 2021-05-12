@@ -19,7 +19,7 @@ object PantufaLauncher {
 		val postgreSqlCraftConomyUsername = config[7]
 		val postgreSqlCraftConomyPassword = config[8]
 
-		val pantufa = Pantufa(
+		val pantufa = PantufaBot(
 				PantufaConfig(
 						token,
 						PantufaConfig.PostgreSqlConfig(

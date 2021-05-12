@@ -5,15 +5,16 @@ import net.perfectdreams.pantufa.utils.Constants.LOCAL_HOST
 import net.perfectdreams.pantufa.utils.Constants.LORITTA_PORT
 import net.perfectdreams.pantufa.utils.Constants.PERFECTDREAMS_BUNGEE_PORT
 import net.perfectdreams.pantufa.utils.Constants.PERFECTDREAMS_LOBBY_PORT
+import net.perfectdreams.pantufa.utils.Constants.PERFECTDREAMS_SURVIVAL_PORT
 import net.perfectdreams.pantufa.utils.socket.SocketUtils
 import java.net.ConnectException
 
 class Server(val host: String, val socketPort: Int, val internalName: String, val fancyName: String, val name: String) {
 	companion object {
 		val LORITTA = Server(LOCAL_HOST, LORITTA_PORT, "loritta", "Loritta", "Loritta")
-		val PERFECTDREAMS_BUNGEE = Server(LOCAL_HOST, PERFECTDREAMS_BUNGEE_PORT, "bungeecord", "SparklyPower BungeeCord", "BungeeCord")
-		val PERFECTDREAMS_LOBBY = Server(LOCAL_HOST, PERFECTDREAMS_LOBBY_PORT, "sparklypower_lobby", "SparklyPower Lobby", "Lobby")
-		val PERFECTDREAMS_SURVIVAL = Server(LOCAL_HOST, PERFECTDREAMS_LOBBY_PORT, "sparklypower_survival", "SparklyPower Survival", "Survival")
+		val PERFECTDREAMS_BUNGEE = Server("172.31.255.1", PERFECTDREAMS_BUNGEE_PORT, "bungeecord", "SparklyPower BungeeCord", "BungeeCord")
+		val PERFECTDREAMS_LOBBY = Server("172.31.255.2", PERFECTDREAMS_LOBBY_PORT, "sparklypower_lobby", "SparklyPower Lobby", "Lobby")
+		val PERFECTDREAMS_SURVIVAL = Server("172.31.255.3", PERFECTDREAMS_SURVIVAL_PORT, "sparklypower_survival", "SparklyPower Survival", "Survival")
 		val servers = mutableListOf<Server>()
 
 		init {

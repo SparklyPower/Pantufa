@@ -1,26 +1,56 @@
 package net.perfectdreams.pantufa.listeners
 
+import com.github.salomonbrys.kotson.jsonObject
 import com.github.salomonbrys.kotson.set
 import com.google.gson.JsonObject
+import net.dv8tion.jda.api.events.guild.GuildBanEvent
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceLeaveEvent
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
-import net.perfectdreams.pantufa.Pantufa
+import net.perfectdreams.pantufa.PantufaBot
+import net.perfectdreams.pantufa.dao.User
 import net.perfectdreams.pantufa.jda
+import net.perfectdreams.pantufa.network.Databases
 import net.perfectdreams.pantufa.utils.Constants
+import net.perfectdreams.pantufa.utils.Server
+import net.perfectdreams.pantufa.utils.extensions.await
 import net.perfectdreams.pantufa.utils.socket.SocketUtils
+import org.jetbrains.exposed.sql.transactions.transaction
 
-class DiscordListener(val m: Pantufa) : ListenerAdapter() {
+class DiscordListener(val m: PantufaBot) : ListenerAdapter() {
+	override fun onGuildBan(event: GuildBanEvent) {
+		m.launch {
+			val user = m.getDiscordAccountFromUser(event.user) ?: return@launch
+			val sparklyUsername = transaction(Databases.sparklyPower) { User.findById(user.minecraftId)?.username } ?: return@launch
+
+			val userBan = try {
+				event.guild.retrieveBan(event.user)
+						.await()
+			} catch (e: Exception) { return@launch }
+
+			Server.PERFECTDREAMS_BUNGEE.send(
+					jsonObject(
+							"type" to "executeCommand",
+							"player" to "Pantufa",
+							"command" to "ban $sparklyUsername Banido no Discord do SparklyPower: ${userBan.reason}"
+					)
+			)
+		}
+	}
+
 	override fun onMessageReceived(event: MessageReceivedEvent) {
-		for (command in m.commandManager.commands) {
-			if (command.matches(event)) {
-				return
-			}
+		m.launch {
+			if (m.commandMap.dispatch(event))
+				return@launch
+
+			for (command in m.commandManager.commands)
+				if (command.matches(event))
+					return@launch
 		}
 
 		// Se nenhum comando vanilla foi executado...
-		if (false && event.message.contentDisplay.startsWith(Pantufa.PREFIX)) { // E inicia com o prefixo...
+		if (false && event.message.contentDisplay.startsWith(PantufaBot.PREFIX)) { // E inicia com o prefixo...
 			// hora de tentar executar um comando do servidor!
 			event.textChannel.sendTyping().queue()
 
@@ -47,7 +77,7 @@ class DiscordListener(val m: Pantufa) : ListenerAdapter() {
 			payload["player"] = event.author.name
 			payload["message"] = event.message.contentRaw
 
-			SocketUtils.sendAsync(payload, port = Constants.PERFECTDREAMS_BUNGEE_PORT)
+			SocketUtils.sendAsync(payload, host = Constants.PERFECTDREAMS_BUNGEE_IP, port = Constants.PERFECTDREAMS_BUNGEE_PORT)
 		}
 		/* val panelaChannel = m.temporaryPanelaChannels.firstOrNull { it.textChannelId == event.channel.id }
 		if (panelaChannel != null) {

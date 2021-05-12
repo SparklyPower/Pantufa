@@ -101,6 +101,7 @@ class SyncRolesThread : Thread("Sync Dream Roles Thread") {
 					val moderators = getPlayersWithGroup("moderador")
 					val coordenadores = getPlayersWithGroup("coordenador")
 					val supports = getPlayersWithGroup("suporte")
+					val builders = getPlayersWithGroup("construtor")
 					val vips = getPlayersWithGroup("vip", "vip+", "vip++", "sonhador", "sonhador+", "sonhador++")
 					val youtubers = getPlayersWithGroup("youtuber")
 
@@ -109,7 +110,8 @@ class SyncRolesThread : Thread("Sync Dream Roles Thread") {
 					syncRolesEligibleForUsers(guild, "693606685943660545", coordenadores)
 					syncRolesEligibleForUsers(guild, "333602209621344267", moderators)
 					syncRolesEligibleForUsers(guild, "333602241564901378", supports)
-					syncRolesEligibleForUsers(guild, "332650495522897920", owners.toMutableList() + admins.toMutableList() + coordenadores.toMutableList() + moderators.toMutableList() + supports.toMutableList())
+					syncRolesEligibleForUsers(guild, "359014713599983625", builders)
+					syncRolesEligibleForUsers(guild, "332650495522897920", owners.toMutableList() + admins.toMutableList() + coordenadores.toMutableList() + moderators.toMutableList() + supports.toMutableList() + builders.toMutableList())
 					syncRolesEligibleForUsers(guild, "332652664544428044", vips)
 					syncRolesEligibleForUsers(guild, "373548131016507393", youtubers)
 				}

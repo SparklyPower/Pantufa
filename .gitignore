@@ -11,6 +11,7 @@ local.properties
 .recommenders
 
 config.json
+token.txt
 lib/
 
 # External tool builders
@@ -90,6 +91,10 @@ buildNumber.properties
 # Gradle:
 .idea/**/gradle.xml
 .idea/**/libraries
+.gradle
+**/build/
+**/libs/
+**/out/
 
 # CMake
 cmake-build-debug/

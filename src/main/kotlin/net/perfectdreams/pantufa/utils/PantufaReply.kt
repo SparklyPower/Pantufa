@@ -9,29 +9,33 @@ class PantufaReply(
 		val hasPadding: Boolean = true,
 		val mentionUser: Boolean = true
 ) {
-	fun build(commandContext: CommandContext): String {
-		var send = ""
-		if (prefix != null) {
-			send = prefix + " **|** "
-		} else if (hasPadding) {
-			send = Constants.LEFT_PADDING + " **|** "
-		}
-		if (mentionUser) {
-			send = send + commandContext.user.asMention + " "
-		}
-		send += message
-		return send
-	}
+	fun build(commandContext: CommandContext) = build(commandContext.user)
+
+	fun build(commandContext: net.perfectdreams.pantufa.api.commands.CommandContext) = build(commandContext.sender)
 
 	fun build(user: User): String {
 		var send = ""
 		if (prefix != null) {
-			send = prefix + " **|** "
+			send = "$prefix **|** "
 		} else if (hasPadding) {
 			send = Constants.LEFT_PADDING + " **|** "
 		}
 		if (mentionUser) {
 			send = send + user.asMention + " "
+		}
+		send += message
+		return send
+	}
+
+	fun build(userId: Long): String {
+		var send = ""
+		if (prefix != null) {
+			send = "$prefix **|** "
+		} else if (hasPadding) {
+			send = Constants.LEFT_PADDING + " **|** "
+		}
+		if (mentionUser) {
+			send = send + "<@${userId}>" + " "
 		}
 		send += message
 		return send

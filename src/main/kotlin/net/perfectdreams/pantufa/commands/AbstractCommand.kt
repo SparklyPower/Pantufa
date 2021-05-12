@@ -1,13 +1,12 @@
 package net.perfectdreams.pantufa.commands
 
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
-import net.perfectdreams.pantufa.Pantufa
+import net.perfectdreams.pantufa.PantufaBot
 import net.perfectdreams.pantufa.dao.User
 import net.perfectdreams.pantufa.network.Databases
 import net.perfectdreams.pantufa.pantufa
 import net.perfectdreams.pantufa.tables.Users
 import net.perfectdreams.pantufa.utils.Constants
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.*
 
@@ -22,7 +21,7 @@ abstract class AbstractCommand(val label: String, val aliases: List<String> = li
 		val labels = mutableListOf(label)
 		labels.addAll(aliases)
 
-		val valid = labels.any { command == Pantufa.PREFIX + it }
+		val valid = labels.any { command == PantufaBot.PREFIX + it }
 
 		if (!valid)
 			return false

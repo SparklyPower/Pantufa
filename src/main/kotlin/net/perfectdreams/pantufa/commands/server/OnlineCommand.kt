@@ -9,10 +9,15 @@ import net.perfectdreams.pantufa.utils.PantufaReply
 import net.perfectdreams.pantufa.utils.socket.SocketUtils
 
 class OnlineCommand : AbstractCommand("online") {
+	val serverToFancyName = mapOf(
+			"sparklypower_lobby" to "SparklyPower Lobby",
+			"sparklypower_survival" to "SparklyPower Survival"
+	)
+
 	override fun run(context: CommandContext) {
 		val jsonObject = JsonObject()
 		jsonObject["type"] = "getOnlinePlayersInfo"
-		val response = SocketUtils.sendAsync(jsonObject, port = Constants.PERFECTDREAMS_BUNGEE_PORT, success = { response ->
+		val response = SocketUtils.sendAsync(jsonObject, host = Constants.PERFECTDREAMS_BUNGEE_IP, port = Constants.PERFECTDREAMS_BUNGEE_PORT, success = { response ->
 			val servers = response["servers"].array
 
 			val replies = mutableListOf<PantufaReply>()
@@ -26,27 +31,32 @@ class OnlineCommand : AbstractCommand("online") {
 							prefix = "<:pocketdreams:333655151871000576>"
 					)
 			)
+
 			servers.forEach {
 				val obj = it.obj
 				val name = obj["name"].string
 				val players = obj["players"].array.map {
 					it["name"].string
-				}
+				}.sorted()
 
-				if (players.isNotEmpty()) {
-					replies.add(
-							PantufaReply(
-									"`${name}` (${players.size}): ${players.joinToString(", ", transform = { "**`$it`**" })}",
-									mentionUser = false
-							)
-					)
-				} else {
-					replies.add(
-							PantufaReply(
-									"`${name}` (0): Ninguém online... \uD83D\uDE2D",
-									mentionUser = false
-							)
-					)
+				val fancyName = serverToFancyName[name]
+
+				if (fancyName != null) {
+					if (players.isNotEmpty()) {
+						replies.add(
+								PantufaReply(
+										"**$fancyName (${players.size})**: ${players.joinToString(", ", transform = { "**`$it`**" })}",
+										mentionUser = false
+								)
+						)
+					} else {
+						replies.add(
+								PantufaReply(
+										"**$fancyName (${players.size})**: Ninguém online... \uD83D\uDE2D",
+										mentionUser = false
+								)
+						)
+					}
 				}
 			}
 

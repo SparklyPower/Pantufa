@@ -13,7 +13,7 @@ import java.util.concurrent.Executors
 object SocketUtils {
 	val executors = Executors.newCachedThreadPool()
 
-	fun sendAsync(jsonObject: JsonObject, host: String = "127.0.0.1", port: Int, success: ((JsonObject) -> Unit)? = null, error: (() -> Unit)? = null) {
+	fun sendAsync(jsonObject: JsonObject, host: String, port: Int, success: ((JsonObject) -> Unit)? = null, error: (() -> Unit)? = null) {
 		executors.submit {
 			try {
 				val response = send(jsonObject, host, port)

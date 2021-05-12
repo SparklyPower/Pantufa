@@ -1,50 +1,46 @@
 package net.perfectdreams.pantufa.threads
 
-import com.github.salomonbrys.kotson.double
-import com.github.salomonbrys.kotson.jsonObject
-import net.perfectdreams.pantufa.dao.DiscordAccount
+import mu.KotlinLogging
+import net.dv8tion.jda.api.entities.Activity
+import net.perfectdreams.pantufa.PantufaBot
 import net.perfectdreams.pantufa.network.Databases
 import net.perfectdreams.pantufa.pantufa
-import net.perfectdreams.pantufa.tables.DiscordAccounts
-import net.perfectdreams.pantufa.utils.Constants
-import net.perfectdreams.pantufa.utils.PantufaReply
-import net.perfectdreams.pantufa.utils.socket.SocketUtils
-import org.jetbrains.exposed.sql.and
+import net.perfectdreams.pantufa.tables.CraftConomyBalance
+import net.perfectdreams.pantufa.utils.CraftConomyUtils
+import org.jetbrains.exposed.sql.SqlExpressionBuilder
 import org.jetbrains.exposed.sql.transactions.transaction
+import org.jetbrains.exposed.sql.update
 
 class CheckDreamPresenceThread : Thread("Check Dream Presence Thread") {
+	private val logger = KotlinLogging.logger {}
+
 	override fun run() {
 		while (true) {
-			/* for (member in pantufa.jda.guilds.flatMap { it.members }.distinctBy { it.user.id }) {
-				val game = member.activities.firstOrNull() ?: continue
+			logger.info { "Verifying member presences..." }
+			try {
+				for (member in pantufa.jda.guilds.flatMap { it.members }.distinctBy { it.user.id }) {
+					val customStatus = member?.activities?.firstOrNull { it.type == Activity.ActivityType.CUSTOM_STATUS }
+							?: continue
 
-				if (game.isRich) {
-					val richPresence = game.asRichPresence()
+					if (customStatus.name.contains("mc.sparklypower.net") || customStatus.name.contains("discord.gg/sparklypower")) {
+						val discordAccount = PantufaBot.INSTANCE.getDiscordAccountFromUser(member.user) ?: continue
 
-					if (richPresence.applicationIdLong == 415617983411388428L) {
-						if (richPresence.details?.contains("mc.sparklypower.net") == true) {
-							println("${member.user.name}#${member.user.discriminator} - ${member.user.id} está usando a rich presence do SparklyPower!")
+						val serverAccountId = CraftConomyUtils.getCraftConomyAccountId(discordAccount.minecraftId) ?: continue
 
-							val account = transaction(Databases.sparklyPower) {
-								DiscordAccount.find {
-									DiscordAccounts.discordId eq member.user.idLong and (DiscordAccounts.isConnected eq true)
-								}.firstOrNull()
-							} ?: continue
+						logger.info { "Giving out 15 sonhos to ${member.user} (MC UUID is ${discordAccount.minecraftId}; CC account is $serverAccountId), status: ${customStatus.name}" }
 
-							val jsonObject = jsonObject(
-									"type" to "giveBalanceUuid",
-									"player" to account.minecraftId.toString(),
-									"quantity" to 1.25
-							)
-
-							SocketUtils.sendAsync(jsonObject, port = Constants.PERFECTDREAMS_SURVIVAL_PORT, success = {
-								response ->
-
-							}, error = { println("Error while giving money!") })
+						transaction(Databases.craftConomy) {
+							CraftConomyBalance.update({ CraftConomyBalance.id eq serverAccountId }) {
+								with(SqlExpressionBuilder) {
+									it.update(balance, balance + 15.0)
+								}
+							}
 						}
 					}
 				}
-			} */
+			} catch (e: Exception) {
+				logger.warn(e) { "Something went wrong!" }
+			}
 			Thread.sleep(60_000)
 		}
 	}
