@@ -20,6 +20,8 @@ object Constants {
 	val SPARKLYPOWER_GUILD: Guild?
 		get() = PantufaBot.INSTANCE.jda.getGuildById(SPARKLYPOWER_GUILD_ID)
 
+	const val SPARKLYPOWER_STAFF_CHANNEL_ID = 417059128519819265L
+
 	val PERFECTDREAMS_OFFLINE: ((CommandContext) -> Unit) = { context ->
 		context.reply(
 				PantufaReply(

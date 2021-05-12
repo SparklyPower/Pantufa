@@ -19,9 +19,7 @@ class CommandManager {
 	val commands = mutableListOf<AbstractCommand>()
 
 	init {
-		// commands.add(XPingCommand())
 		commands.add(OnlineCommand())
-		commands.add(PanelaCommand())
 		commands.add(LSXCommand())
 		commands.add(RegistrarCommand())
 		commands.add(TpsCommand())

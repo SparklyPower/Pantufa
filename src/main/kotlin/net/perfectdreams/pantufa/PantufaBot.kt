@@ -27,8 +27,6 @@ import net.perfectdreams.pantufa.utils.discord.DiscordCommandMap
 import net.perfectdreams.pantufa.utils.parallax.ParallaxEmbed
 import net.perfectdreams.pantufa.utils.socket.SocketHandler
 import net.perfectdreams.pantufa.utils.socket.SocketServer
-import net.perfectdreams.pantufa.utils.webhook.DiscordMessage
-import net.perfectdreams.pantufa.utils.webhook.DiscordWebhook
 import net.perfectdreams.discordinteraktions.InteractionsServer
 import net.perfectdreams.pantufa.utils.config.PantufaConfig
 import org.jetbrains.exposed.sql.SchemaUtils
@@ -54,7 +52,6 @@ class PantufaBot(val config: PantufaConfig) {
 	val coroutineDispatcher = executors.asCoroutineDispatcher()
 	lateinit var jda: JDA
 
-	val temporaryPanelaChannels = mutableListOf<PanelaChannel>()
 	var previousPlayers: List<String>? = null
 	val whitelistedGuildIds = listOf(
 		265632341530116097L, // SparklyPower (Old)
@@ -135,7 +132,6 @@ class PantufaBot(val config: PantufaConfig) {
 		}
 
 		thread {
-			var idx = 0
 			while (true) {
 				try {
 					val response = Server.PERFECTDREAMS_BUNGEE.send(
@@ -218,7 +214,6 @@ class PantufaBot(val config: PantufaConfig) {
 						else -> "\uD83D\uDE0D"
 					}
 
-					// if (idx % 2 == 0) {
 					val payload = Server.PERFECTDREAMS_SURVIVAL.send(
 						jsonObject(
 							"type" to "getTps"
@@ -248,17 +243,12 @@ class PantufaBot(val config: PantufaConfig) {
 							}"
 						)
 					)
-
-					// } else {
-					// 	jda.presence.activity = Activity.playing("A Loritta é a minha melhor amiga!")
-					// }
-
-					idx++
 				} catch (e: Exception) {
 					e.printStackTrace()
 
 					jda.presence.activity = Activity.playing("\uD83D\uDEAB SparklyPower está offline \uD83D\uDE2D | \uD83C\uDFAE mc.sparklypower.net")
 				}
+
 				Thread.sleep(15000) // rate limit de presence é 5 a cada 60 segundos
 			}
 		}
@@ -271,72 +261,56 @@ class PantufaBot(val config: PantufaConfig) {
 					val type = json["type"].nullString ?: return
 
 					println("Type: $type")
-					if (type == "sendMessage") {
-						val textChannelId = json["textChannelId"].string
-						val message = json["message"].string
-						val base64Image = json["image"].nullString
 
-						val bufferedImage: BufferedImage? = null
-						if (base64Image != null) {
-							// TODO: Parse image
+					when (type) {
+						"sendMessage" -> {
+							// TODO: This should be replaced with webhooks within the applications that use this method
+							val textChannelId = json["textChannelId"].string
+							val message = json["message"].string
+							val base64Image = json["image"].nullString
+
+							val bufferedImage: BufferedImage? = null
+							if (base64Image != null) {
+								// TODO: Parse image
+							}
+
+							val messageBuilder = MessageBuilder()
+								.setContent(message)
+
+							val embed = json["embed"].nullObj
+
+							if (embed != null) {
+								val parallaxEmbed = gson.fromJson<ParallaxEmbed>(embed)
+
+								val discordEmbed = parallaxEmbed.toDiscordEmbed(true) // tá safe
+
+								messageBuilder.setEmbed(discordEmbed)
+							}
+
+							val textChannel = jda.getTextChannelById(textChannelId)
+
+							println("textChannelId: ${textChannelId}")
+
+							textChannel?.sendMessage(messageBuilder.build())?.complete()
+							return
 						}
 
-						val messageBuilder = MessageBuilder()
-							.setContent(message)
+						"sendEventStart" -> {
+							// TODO: This should be replaced with webhooks
+							val guild = Constants.SPARKLYPOWER_GUILD
+							if (guild != null) {
+								val roleId = json["roleId"].string
+								val channelId = json["channelId"].string
+								val eventName = json["eventName"].string
 
-						val embed = json["embed"].nullObj
+								val role = guild.getRoleById(roleId) ?: return
+								val channel = guild.getTextChannelById(channelId) ?: return
 
-						if (embed != null) {
-							val parallaxEmbed = gson.fromJson<ParallaxEmbed>(embed)
-
-							val discordEmbed = parallaxEmbed.toDiscordEmbed(true) // tá safe
-
-							messageBuilder.setEmbed(discordEmbed)
-						}
-
-						val textChannel = jda.getTextChannelById(textChannelId)
-
-						println("textChannelId: ${textChannelId}")
-
-						textChannel?.sendMessage(messageBuilder.build())?.complete()
-						return
-					}
-					if (type == "panelinhaPrivateMessage") {
-						val tag = json["panelinha"].string
-						val username = json["username"].string
-						val content = json["content"].string
-
-						val panelaChannel = temporaryPanelaChannels.firstOrNull { it.cleanTag == tag } ?: return
-
-						val textChannelId = panelaChannel.textChannelId
-						val textChannel = jda.getTextChannelById(textChannelId) ?: return
-
-						val webhook = textChannel.retrieveWebhooks().complete().firstOrNull() ?: textChannel.createWebhook(
-							"$tag Relay"
-						).complete()
-						val url = webhook.url
-						val webhookClient = DiscordWebhook(url)
-						webhookClient.send(
-							DiscordMessage(
-								username = username,
-								avatar = "https://i.imgur.com/QDntdpA.png",
-								content = content
-							)
-						)
-					}
-					if (type == "sendEventStart") {
-						val guild = Constants.SPARKLYPOWER_GUILD
-						if (guild != null) {
-							val roleId = json["roleId"].string
-							val channelId = json["channelId"].string
-							val eventName = json["eventName"].string
-
-							val role = guild.getRoleById(roleId) ?: return
-							val channel = guild.getTextChannelById(channelId) ?: return
-
-							channel.sendMessage("${role.asMention} Evento $eventName irá iniciar em 60 segundos!").queue()
+								channel.sendMessage("${role.asMention} Evento $eventName irá iniciar em 60 segundos!").queue()
+							}
 						}
 					}
+
 				}
 			}
 			socket.start()
@@ -408,21 +382,6 @@ class PantufaBot(val config: PantufaConfig) {
 	fun getMinecraftUserFromUsername(username: String) = transaction(Databases.sparklyPower) {
 		net.perfectdreams.pantufa.dao.User.find { Users.username eq username }.firstOrNull()
 	}
-
-	/* fun getDiscordAccountFromUsername(username: String): DiscordAccount? {
-		return discordAccounts.find(
-				Filters.and(
-						Filters.eq(
-								"minecraftUsername", username
-						),
-						Filters.eq(
-								"connected", true
-						)
-				)
-		).firstOrNull()
-	} */
-
-	class PanelaChannel(val voiceChannelId: String, val textChannelId: String, val cleanTag: String)
 
 	fun launch(block: suspend CoroutineScope.() -> Unit): Job {
 		val job = GlobalScope.launch(coroutineDispatcher, block = block)

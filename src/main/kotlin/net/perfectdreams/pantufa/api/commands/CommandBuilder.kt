@@ -1,7 +1,6 @@
 package net.perfectdreams.pantufa.api.commands
 
 import net.perfectdreams.pantufa.PantufaBot
-import net.perfectdreams.pantufa.api.commands.Command
 
 fun command(loritta: PantufaBot, commandName: String, labels: List<String>, builder: CommandBuilder<CommandContext>.() -> (Unit)): Command<CommandContext> {
 	val b = CommandBuilder<CommandContext>(loritta, commandName, labels)
