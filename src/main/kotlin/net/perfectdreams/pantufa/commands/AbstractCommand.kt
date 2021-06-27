@@ -26,6 +26,11 @@ abstract class AbstractCommand(val label: String, val aliases: List<String> = li
 		if (!valid)
 			return false
 
+		if (event.channel.idLong !in Constants.ALLOWED_CHANNELS_IDS && event.guild.idLong != 268353819409252352L && event.member?.roles?.any { it.idLong == 332650495522897920L } == false) { // Ideias Aleatórias
+			event.textChannel.sendMessage("${Constants.ERROR} **|** ${event.author.asMention} Você só pode usar meus lindos e incríveis comandos nos canais de comandos!").complete()
+			return true
+		}
+
 		event.channel.sendTyping().complete()
 
 		val discordAccount = pantufa.getDiscordAccountFromId(event.author.idLong)

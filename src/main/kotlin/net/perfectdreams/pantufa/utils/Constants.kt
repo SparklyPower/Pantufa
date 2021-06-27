@@ -31,6 +31,20 @@ object Constants {
 		)
 	}
 
+	val ALLOWED_CHANNELS_IDS = listOf(
+		378935712679985152L, // comandos SparklyPower
+		830658622383980545L, // comandos SparklyPower 2
+		673531793546149899L, // comandos Loritta
+		704874923104927835L, // comandos Loritta 2
+		798014569191571506L, // comandos Loritta 3
+		798017447830880266L, // comandos Loritta 4
+		417059128519819265L, // staff SparklyPower
+		556589191547584544L, // staff SparklyPower cmds
+		358774895850815488L, // staff Loritta
+		547119872568459284L, // staff Loritta cmds
+		574985687951212549L, // SparklyPower VIPs
+	)
+
 	val SPARKLYPOWER_OFFLINE: (suspend (PantufaCommandContext) -> Unit) = { context ->
 		context.reply(
 			PantufaReply(

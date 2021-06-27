@@ -8,30 +8,30 @@ import com.github.salomonbrys.kotson.string
 import com.google.gson.JsonObject
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import net.perfectdreams.discordinteraktions.common.context.SlashCommandArguments
 import net.perfectdreams.discordinteraktions.declarations.slash.SlashCommandDeclaration
+import net.perfectdreams.discordinteraktions.declarations.slash.SlashCommandExecutorDeclaration
 import net.perfectdreams.pantufa.PantufaBot
 import net.perfectdreams.pantufa.utils.Constants
 import net.perfectdreams.pantufa.utils.Constants.SPARKLYPOWER_OFFLINE
 import net.perfectdreams.pantufa.utils.PantufaReply
 import net.perfectdreams.pantufa.utils.socket.SocketUtils
 
-class OnlineCommand(pantufa: PantufaBot) : PantufaInteractionCommand(
-    pantufa, this
+class OnlineExecutor(pantufa: PantufaBot) : PantufaInteractionCommand(
+    pantufa
 ) {
-    companion object : SlashCommandDeclaration(
-        name = "online",
-        description = "Veja os players online no SparklyPower! Será que o seu amig@ está online?"
-    ) {
+    companion object : SlashCommandExecutorDeclaration(OnlineExecutor::class) {
         val serverToFancyName = mapOf(
             "sparklypower_lobby" to "SparklyPower Lobby",
             "sparklypower_survival" to "SparklyPower Survival"
         )
     }
 
-    override suspend fun executesPantufa(context: PantufaCommandContext) {
+    override suspend fun executePantufa(context: PantufaCommandContext, args: SlashCommandArguments) {
         val jsonObject = JsonObject()
         jsonObject["type"] = "getOnlinePlayersInfo"
-        val response = SocketUtils.sendAsync(jsonObject, host = Constants.PERFECTDREAMS_BUNGEE_IP, port = Constants.PERFECTDREAMS_BUNGEE_PORT, success = { response ->
+
+        SocketUtils.sendAsync(jsonObject, host = Constants.PERFECTDREAMS_BUNGEE_IP, port = Constants.PERFECTDREAMS_BUNGEE_PORT, success = { response ->
             val servers = response["servers"].array
 
             val replies = mutableListOf<PantufaReply>()

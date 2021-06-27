@@ -1,8 +1,8 @@
 package net.perfectdreams.pantufa.interactions.commands
 
-import net.perfectdreams.discordinteraktions.commands.get
-import net.perfectdreams.discordinteraktions.declarations.slash.SlashCommandDeclaration
-import net.perfectdreams.discordinteraktions.declarations.slash.required
+import net.perfectdreams.discordinteraktions.common.context.SlashCommandArguments
+import net.perfectdreams.discordinteraktions.declarations.slash.SlashCommandExecutorDeclaration
+import net.perfectdreams.discordinteraktions.declarations.slash.options.CommandOptions
 import net.perfectdreams.pantufa.PantufaBot
 import net.perfectdreams.pantufa.api.commands.SilentCommandException
 import net.perfectdreams.pantufa.dao.DiscordAccount
@@ -14,25 +14,20 @@ import net.perfectdreams.pantufa.utils.PantufaReply
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.deleteWhere
 
-class RegistrarCommand(pantufa: PantufaBot) : PantufaInteractionCommand(
-    pantufa,
-    this
+class RegistrarExecutor(pantufa: PantufaBot) : PantufaInteractionCommand(
+    pantufa
 ) {
-    companion object : SlashCommandDeclaration(
-        name = "registrar",
-        description = "Conecte a sua conta do Discord com a do SparklyPower para expandir a sua experiência de jogo!"
-    ) {
-        override val options = Options
-
-        object Options : SlashCommandDeclaration.Options() {
+    companion object : SlashCommandExecutorDeclaration(RegistrarExecutor::class) {
+        object Options : CommandOptions() {
             val username = string("username", "Seu nome no SparklyPower (ou seja, da sua conta do Minecraft)")
-                .required()
                 .register()
         }
+
+        override val options = Options
     }
 
-    override suspend fun executesPantufa(context: PantufaCommandContext) {
-        val arg0 = options.username.get(context.interactionContext)
+    override suspend fun executePantufa(context: PantufaCommandContext, args: SlashCommandArguments) {
+        val arg0 = args[options.username]
 
         pantufa.transactionOnSparklyPowerDatabase {
             DiscordAccounts.deleteWhere { DiscordAccounts.discordId eq context.senderId }

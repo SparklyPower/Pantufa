@@ -4,13 +4,11 @@ import com.github.salomonbrys.kotson.jsonObject
 import com.github.salomonbrys.kotson.set
 import com.google.gson.JsonObject
 import net.dv8tion.jda.api.events.guild.GuildBanEvent
-import net.dv8tion.jda.api.events.guild.voice.GuildVoiceLeaveEvent
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import net.perfectdreams.pantufa.PantufaBot
 import net.perfectdreams.pantufa.dao.User
-import net.perfectdreams.pantufa.jda
 import net.perfectdreams.pantufa.network.Databases
 import net.perfectdreams.pantufa.utils.Constants
 import net.perfectdreams.pantufa.utils.Server
@@ -41,10 +39,10 @@ class DiscordListener(val m: PantufaBot) : ListenerAdapter() {
 
 	override fun onMessageReceived(event: MessageReceivedEvent) {
 		m.launch {
-			if (m.commandMap.dispatch(event))
+			if (m.legacyCommandMap.dispatch(event))
 				return@launch
 
-			for (command in m.commandManager.commands)
+			for (command in m.legacyCommandManager.commands)
 				if (command.matches(event))
 					return@launch
 		}

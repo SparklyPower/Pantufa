@@ -4,16 +4,31 @@ import com.github.salomonbrys.kotson.*
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
-import dev.kord.common.entity.Snowflake
 import kotlinx.coroutines.*
 import net.dv8tion.jda.api.*
 import net.dv8tion.jda.api.entities.Activity
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.requests.GatewayIntent
+import net.perfectdreams.discordinteraktions.api.entities.Snowflake
+import net.perfectdreams.discordinteraktions.platform.jda.commands.JDACommandRegistry
+import net.perfectdreams.discordinteraktions.platform.jda.listeners.SlashCommandListener
+import net.perfectdreams.pantufa.api.commands.command
 import net.perfectdreams.pantufa.commands.CommandManager
 import net.perfectdreams.pantufa.commands.server.*
 import net.perfectdreams.pantufa.commands.vanilla.utils.PingCommand
 import net.perfectdreams.pantufa.dao.DiscordAccount
+import net.perfectdreams.pantufa.interactions.commands.ChatColorExecutor
+import net.perfectdreams.pantufa.interactions.commands.GuildsExecutor
+import net.perfectdreams.pantufa.interactions.commands.LSXExecutor
+import net.perfectdreams.pantufa.interactions.commands.MinecraftUserDiscordUserExecutor
+import net.perfectdreams.pantufa.interactions.commands.MinecraftUserPlayerNameExecutor
+import net.perfectdreams.pantufa.interactions.commands.MoneyExecutor
+import net.perfectdreams.pantufa.interactions.commands.OnlineExecutor
+import net.perfectdreams.pantufa.interactions.commands.PesadelosExecutor
+import net.perfectdreams.pantufa.interactions.commands.PingExecutor
+import net.perfectdreams.pantufa.interactions.commands.RegistrarExecutor
+import net.perfectdreams.pantufa.interactions.commands.VIPInfoExecutor
+import net.perfectdreams.pantufa.interactions.commands.declarations.LSXCommand
 import net.perfectdreams.pantufa.listeners.DiscordListener
 import net.perfectdreams.pantufa.network.Databases
 import net.perfectdreams.pantufa.tables.DiscordAccounts
@@ -27,7 +42,6 @@ import net.perfectdreams.pantufa.utils.discord.DiscordCommandMap
 import net.perfectdreams.pantufa.utils.parallax.ParallaxEmbed
 import net.perfectdreams.pantufa.utils.socket.SocketHandler
 import net.perfectdreams.pantufa.utils.socket.SocketServer
-import net.perfectdreams.discordinteraktions.InteractionsServer
 import net.perfectdreams.pantufa.utils.config.PantufaConfig
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.Transaction
@@ -46,8 +60,9 @@ class PantufaBot(val config: PantufaConfig) {
 		lateinit var INSTANCE: PantufaBot
 	}
 
-	val commandManager = CommandManager()
-	val commandMap = DiscordCommandMap(this)
+	val commandManager = net.perfectdreams.discordinteraktions.common.commands.CommandManager()
+	val legacyCommandManager = CommandManager()
+	val legacyCommandMap = DiscordCommandMap(this)
 	val executors = Executors.newCachedThreadPool()
 	val coroutineDispatcher = executors.asCoroutineDispatcher()
 	lateinit var jda: JDA
@@ -72,63 +87,86 @@ class PantufaBot(val config: PantufaConfig) {
 
 		initPostgreSql()
 
+		commandManager.register(
+			net.perfectdreams.pantufa.interactions.commands.declarations.ChatColorCommand,
+			ChatColorExecutor(this)
+		)
+
+		commandManager.register(
+			net.perfectdreams.pantufa.interactions.commands.declarations.GuildsCommand,
+			GuildsExecutor(this)
+		)
+
+		commandManager.register(
+			net.perfectdreams.pantufa.interactions.commands.declarations.LSXCommand,
+			LSXExecutor(this)
+		)
+
+		commandManager.register(
+			net.perfectdreams.pantufa.interactions.commands.declarations.MinecraftUserCommand,
+			MinecraftUserPlayerNameExecutor(this),
+			MinecraftUserDiscordUserExecutor(this)
+		)
+
+		commandManager.register(
+			net.perfectdreams.pantufa.interactions.commands.declarations.MoneyCommand,
+			MoneyExecutor(this)
+		)
+
+		commandManager.register(
+			net.perfectdreams.pantufa.interactions.commands.declarations.OnlineCommand,
+			OnlineExecutor(this)
+		)
+
+		commandManager.register(
+			net.perfectdreams.pantufa.interactions.commands.declarations.PesadelosCommand,
+			PesadelosExecutor(this)
+		)
+
+		commandManager.register(
+			net.perfectdreams.pantufa.interactions.commands.declarations.PingCommand,
+			PingExecutor(this)
+		)
+
+		commandManager.register(
+			net.perfectdreams.pantufa.interactions.commands.declarations.RegistrarCommand,
+			RegistrarExecutor(this)
+		)
+
+		commandManager.register(
+			net.perfectdreams.pantufa.interactions.commands.declarations.VIPInfoCommand,
+			VIPInfoExecutor(this)
+		)
+
 		jda = JDABuilder.create(EnumSet.allOf(GatewayIntent::class.java))
+			.addEventListeners(SlashCommandListener(commandManager))
 			.setStatus(OnlineStatus.ONLINE)
 			.setToken(config.token)
 			.build()
 
-		commandMap.register(PingCommand.create(this))
-		commandMap.register(MinecraftUserCommand.create(this))
-		commandMap.register(NotificarPlayerCommand.create(this))
-		commandMap.register(NotificarEventoCommand.create(this))
-		commandMap.register(ChatColorCommand.create(this))
-		commandMap.register(VerificarStatusCommand.create(this))
-		commandMap.register(PesadelosCommand.create(this))
-		commandMap.register(VIPInfoCommand.create(this))
-		commandMap.register(MoneyCommand.create(this))
-		commandMap.register(SugerirCommand.create(this))
+		legacyCommandMap.register(PingCommand.create(this))
+		legacyCommandMap.register(MinecraftUserCommand.create(this))
+		legacyCommandMap.register(NotificarPlayerCommand.create(this))
+		legacyCommandMap.register(NotificarEventoCommand.create(this))
+		legacyCommandMap.register(ChatColorCommand.create(this))
+		legacyCommandMap.register(VerificarStatusCommand.create(this))
+		legacyCommandMap.register(PesadelosCommand.create(this))
+		legacyCommandMap.register(VIPInfoCommand.create(this))
+		legacyCommandMap.register(MoneyCommand.create(this))
+		legacyCommandMap.register(SugerirCommand.create(this))
 
 		SyncRolesThread().start()
 		CheckDreamPresenceThread().start()
-		val interactionsServer = InteractionsServer(
-			390927821997998081L,
-			config.discordInteractions.publicKey,
-			config.token
-		)
-
-		interactionsServer.commandManager.commands.addAll(
-			listOf(
-				net.perfectdreams.pantufa.interactions.commands.ChatColorCommand(this),
-				net.perfectdreams.pantufa.interactions.commands.LSXCommand(this),
-				net.perfectdreams.pantufa.interactions.commands.MinecraftUserPlayerNameCommand(this),
-				net.perfectdreams.pantufa.interactions.commands.MinecraftUserDiscordUserCommand(this),
-				net.perfectdreams.pantufa.interactions.commands.MoneyCommand(this),
-				net.perfectdreams.pantufa.interactions.commands.OnlineCommand(this),
-				net.perfectdreams.pantufa.interactions.commands.PesadelosCommand(this),
-				net.perfectdreams.pantufa.interactions.commands.PingCommand(this),
-				net.perfectdreams.pantufa.interactions.commands.RegistrarCommand(this),
-				net.perfectdreams.pantufa.interactions.commands.VIPInfoCommand(this),
-				net.perfectdreams.pantufa.interactions.commands.GuildsCommand(this),
-			)
-		)
 
 		runBlocking {
+			val registry = JDACommandRegistry(jda, commandManager)
 			if (config.discordInteractions.registerGlobally) {
-				interactionsServer.commandManager.updateAllGlobalCommands(
-					deleteUnknownCommands = true
-				)
+				registry.updateAllGlobalCommands(deleteUnknownCommands = true)
 			} else {
 				for (id in config.discordInteractions.guildsToBeRegistered) {
-					interactionsServer.commandManager.updateAllCommandsInGuild(
-						Snowflake(268353819409252352L),
-						deleteUnknownCommands = true
-					)
+					registry.updateAllCommandsInGuild(Snowflake(268353819409252352L), deleteUnknownCommands = true)
 				}
 			}
-		}
-
-		thread {
-			interactionsServer.start()
 		}
 
 		thread {

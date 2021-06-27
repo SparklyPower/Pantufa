@@ -1,21 +1,19 @@
 package net.perfectdreams.pantufa.interactions.commands
 
-import net.perfectdreams.discordinteraktions.declarations.slash.SlashCommandDeclaration
+import net.perfectdreams.discordinteraktions.common.context.SlashCommandArguments
+import net.perfectdreams.discordinteraktions.declarations.slash.SlashCommandExecutorDeclaration
 import net.perfectdreams.pantufa.PantufaBot
 import net.perfectdreams.pantufa.tables.LuckPermsUserPermissions
 import net.perfectdreams.pantufa.utils.DateUtils
 import net.perfectdreams.pantufa.utils.PantufaReply
 import org.jetbrains.exposed.sql.select
 
-class VIPInfoCommand(pantufa: PantufaBot) : PantufaInteractionCommand(
-    pantufa, this
+class VIPInfoExecutor(pantufa: PantufaBot) : PantufaInteractionCommand(
+    pantufa
 ) {
-    companion object : SlashCommandDeclaration(
-        name = "vipinfo",
-        description = "Veja quanto tempo falta para o seu VIP acabar"
-    )
+    companion object : SlashCommandExecutorDeclaration(VIPInfoExecutor::class)
 
-    override suspend fun executesPantufa(context: PantufaCommandContext) {
+    override suspend fun executePantufa(context: PantufaCommandContext, args: SlashCommandArguments) {
         val accountInfo = context.retrieveConnectedMinecraftAccountOrFail()
         val playerUniqueId = accountInfo.uniqueId
 

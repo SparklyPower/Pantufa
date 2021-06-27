@@ -1,39 +1,33 @@
 package net.perfectdreams.pantufa.interactions.commands
 
-import net.perfectdreams.discordinteraktions.commands.get
-import net.perfectdreams.discordinteraktions.declarations.slash.SlashCommandDeclaration
-import net.perfectdreams.discordinteraktions.declarations.slash.required
+import net.perfectdreams.discordinteraktions.common.context.SlashCommandArguments
+import net.perfectdreams.discordinteraktions.declarations.slash.SlashCommandExecutorDeclaration
+import net.perfectdreams.discordinteraktions.declarations.slash.options.CommandOptions
 import net.perfectdreams.pantufa.PantufaBot
 import net.perfectdreams.pantufa.utils.Constants
 import net.perfectdreams.pantufa.utils.PantufaReply
 import java.awt.Color
 
-class ChatColorCommand(pantufa: PantufaBot) : PantufaInteractionCommand(pantufa, this) {
-    companion object : SlashCommandDeclaration(
-        name = "chatcolor",
-        description = "Transforme uma cor RGB em uma cor que você possa usar no chat (e em outros lugares) do SparklyPower!"
-    ) {
-        override val options = Options
-
-        object Options : SlashCommandDeclaration.Options() {
+class ChatColorExecutor(pantufa: PantufaBot) : PantufaInteractionCommand(pantufa) {
+    companion object : SlashCommandExecutorDeclaration(ChatColorExecutor::class) {
+        object Options : CommandOptions() {
             val red = integer("red", "Quantidade de cor vermelha (em formato (R, G, B), é o primeiro número)")
-                .required()
                 .register()
 
             val green = integer("green", "Quantidade de cor verde (em formato (R, G, B), é o segundo número)")
-                .required()
                 .register()
 
             val blue = integer("blue", "Quantidade de cor azul (em formato (R, G, B), é o terceiro número)")
-                .required()
                 .register()
         }
+
+        override val options = Options
     }
 
-    override suspend fun executesPantufa(context: PantufaCommandContext) {
-        val r = options.red.get(context.interactionContext)
-        val g = options.green.get(context.interactionContext)
-        val b = options.blue.get(context.interactionContext)
+    override suspend fun executePantufa(context: PantufaCommandContext, args: SlashCommandArguments) {
+        val r = args[options.red]
+        val g = args[options.green]
+        val b = args[options.blue]
 
         if (r !in 0..255 || g !in 0..255 || b !in 0..255) {
             context.reply(

@@ -1,9 +1,9 @@
 package net.perfectdreams.pantufa.interactions.commands
 
 import kotlinx.coroutines.sync.withLock
-import net.perfectdreams.discordinteraktions.commands.get
-import net.perfectdreams.discordinteraktions.declarations.slash.SlashCommandDeclaration
-import net.perfectdreams.discordinteraktions.declarations.slash.choice
+import net.perfectdreams.discordinteraktions.common.context.SlashCommandArguments
+import net.perfectdreams.discordinteraktions.declarations.slash.SlashCommandExecutorDeclaration
+import net.perfectdreams.discordinteraktions.declarations.slash.options.CommandOptions
 import net.perfectdreams.pantufa.PantufaBot
 import net.perfectdreams.pantufa.commands.server.LSXCommand
 import net.perfectdreams.pantufa.dao.Ban
@@ -11,23 +11,22 @@ import net.perfectdreams.pantufa.dao.Profile
 import net.perfectdreams.pantufa.network.Databases
 import net.perfectdreams.pantufa.tables.Bans
 import net.perfectdreams.pantufa.tables.ChatUsers
-import net.perfectdreams.pantufa.utils.*
+import net.perfectdreams.pantufa.utils.Constants
+import net.perfectdreams.pantufa.utils.CraftConomyUtils
+import net.perfectdreams.pantufa.utils.NumberUtils
+import net.perfectdreams.pantufa.utils.PantufaReply
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.or
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 
-class LSXCommand(pantufa: PantufaBot) : PantufaInteractionCommand(
-    pantufa,
-    this
+class LSXExecutor(pantufa: PantufaBot) : PantufaInteractionCommand(
+    pantufa
 ) {
-    companion object : SlashCommandDeclaration(
-        name = "transferir",
-        description = "LorittaLand Sonhos Exchange Service: Transfira sonhos da Loritta para o SparklyPower e vice-versa!"
-    ) {
+    companion object : SlashCommandExecutorDeclaration(LSXExecutor::class) {
         override val options = Options
 
-        object Options : SlashCommandDeclaration.Options() {
+        object Options : CommandOptions() {
             val source = string("source", "Fonte dos Sonhos")
                 .choice("survival", "SparklyPower Survival")
                 .choice("loritta", "Loritta :3")
@@ -49,10 +48,10 @@ class LSXCommand(pantufa: PantufaBot) : PantufaInteractionCommand(
         } ?: throw RuntimeException()
     }
 
-    override suspend fun executesPantufa(context: PantufaCommandContext) {
-        val arg0 = options.source.get(context.interactionContext)
-        val arg1 = options.destination.get(context.interactionContext)
-        val arg2 = options.quantity.get(context.interactionContext)
+    override suspend fun executePantufa(context: PantufaCommandContext, args: SlashCommandArguments) {
+        val arg0 = args[options.source]
+        val arg1 = args[options.destination]
+        val arg2 = args[options.quantity]
 
         val profile = getLorittaProfile(context.senderId)
         val bannedState = profile.getBannedState()

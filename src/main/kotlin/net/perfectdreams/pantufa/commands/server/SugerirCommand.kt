@@ -1,5 +1,7 @@
 package net.perfectdreams.pantufa.commands.server
 
+import net.dv8tion.jda.api.entities.Emoji
+import net.dv8tion.jda.api.entities.Emote
 import net.perfectdreams.pantufa.PantufaBot
 import net.perfectdreams.pantufa.api.commands.command
 import net.perfectdreams.pantufa.commands.AbstractCommand
@@ -29,8 +31,13 @@ object SugerirCommand {
 					)
 				)
 			} else {
-				suggestionChannel.sendMessage("**Sugestão de ${this.sender.asMention}:**\n\n" + this.args.joinToString(" "))
+				val message = suggestionChannel.sendMessage("**Sugestão de ${this.sender.asMention}:**\n\n" + this.args.joinToString(" "))
 					.allowedMentions(listOf())
+					.await()
+
+				message.addReaction("pantufa_thumbsup:853048446826840104")
+					.await()
+				message.addReaction("pantufa_analise:853048446813470762")
 					.await()
 
 				reply(

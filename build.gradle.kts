@@ -1,8 +1,8 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    kotlin("jvm") version "1.4.30"
-    kotlin("plugin.serialization") version "1.4.30"
+    kotlin("jvm") version "1.5.10"
+    kotlin("plugin.serialization") version "1.5.10"
 }
 
 group = "net.perfectdreams.pantufa"
@@ -14,6 +14,7 @@ repositories {
     maven("https://repo.perfectdreams.net/")
     maven("https://jcenter.bintray.com")
     maven("https://jitpack.io")
+    maven("https://m2.dv8tion.net/releases")
 }
 
 dependencies {
@@ -21,14 +22,14 @@ dependencies {
     implementation("ch.qos.logback:logback-classic:1.3.0-alpha5")
     implementation("io.github.microutils:kotlin-logging:1.8.3")
 
-    implementation("net.dv8tion:JDA:4.2.0_228")
+    implementation("net.dv8tion:JDA:4.3.0_283")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.9")
     api("org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:1.4.1")
     implementation("com.github.ben-manes.caffeine:caffeine:2.8.5")
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.1.0")
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-hocon:1.0.0-RC2")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.2.1")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-hocon:1.2.1")
 
-    implementation("net.perfectdreams.discordinteraktions:core:0.0.2-SNAPSHOT")
+    implementation("net.perfectdreams.discordinteraktions:gateway-jda:0.0.5-SNAPSHOT")
     implementation("com.github.kevinsawicki:http-request:6.0")
 
     // Sequins
@@ -42,10 +43,7 @@ dependencies {
     implementation("org.jetbrains.exposed:exposed-dao:0.29.1")
     implementation("org.jetbrains.exposed:exposed-jdbc:0.29.1")
 
-    api("io.ktor:ktor-server-core:1.5.0")
-    api("io.ktor:ktor-server-netty:1.5.0")
     implementation("io.ktor:ktor-client-cio:1.5.0")
-    implementation("org.bouncycastle:bcprov-jdk15on:1.67")
 
     implementation("org.apache.commons:commons-text:1.9")
 

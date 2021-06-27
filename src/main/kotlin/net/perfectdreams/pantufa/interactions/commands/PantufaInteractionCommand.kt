@@ -1,34 +1,31 @@
 package net.perfectdreams.pantufa.interactions.commands
 
-import dev.kord.common.entity.MessageFlag
-import dev.kord.common.entity.MessageFlags
-import net.perfectdreams.discordinteraktions.commands.SlashCommand
-import net.perfectdreams.discordinteraktions.context.GuildSlashCommandContext
-import net.perfectdreams.discordinteraktions.context.SlashCommandContext
+import net.perfectdreams.discordinteraktions.common.commands.SlashCommandExecutor
+import net.perfectdreams.discordinteraktions.common.context.GuildSlashCommandContext
+import net.perfectdreams.discordinteraktions.common.context.SlashCommandArguments
+import net.perfectdreams.discordinteraktions.common.context.SlashCommandContext
 import net.perfectdreams.discordinteraktions.declarations.slash.SlashCommandDeclaration
 import net.perfectdreams.pantufa.PantufaBot
 import net.perfectdreams.pantufa.api.commands.SilentCommandException
 
 abstract class PantufaInteractionCommand(
-    val pantufa: PantufaBot,
-    declaration: SlashCommandDeclaration,
-    parent: SlashCommandDeclaration = declaration
-) : SlashCommand(declaration, parent) {
-    override suspend fun executes(context: SlashCommandContext) {
+    val pantufa: PantufaBot
+) : SlashCommandExecutor() {
+    override suspend fun execute(context: SlashCommandContext, args: SlashCommandArguments) {
         try {
-            if (context !is GuildSlashCommandContext || context.request.guildId.value?.value !in pantufa.whitelistedGuildIds) {
+            if (context !is GuildSlashCommandContext || context.guild.id.value !in pantufa.whitelistedGuildIds) {
                 context.sendMessage {
                     content = "Comandos apenas podem ser utilizados em nosso servidor oficial! https://discord.gg/sparklypower"
-                    flags = MessageFlags(MessageFlag.Ephemeral)
+                    isEphemeral = true
                 }
                 return
             }
 
-            executesPantufa(PantufaCommandContext(pantufa, context))
+            executePantufa(PantufaCommandContext(pantufa, context), args)
         } catch (e: SilentCommandException) {
             println("Caught *silent* cmd exception!")
         }
     }
 
-    abstract suspend fun executesPantufa(context: PantufaCommandContext)
+    abstract suspend fun executePantufa(context: PantufaCommandContext, args: SlashCommandArguments)
 }
