@@ -25,7 +25,7 @@ object Constants {
 	val PERFECTDREAMS_OFFLINE: ((CommandContext) -> Unit) = { context ->
 		context.reply(
 				PantufaReply(
-						message = Constants.PERFECTDREAMS_OFFLINE_MESSAGE,
+						content = Constants.PERFECTDREAMS_OFFLINE_MESSAGE,
 						prefix = Constants.ERROR
 				)
 		)
@@ -43,12 +43,13 @@ object Constants {
 		358774895850815488L, // staff Loritta
 		547119872568459284L, // staff Loritta cmds
 		574985687951212549L, // SparklyPower VIPs
+		411606648822431744L // loritta donators
 	)
 
 	val SPARKLYPOWER_OFFLINE: (suspend (PantufaCommandContext) -> Unit) = { context ->
 		context.reply(
 			PantufaReply(
-				message = Constants.PERFECTDREAMS_OFFLINE_MESSAGE,
+				content = Constants.PERFECTDREAMS_OFFLINE_MESSAGE,
 				prefix = Constants.ERROR
 			)
 		)

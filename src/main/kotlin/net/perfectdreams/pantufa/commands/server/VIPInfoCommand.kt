@@ -2,18 +2,10 @@ package net.perfectdreams.pantufa.commands.server
 
 import net.perfectdreams.pantufa.PantufaBot
 import net.perfectdreams.pantufa.api.commands.command
-import net.perfectdreams.pantufa.commands.AbstractCommand
-import net.perfectdreams.pantufa.commands.CommandContext
-import net.perfectdreams.pantufa.dao.CashInfo
-import net.perfectdreams.pantufa.network.Databases
 import net.perfectdreams.pantufa.tables.LuckPermsUserPermissions
-import net.perfectdreams.pantufa.utils.Constants
 import net.perfectdreams.pantufa.utils.DateUtils
 import net.perfectdreams.pantufa.utils.PantufaReply
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.transactions.transaction
-import java.awt.Color
 
 object VIPInfoCommand {
 	fun create(pantufa: PantufaBot) = command(pantufa, "VIPInfoCommand", listOf("vip", "vipinfo")) {
@@ -45,7 +37,7 @@ object VIPInfoCommand {
 				// And then send the message!
 				reply(
 					PantufaReply(
-						message = "Seu **${data.first}** irá expirar em *${
+						content = "Seu **${data.first}** irá expirar em *${
 							DateUtils.formatDateDiff(data.second.toLong() * 1000)
 						}*",
 						prefix = "<a:cooldoge:543220304223404042>"
@@ -54,7 +46,7 @@ object VIPInfoCommand {
 			} else {
 				reply(
 					PantufaReply(
-						message = "Você não tem nenhum **VIP** no momento... Então que tal comprar pesadelos em nossa loja para você poder comprar um VIP lindíssimo? https://sparklypower.net/loja",
+						content = "Você não tem nenhum **VIP** no momento... Então que tal comprar pesadelos em nossa loja para você poder comprar um VIP lindíssimo? https://sparklypower.net/loja",
 						prefix = "<:lori_sob:556524143281963008>"
 					)
 				)

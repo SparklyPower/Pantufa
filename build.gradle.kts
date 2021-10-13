@@ -29,7 +29,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.2.1")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-hocon:1.2.1")
 
-    implementation("net.perfectdreams.discordinteraktions:gateway-jda:0.0.5-SNAPSHOT")
+    implementation("net.perfectdreams.discordinteraktions:gateway-kord:0.0.10-SNAPSHOT")
     implementation("com.github.kevinsawicki:http-request:6.0")
 
     // Sequins
@@ -43,7 +43,7 @@ dependencies {
     implementation("org.jetbrains.exposed:exposed-dao:0.29.1")
     implementation("org.jetbrains.exposed:exposed-jdbc:0.29.1")
 
-    implementation("io.ktor:ktor-client-cio:1.5.0")
+    implementation("io.ktor:ktor-client-cio:1.6.3")
 
     implementation("org.apache.commons:commons-text:1.9")
 

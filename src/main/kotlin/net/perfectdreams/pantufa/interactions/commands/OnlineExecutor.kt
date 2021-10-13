@@ -8,9 +8,9 @@ import com.github.salomonbrys.kotson.string
 import com.google.gson.JsonObject
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import net.perfectdreams.discordinteraktions.common.context.SlashCommandArguments
-import net.perfectdreams.discordinteraktions.declarations.slash.SlashCommandDeclaration
-import net.perfectdreams.discordinteraktions.declarations.slash.SlashCommandExecutorDeclaration
+import net.perfectdreams.discordinteraktions.common.context.commands.slash.SlashCommandArguments
+import net.perfectdreams.discordinteraktions.declarations.commands.slash.SlashCommandExecutorDeclaration
+import net.perfectdreams.discordinteraktions.declarations.commands.slash.options.CommandOptions
 import net.perfectdreams.pantufa.PantufaBot
 import net.perfectdreams.pantufa.utils.Constants
 import net.perfectdreams.pantufa.utils.Constants.SPARKLYPOWER_OFFLINE
@@ -21,6 +21,13 @@ class OnlineExecutor(pantufa: PantufaBot) : PantufaInteractionCommand(
     pantufa
 ) {
     companion object : SlashCommandExecutorDeclaration(OnlineExecutor::class) {
+        object Options : CommandOptions() {
+            val showGraph = optionalBoolean("show_graph", "Mostra o gráfico de players online")
+                .register()
+        }
+
+        override val options = Options
+
         val serverToFancyName = mapOf(
             "sparklypower_lobby" to "SparklyPower Lobby",
             "sparklypower_survival" to "SparklyPower Survival"
@@ -28,6 +35,7 @@ class OnlineExecutor(pantufa: PantufaBot) : PantufaInteractionCommand(
     }
 
     override suspend fun executePantufa(context: PantufaCommandContext, args: SlashCommandArguments) {
+        val showGraph = args[options.showGraph]
         val jsonObject = JsonObject()
         jsonObject["type"] = "getOnlinePlayersInfo"
 
@@ -41,7 +49,7 @@ class OnlineExecutor(pantufa: PantufaBot) : PantufaInteractionCommand(
             }
             replies.add(
                 PantufaReply(
-                    message = "**Players Online no SparklyPower Network ($totalPlayersOnline players online)**",
+                    content = "**Players Online no SparklyPower Network ($totalPlayersOnline players online)**",
                     prefix = "<:pocketdreams:333655151871000576>"
                 )
             )
@@ -75,7 +83,19 @@ class OnlineExecutor(pantufa: PantufaBot) : PantufaInteractionCommand(
             }
 
             GlobalScope.launch {
-                context.reply(*replies.toTypedArray())
+                // Get cached graph if the user requested the player graph
+                val playersOnlineGraphImage = if (showGraph == true)
+                    pantufa.playersOnlineGraph.getCachedGraph().inputStream()
+                else null
+
+                context.sendMessage {
+                    for (reply in replies) {
+                        styled(reply)
+                    }
+
+                    if (playersOnlineGraphImage != null)
+                        addFile("graph.png", playersOnlineGraphImage)
+                }
             }
         }, error = { GlobalScope.launch { SPARKLYPOWER_OFFLINE.invoke(context) } })
     }

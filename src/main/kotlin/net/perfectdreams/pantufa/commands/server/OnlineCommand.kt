@@ -27,7 +27,7 @@ class OnlineCommand : AbstractCommand("online") {
 			}
 			replies.add(
 					PantufaReply(
-							message = "**Players Online no SparklyPower Network ($totalPlayersOnline players online)**",
+							content = "**Players Online no SparklyPower Network ($totalPlayersOnline players online)**",
 							prefix = "<:pocketdreams:333655151871000576>"
 					)
 			)

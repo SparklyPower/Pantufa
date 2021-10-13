@@ -1,15 +1,10 @@
 package net.perfectdreams.pantufa.interactions.commands
 
-import net.perfectdreams.discordinteraktions.common.context.SlashCommandArguments
-import net.perfectdreams.discordinteraktions.declarations.slash.SlashCommandExecutorDeclaration
-import net.perfectdreams.discordinteraktions.declarations.slash.options.CommandOptions
+import net.perfectdreams.discordinteraktions.common.context.commands.slash.SlashCommandArguments
+import net.perfectdreams.discordinteraktions.declarations.commands.slash.SlashCommandExecutorDeclaration
+import net.perfectdreams.discordinteraktions.declarations.commands.slash.options.CommandOptions
 import net.perfectdreams.pantufa.PantufaBot
-import net.perfectdreams.pantufa.api.commands.SilentCommandException
-import net.perfectdreams.pantufa.dao.CashInfo
-import net.perfectdreams.pantufa.network.Databases
-import net.perfectdreams.pantufa.utils.Constants
 import net.perfectdreams.pantufa.utils.PantufaReply
-import org.jetbrains.exposed.sql.transactions.transaction
 
 class MinecraftUserPlayerNameExecutor(pantufa: PantufaBot) : PantufaInteractionCommand(
     pantufa

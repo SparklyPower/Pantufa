@@ -1,0 +1,75 @@
+package net.perfectdreams.pantufa.listeners
+
+import dev.kord.common.annotation.KordPreview
+import dev.kord.common.entity.DiscordInteraction
+import dev.kord.common.entity.InteractionType
+import dev.kord.common.entity.Snowflake
+import dev.kord.rest.service.RestClient
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.json.Json
+import mu.KotlinLogging
+import net.dv8tion.jda.api.events.RawGatewayEvent
+import net.dv8tion.jda.api.hooks.ListenerAdapter
+import net.perfectdreams.discordinteraktions.common.commands.CommandManager
+import net.perfectdreams.discordinteraktions.common.context.InteractionRequestState
+import net.perfectdreams.discordinteraktions.common.context.RequestBridge
+import net.perfectdreams.discordinteraktions.common.utils.Observable
+import net.perfectdreams.discordinteraktions.platforms.kord.context.manager.InitialHttpRequestManager
+import net.perfectdreams.discordinteraktions.platforms.kord.utils.KordCommandChecker
+import net.perfectdreams.discordinteraktions.platforms.kord.utils.KordComponentChecker
+
+@OptIn(KordPreview::class)
+class InteractionListener(
+    val rest: RestClient,
+    val applicationId: Snowflake,
+    val commandManager: CommandManager
+) : ListenerAdapter() {
+    companion object {
+        private val json = Json {
+            // If there're any unknown keys, we'll ignore them instead of throwing an exception.
+            this.ignoreUnknownKeys = true
+        }
+
+        private val logger = KotlinLogging.logger {}
+    }
+
+    private val kordCommandChecker = KordCommandChecker(commandManager)
+    private val kordComponentChecker = KordComponentChecker(commandManager)
+
+    override fun onRawGateway(event: RawGatewayEvent) {
+        // Workaround for Discord InteraKTions!
+        if (event.type != "INTERACTION_CREATE")
+            return
+
+        // From "GatewayKordInteractions.kt"
+        val interactionsEvent = event.payload.toString()
+
+        // Kord still has some fields missing (like "deaf") so we need to decode ignoring missing fields
+        val request = json.decodeFromString<DiscordInteraction>(interactionsEvent)
+
+        val observableState = Observable(InteractionRequestState.NOT_REPLIED_YET)
+        val bridge = RequestBridge(observableState)
+
+        val requestManager = InitialHttpRequestManager(
+            bridge,
+            rest,
+            applicationId,
+            request.token,
+            request
+        )
+
+        bridge.manager = requestManager
+
+        if (request.type == InteractionType.ApplicationCommand)
+            kordCommandChecker.checkAndExecute(
+                request,
+                requestManager
+            )
+        else if (request.type == InteractionType.Component) {
+            kordComponentChecker.checkAndExecute(
+                request,
+                requestManager
+            )
+        }
+    }
+}

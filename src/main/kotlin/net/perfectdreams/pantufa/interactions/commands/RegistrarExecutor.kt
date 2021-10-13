@@ -1,8 +1,8 @@
 package net.perfectdreams.pantufa.interactions.commands
 
-import net.perfectdreams.discordinteraktions.common.context.SlashCommandArguments
-import net.perfectdreams.discordinteraktions.declarations.slash.SlashCommandExecutorDeclaration
-import net.perfectdreams.discordinteraktions.declarations.slash.options.CommandOptions
+import net.perfectdreams.discordinteraktions.common.context.commands.slash.SlashCommandArguments
+import net.perfectdreams.discordinteraktions.declarations.commands.slash.SlashCommandExecutorDeclaration
+import net.perfectdreams.discordinteraktions.declarations.commands.slash.options.CommandOptions
 import net.perfectdreams.pantufa.PantufaBot
 import net.perfectdreams.pantufa.api.commands.SilentCommandException
 import net.perfectdreams.pantufa.dao.DiscordAccount
@@ -30,7 +30,7 @@ class RegistrarExecutor(pantufa: PantufaBot) : PantufaInteractionCommand(
         val arg0 = args[options.username]
 
         pantufa.transactionOnSparklyPowerDatabase {
-            DiscordAccounts.deleteWhere { DiscordAccounts.discordId eq context.senderId }
+            DiscordAccounts.deleteWhere { DiscordAccounts.discordId eq context.senderId.toLong() }
         }
 
         val accountStatus = pantufa.transactionOnSparklyPowerDatabase {
@@ -46,7 +46,7 @@ class RegistrarExecutor(pantufa: PantufaBot) : PantufaInteractionCommand(
 
             DiscordAccount.new {
                 this.minecraftId = user.id.value
-                this.discordId = context.senderId
+                this.discordId = context.senderId.toLong()
                 this.isConnected = false
             }
             return@transactionOnSparklyPowerDatabase AccountResult.OK

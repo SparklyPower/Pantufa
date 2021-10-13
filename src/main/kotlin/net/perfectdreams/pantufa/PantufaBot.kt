@@ -4,15 +4,15 @@ import com.github.salomonbrys.kotson.*
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
+import dev.kord.common.entity.Snowflake
+import dev.kord.rest.service.RestClient
+import io.ktor.client.*
 import kotlinx.coroutines.*
 import net.dv8tion.jda.api.*
 import net.dv8tion.jda.api.entities.Activity
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.requests.GatewayIntent
-import net.perfectdreams.discordinteraktions.api.entities.Snowflake
-import net.perfectdreams.discordinteraktions.platform.jda.commands.JDACommandRegistry
-import net.perfectdreams.discordinteraktions.platform.jda.listeners.SlashCommandListener
-import net.perfectdreams.pantufa.api.commands.command
+import net.perfectdreams.discordinteraktions.platforms.kord.commands.KordCommandRegistry
 import net.perfectdreams.pantufa.commands.CommandManager
 import net.perfectdreams.pantufa.commands.server.*
 import net.perfectdreams.pantufa.commands.vanilla.utils.PingCommand
@@ -28,21 +28,22 @@ import net.perfectdreams.pantufa.interactions.commands.PesadelosExecutor
 import net.perfectdreams.pantufa.interactions.commands.PingExecutor
 import net.perfectdreams.pantufa.interactions.commands.RegistrarExecutor
 import net.perfectdreams.pantufa.interactions.commands.VIPInfoExecutor
-import net.perfectdreams.pantufa.interactions.commands.declarations.LSXCommand
 import net.perfectdreams.pantufa.listeners.DiscordListener
+import net.perfectdreams.pantufa.listeners.InteractionListener
 import net.perfectdreams.pantufa.network.Databases
 import net.perfectdreams.pantufa.tables.DiscordAccounts
 import net.perfectdreams.pantufa.tables.NotifyPlayersOnline
 import net.perfectdreams.pantufa.tables.Users
 import net.perfectdreams.pantufa.threads.CheckDreamPresenceThread
 import net.perfectdreams.pantufa.threads.SyncRolesThread
+import net.perfectdreams.pantufa.utils.CachedGraphManager
 import net.perfectdreams.pantufa.utils.Constants
 import net.perfectdreams.pantufa.utils.Server
+import net.perfectdreams.pantufa.utils.config.PantufaConfig
 import net.perfectdreams.pantufa.utils.discord.DiscordCommandMap
 import net.perfectdreams.pantufa.utils.parallax.ParallaxEmbed
 import net.perfectdreams.pantufa.utils.socket.SocketHandler
 import net.perfectdreams.pantufa.utils.socket.SocketServer
-import net.perfectdreams.pantufa.utils.config.PantufaConfig
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.Transaction
 import org.jetbrains.exposed.sql.select
@@ -53,11 +54,14 @@ import java.util.*
 import java.util.concurrent.Executors
 import kotlin.concurrent.thread
 
-
 class PantufaBot(val config: PantufaConfig) {
 	companion object {
 		const val PREFIX = "-"
 		lateinit var INSTANCE: PantufaBot
+
+		val http = HttpClient {
+			expectSuccess = false
+		}
 	}
 
 	val commandManager = net.perfectdreams.discordinteraktions.common.commands.CommandManager()
@@ -66,20 +70,22 @@ class PantufaBot(val config: PantufaConfig) {
 	val executors = Executors.newCachedThreadPool()
 	val coroutineDispatcher = executors.asCoroutineDispatcher()
 	lateinit var jda: JDA
-
+	val rest = RestClient(config.token)
 	var previousPlayers: List<String>? = null
 	val whitelistedGuildIds = listOf(
-		265632341530116097L, // SparklyPower (Old)
-		268353819409252352L, // Ideias Aleatórias
-		297732013006389252L, // Apartamento da Loritta
-		602640402830589954L, // Furdúncios Artísticos
-		320248230917046282, // SparklyPower (New)
-		420626099257475072L, // Loritta's Apartment
-		340165396692729883L, // Loritta's Emoji Server
-		538506322212159578L, // Loritta's Emoji Server 2
-		392482696720416775L, // Pantufa's Emoji Server
-		626604568741937199L // Loritta's Emoji Server 4
+		Snowflake(265632341530116097L), // SparklyPower (Old)
+		Snowflake(268353819409252352L), // Ideias Aleatórias
+		Snowflake(297732013006389252L), // Apartamento da Loritta
+		Snowflake(602640402830589954L), // Furdúncios Artísticos
+		Snowflake(320248230917046282), // SparklyPower (New)
+		Snowflake(420626099257475072L), // Loritta's Apartment
+		Snowflake(340165396692729883L), // Loritta's Emoji Server
+		Snowflake(538506322212159578L), // Loritta's Emoji Server 2
+		Snowflake(392482696720416775L), // Pantufa's Emoji Server
+		Snowflake(626604568741937199L) // Loritta's Emoji Server 4
 	)
+	val applicationId = Snowflake(390927821997998081L)
+	val playersOnlineGraph = CachedGraphManager(config.grafana.token, "${config.grafana.url}/render/d-solo/JeZauCDnk/sparklypower-network?orgId=1&var-sparklypower_server=sparklypower_survival&var-world=All&panelId=87&width=800&height=300&tz=America%2FSao_Paulo")
 
 	fun start() {
 		INSTANCE = this
@@ -139,7 +145,14 @@ class PantufaBot(val config: PantufaConfig) {
 		)
 
 		jda = JDABuilder.create(EnumSet.allOf(GatewayIntent::class.java))
-			.addEventListeners(SlashCommandListener(commandManager))
+			.addEventListeners(
+				InteractionListener(
+					rest,
+					Snowflake(390927821997998081L),
+					commandManager
+				)
+			)
+			.setRawEventsEnabled(true) // Required for InteractionListener
 			.setStatus(OnlineStatus.ONLINE)
 			.setToken(config.token)
 			.build()
@@ -159,12 +172,12 @@ class PantufaBot(val config: PantufaConfig) {
 		CheckDreamPresenceThread().start()
 
 		runBlocking {
-			val registry = JDACommandRegistry(jda, commandManager)
+			val registry = KordCommandRegistry(applicationId, rest, commandManager)
 			if (config.discordInteractions.registerGlobally) {
 				registry.updateAllGlobalCommands(deleteUnknownCommands = true)
 			} else {
 				for (id in config.discordInteractions.guildsToBeRegistered) {
-					registry.updateAllCommandsInGuild(Snowflake(268353819409252352L), deleteUnknownCommands = true)
+					registry.updateAllCommandsInGuild(Snowflake(id), deleteUnknownCommands = true)
 				}
 			}
 		}
@@ -355,6 +368,8 @@ class PantufaBot(val config: PantufaConfig) {
 		}
 
 		jda.addEventListener(DiscordListener(this))
+
+		PantufaTasks(this).start()
 	}
 
 	fun initPostgreSql() {

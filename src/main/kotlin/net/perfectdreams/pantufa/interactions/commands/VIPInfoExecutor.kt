@@ -1,7 +1,7 @@
 package net.perfectdreams.pantufa.interactions.commands
 
-import net.perfectdreams.discordinteraktions.common.context.SlashCommandArguments
-import net.perfectdreams.discordinteraktions.declarations.slash.SlashCommandExecutorDeclaration
+import net.perfectdreams.discordinteraktions.common.context.commands.slash.SlashCommandArguments
+import net.perfectdreams.discordinteraktions.declarations.commands.slash.SlashCommandExecutorDeclaration
 import net.perfectdreams.pantufa.PantufaBot
 import net.perfectdreams.pantufa.tables.LuckPermsUserPermissions
 import net.perfectdreams.pantufa.utils.DateUtils
@@ -41,7 +41,7 @@ class VIPInfoExecutor(pantufa: PantufaBot) : PantufaInteractionCommand(
             // And then send the message!
             context.reply(
                 PantufaReply(
-                    message = "Seu **${data.first}** irá expirar em *${
+                    content = "Seu **${data.first}** irá expirar em *${
                         DateUtils.formatDateDiff(data.second.toLong() * 1000)
                     }*",
                     prefix = "<a:cooldoge:543220304223404042>"
@@ -50,7 +50,7 @@ class VIPInfoExecutor(pantufa: PantufaBot) : PantufaInteractionCommand(
         } else {
             context.reply(
                 PantufaReply(
-                    message = "Você não tem nenhum **VIP** no momento... Então que tal comprar pesadelos em nossa loja para você poder comprar um VIP lindíssimo? https://sparklypower.net/loja",
+                    content = "Você não tem nenhum **VIP** no momento... Então que tal comprar pesadelos em nossa loja para você poder comprar um VIP lindíssimo? https://sparklypower.net/loja",
                     prefix = "<:lori_sob:556524143281963008>"
                 )
             )

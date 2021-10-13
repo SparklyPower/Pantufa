@@ -1,6 +1,7 @@
 package net.perfectdreams.pantufa.commands
 
 import net.perfectdreams.pantufa.commands.server.*
+import net.perfectdreams.pantufa.commands.server.administration.AdvDupeIpCommand
 import net.perfectdreams.pantufa.commands.server.administration.BanCommand
 import net.perfectdreams.pantufa.commands.server.administration.CheckBanCommand
 import net.perfectdreams.pantufa.commands.server.administration.DupeIpCommand
@@ -31,6 +32,7 @@ class CommandManager {
 		commands.add(WarnCommand())
 		commands.add(UnwarnCommand())
 		commands.add(CheckBanCommand())
+		commands.add(AdvDupeIpCommand())
 		commands.add(DupeIpCommand())
 		commands.add(FingerprintCommand())
 		commands.add(GeoIpCommand())

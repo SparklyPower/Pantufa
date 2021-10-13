@@ -1,9 +1,9 @@
 package net.perfectdreams.pantufa.interactions.commands
 
 import kotlinx.coroutines.sync.withLock
-import net.perfectdreams.discordinteraktions.common.context.SlashCommandArguments
-import net.perfectdreams.discordinteraktions.declarations.slash.SlashCommandExecutorDeclaration
-import net.perfectdreams.discordinteraktions.declarations.slash.options.CommandOptions
+import net.perfectdreams.discordinteraktions.common.context.commands.slash.SlashCommandArguments
+import net.perfectdreams.discordinteraktions.declarations.commands.slash.SlashCommandExecutorDeclaration
+import net.perfectdreams.discordinteraktions.declarations.commands.slash.options.CommandOptions
 import net.perfectdreams.pantufa.PantufaBot
 import net.perfectdreams.pantufa.commands.server.LSXCommand
 import net.perfectdreams.pantufa.dao.Ban
@@ -27,17 +27,17 @@ class LSXExecutor(pantufa: PantufaBot) : PantufaInteractionCommand(
         override val options = Options
 
         object Options : CommandOptions() {
-            val source = string("source", "Fonte dos Sonhos")
+            val source = optionalString("source", "Fonte dos Sonhos")
                 .choice("survival", "SparklyPower Survival")
                 .choice("loritta", "Loritta :3")
                 .register()
 
-            val destination = string("destination", "Destino dos Sonhos")
+            val destination = optionalString("destination", "Destino dos Sonhos")
                 .choice("survival", "SparklyPower Survival")
                 .choice("loritta", "Loritta :3")
                 .register()
 
-            val quantity = string("quantity", "Quantidade de sonhos que você deseja transferir")
+            val quantity = optionalString("quantity", "Quantidade de sonhos que você deseja transferir")
                 .register()
         }
     }
@@ -53,7 +53,7 @@ class LSXExecutor(pantufa: PantufaBot) : PantufaInteractionCommand(
         val arg1 = args[options.destination]
         val arg2 = args[options.quantity]
 
-        val profile = getLorittaProfile(context.senderId)
+        val profile = getLorittaProfile(context.senderId.toLong())
         val bannedState = profile.getBannedState()
 
         if (bannedState != null) {

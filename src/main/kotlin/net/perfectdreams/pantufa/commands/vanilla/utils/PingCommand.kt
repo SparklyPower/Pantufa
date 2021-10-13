@@ -12,16 +12,16 @@ object PingCommand {
 
 			val replies = mutableListOf(
 					PantufaReply(
-							message = "**Pong!**",
+							content = "**Pong!**",
 							prefix = ":ping_pong:"
 					),
 					PantufaReply(
-							message = "**Gateway Ping:** `${pantufa.jda.gatewayPing}ms`",
+							content = "**Gateway Ping:** `${pantufa.jda.gatewayPing}ms`",
 							prefix = ":stopwatch:",
 							mentionUser = false
 					),
 					PantufaReply(
-							message = "**API Ping:** `...ms`",
+							content = "**API Ping:** `...ms`",
 							prefix = ":stopwatch:",
 							mentionUser = false
 					)
@@ -32,7 +32,7 @@ object PingCommand {
 			replies.removeAt(2) // remova o último
 			replies.add(
 					PantufaReply(
-							message = "**API Ping:** `${System.currentTimeMillis() - time}ms`",
+							content = "**API Ping:** `${System.currentTimeMillis() - time}ms`",
 							prefix = ":zap:",
 							mentionUser = false
 					)

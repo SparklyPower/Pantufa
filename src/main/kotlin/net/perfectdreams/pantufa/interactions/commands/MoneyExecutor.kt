@@ -1,8 +1,8 @@
 package net.perfectdreams.pantufa.interactions.commands
 
-import net.perfectdreams.discordinteraktions.common.context.SlashCommandArguments
-import net.perfectdreams.discordinteraktions.declarations.slash.SlashCommandExecutorDeclaration
-import net.perfectdreams.discordinteraktions.declarations.slash.options.CommandOptions
+import net.perfectdreams.discordinteraktions.common.context.commands.slash.SlashCommandArguments
+import net.perfectdreams.discordinteraktions.declarations.commands.slash.SlashCommandExecutorDeclaration
+import net.perfectdreams.discordinteraktions.declarations.commands.slash.options.CommandOptions
 import net.perfectdreams.pantufa.PantufaBot
 import net.perfectdreams.pantufa.api.commands.SilentCommandException
 import net.perfectdreams.pantufa.utils.Constants
@@ -29,7 +29,7 @@ class MoneyExecutor(pantufa: PantufaBot) : PantufaInteractionCommand(
             val playerData = pantufa.retrieveMinecraftUserFromUsername(playerName) ?: run {
                 context.reply(
                     PantufaReply(
-                        message = "Player desconhecido!",
+                        content = "Player desconhecido!",
                         prefix = Constants.ERROR
                     )
                 )
@@ -43,7 +43,7 @@ class MoneyExecutor(pantufa: PantufaBot) : PantufaInteractionCommand(
 
             context.reply(
                 PantufaReply(
-                    message = "**`${playerData.username}`** possui **${ccBalance.formatToTwoDecimalPlaces()} Sonhos**!",
+                    content = "**`${playerData.username}`** possui **${ccBalance.formatToTwoDecimalPlaces()} Sonhos**!",
                     prefix = "\uD83D\uDCB5"
                 )
             )
@@ -55,7 +55,7 @@ class MoneyExecutor(pantufa: PantufaBot) : PantufaInteractionCommand(
 
             context.reply(
                 PantufaReply(
-                    message = "Você possui **${ccBalance.formatToTwoDecimalPlaces()} Sonhos**!",
+                    content = "Você possui **${ccBalance.formatToTwoDecimalPlaces()} Sonhos**!",
                     prefix = "\uD83D\uDCB5"
                 )
             )

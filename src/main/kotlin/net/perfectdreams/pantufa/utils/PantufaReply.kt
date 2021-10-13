@@ -4,10 +4,10 @@ import net.dv8tion.jda.api.entities.User
 import net.perfectdreams.pantufa.commands.CommandContext
 
 class PantufaReply(
-		val message: String = " ",
-		val prefix: String? = null,
-		val hasPadding: Boolean = true,
-		val mentionUser: Boolean = true
+    val content: String = " ",
+    val prefix: String = Constants.LEFT_PADDING,
+    val hasPadding: Boolean = true,
+    val mentionUser: Boolean = true
 ) {
 	fun build(commandContext: CommandContext) = build(commandContext.user)
 
@@ -15,29 +15,21 @@ class PantufaReply(
 
 	fun build(user: User): String {
 		var send = ""
-		if (prefix != null) {
-			send = "$prefix **|** "
-		} else if (hasPadding) {
-			send = Constants.LEFT_PADDING + " **|** "
-		}
+		send = "$prefix **|** "
 		if (mentionUser) {
 			send = send + user.asMention + " "
 		}
-		send += message
+		send += content
 		return send
 	}
 
 	fun build(userId: Long): String {
 		var send = ""
-		if (prefix != null) {
-			send = "$prefix **|** "
-		} else if (hasPadding) {
-			send = Constants.LEFT_PADDING + " **|** "
-		}
+		send = "$prefix **|** "
 		if (mentionUser) {
 			send = send + "<@${userId}>" + " "
 		}
-		send += message
+		send += content
 		return send
 	}
 }

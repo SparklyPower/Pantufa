@@ -1,6 +1,7 @@
 package net.perfectdreams.pantufa.interactions.commands
 
-import net.perfectdreams.discordinteraktions.common.context.SlashCommandContext
+import net.perfectdreams.discordinteraktions.common.builder.message.create.PublicInteractionOrFollowupMessageCreateBuilder
+import net.perfectdreams.discordinteraktions.common.context.commands.ApplicationCommandContext
 import net.perfectdreams.pantufa.PantufaBot
 import net.perfectdreams.pantufa.api.commands.SilentCommandException
 import net.perfectdreams.pantufa.commands.AbstractCommand
@@ -11,12 +12,12 @@ import net.perfectdreams.pantufa.utils.Constants
 import net.perfectdreams.pantufa.utils.PantufaReply
 import org.jetbrains.exposed.sql.transactions.transaction
 
-class PantufaCommandContext(val pantufa: PantufaBot, val interactionContext: SlashCommandContext) {
+class PantufaCommandContext(val pantufa: PantufaBot, val interactionContext: ApplicationCommandContext) {
     val sender = interactionContext.sender
     val senderId = sender.id.value
 
     suspend fun retrieveConnectedDiscordAccount() =
-        pantufa.retrieveDiscordAccountFromUser(senderId)
+        pantufa.retrieveDiscordAccountFromUser(senderId.toLong())
 
     suspend fun retrieveConnectedMinecraftAccount(): AbstractCommand.MinecraftAccountInfo? {
         val discordAccount = retrieveConnectedDiscordAccount() ?: return null
@@ -54,10 +55,12 @@ class PantufaCommandContext(val pantufa: PantufaBot, val interactionContext: Sla
     suspend fun reply(vararg pantufaReplies: PantufaReply) {
         val message = StringBuilder()
         for (pantufaReply in pantufaReplies) {
-            message.append(pantufaReply.build(sender.id.value) + "\n")
+            message.append(pantufaReply.build(sender.id.value.toLong()) + "\n")
         }
         interactionContext.sendMessage {
             content = message.toString()
         }
     }
+
+    suspend fun sendMessage(block: PublicInteractionOrFollowupMessageCreateBuilder.() -> kotlin.Unit) = interactionContext.sendMessage(block)
 }

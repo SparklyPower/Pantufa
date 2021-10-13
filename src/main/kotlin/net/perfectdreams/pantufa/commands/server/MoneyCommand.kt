@@ -3,16 +3,10 @@ package net.perfectdreams.pantufa.commands.server
 import net.perfectdreams.pantufa.PantufaBot
 import net.perfectdreams.pantufa.api.commands.SilentCommandException
 import net.perfectdreams.pantufa.api.commands.command
-import net.perfectdreams.pantufa.commands.AbstractCommand
-import net.perfectdreams.pantufa.commands.CommandContext
-import net.perfectdreams.pantufa.dao.CashInfo
-import net.perfectdreams.pantufa.network.Databases
 import net.perfectdreams.pantufa.utils.Constants
 import net.perfectdreams.pantufa.utils.CraftConomyUtils
 import net.perfectdreams.pantufa.utils.PantufaReply
 import net.perfectdreams.pantufa.utils.formatToTwoDecimalPlaces
-import org.jetbrains.exposed.sql.transactions.transaction
-import java.awt.Color
 
 object MoneyCommand {
 	fun create(pantufa: PantufaBot) = command(pantufa, "MoneyCommand", listOf("money", "dinheiro", "bal", "balance")) {
@@ -23,7 +17,7 @@ object MoneyCommand {
 				val playerData = pantufa.retrieveMinecraftUserFromUsername(playerName) ?: run {
 					reply(
 						PantufaReply(
-							message = "Player desconhecido!",
+							content = "Player desconhecido!",
 							prefix = Constants.ERROR
 						)
 					)
@@ -36,7 +30,7 @@ object MoneyCommand {
 
 				reply(
 					PantufaReply(
-						message = "**`${playerData.username}`** possui **${ccBalance.formatToTwoDecimalPlaces()} Sonhos**!",
+						content = "**`${playerData.username}`** possui **${ccBalance.formatToTwoDecimalPlaces()} Sonhos**!",
 						prefix = "\uD83D\uDCB5"
 					)
 				)
@@ -48,7 +42,7 @@ object MoneyCommand {
 
 				reply(
 					PantufaReply(
-						message = "Você possui **${ccBalance.formatToTwoDecimalPlaces()} Sonhos**!",
+						content = "Você possui **${ccBalance.formatToTwoDecimalPlaces()} Sonhos**!",
 						prefix = "\uD83D\uDCB5"
 					)
 				)

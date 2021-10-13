@@ -51,17 +51,27 @@ open class RemoteCommandExecutorCommand(label: String,
 				)
 		)
 
-		val messages = payload["messages"].array
-		var isFirst = true
-		val replies = messages.map {
-			val reply = PantufaReply(it.string, mentionUser = isFirst)
-			isFirst = false
-			reply
-		}
+		val messages = payload["messages"].array.map { it.string }
 
-		context.reply(
+		println("Message: $messages")
+
+		// Now we are going to do some special checks
+		if (messages.joinToString("\n").length >= 1900) { // if it is greater than 1900, we are going to send a file
+			// (the reason it is 1900 is due to the formatting the replies do)
+			context.event.channel.sendFile(messages.joinToString("\n").toByteArray(Charsets.UTF_8), "result.txt").complete()
+		} else {
+			var isFirst = true
+
+			val replies = messages.map {
+				val reply = PantufaReply(it, mentionUser = isFirst)
+				isFirst = false
+				reply
+			}
+
+			context.reply(
 				*replies.toTypedArray()
-		)
+			)
+		}
 	}
 
 	fun getGroupPermissions(groupName: String): List<String> {
