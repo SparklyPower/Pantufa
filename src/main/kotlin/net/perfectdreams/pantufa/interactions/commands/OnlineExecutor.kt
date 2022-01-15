@@ -8,9 +8,9 @@ import com.github.salomonbrys.kotson.string
 import com.google.gson.JsonObject
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import net.perfectdreams.discordinteraktions.common.context.commands.slash.SlashCommandArguments
-import net.perfectdreams.discordinteraktions.declarations.commands.slash.SlashCommandExecutorDeclaration
-import net.perfectdreams.discordinteraktions.declarations.commands.slash.options.CommandOptions
+import net.perfectdreams.discordinteraktions.common.commands.SlashCommandExecutorDeclaration
+import net.perfectdreams.discordinteraktions.common.commands.options.ApplicationCommandOptions
+import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
 import net.perfectdreams.pantufa.PantufaBot
 import net.perfectdreams.pantufa.utils.Constants
 import net.perfectdreams.pantufa.utils.Constants.SPARKLYPOWER_OFFLINE
@@ -21,7 +21,7 @@ class OnlineExecutor(pantufa: PantufaBot) : PantufaInteractionCommand(
     pantufa
 ) {
     companion object : SlashCommandExecutorDeclaration(OnlineExecutor::class) {
-        object Options : CommandOptions() {
+        object Options : ApplicationCommandOptions() {
             val showGraph = optionalBoolean("show_graph", "Mostra o gráfico de players online")
                 .register()
         }

@@ -1,8 +1,8 @@
 package net.perfectdreams.pantufa.interactions.commands
 
-import net.perfectdreams.discordinteraktions.common.context.commands.slash.SlashCommandArguments
-import net.perfectdreams.discordinteraktions.declarations.commands.slash.SlashCommandExecutorDeclaration
-import net.perfectdreams.discordinteraktions.declarations.commands.slash.options.CommandOptions
+import net.perfectdreams.discordinteraktions.common.commands.SlashCommandExecutorDeclaration
+import net.perfectdreams.discordinteraktions.common.commands.options.ApplicationCommandOptions
+import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
 import net.perfectdreams.pantufa.PantufaBot
 import net.perfectdreams.pantufa.api.commands.SilentCommandException
 import net.perfectdreams.pantufa.dao.CashInfo
@@ -15,7 +15,7 @@ class PesadelosExecutor(pantufa: PantufaBot) : PantufaInteractionCommand(
     pantufa
 ) {
     companion object : SlashCommandExecutorDeclaration(PesadelosExecutor::class) {
-        object Options : CommandOptions() {
+        object Options : ApplicationCommandOptions() {
             val playerName = optionalString("player_name", "Nome do Player")
                 .register()
         }

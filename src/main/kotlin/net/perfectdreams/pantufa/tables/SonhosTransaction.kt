@@ -4,7 +4,7 @@ import net.perfectdreams.pantufa.gson
 import net.perfectdreams.pantufa.jsonParser
 import net.perfectdreams.pantufa.utils.SonhosPaymentReason
 import net.perfectdreams.pantufa.utils.exposed.rawJsonb
-import org.jetbrains.exposed.dao.LongIdTable
+import org.jetbrains.exposed.dao.id.LongIdTable
 
 object SonhosTransaction : LongIdTable() {
 	val reason = enumeration("source", SonhosPaymentReason::class)

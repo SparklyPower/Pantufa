@@ -2,13 +2,13 @@ package net.perfectdreams.pantufa.interactions.commands.declarations
 
 import net.perfectdreams.discordinteraktions.common.commands.SlashCommandDeclarationWrapper
 import net.perfectdreams.discordinteraktions.common.commands.slashCommand
-import net.perfectdreams.pantufa.interactions.commands.OnlineExecutor
+import net.perfectdreams.pantufa.interactions.commands.ChangePassExecutor
 
-object OnlineCommand : SlashCommandDeclarationWrapper {
+object ChangePassCommand : SlashCommandDeclarationWrapper {
     override fun declaration() = slashCommand(
-        name = "online",
-        description = "Veja os players online no SparklyPower! Será que o seu amig@ está online?"
+        "changepass",
+        "Altera a sua senha do SparklyPower"
     ) {
-        executor = OnlineExecutor
+        executor = ChangePassExecutor
     }
 }

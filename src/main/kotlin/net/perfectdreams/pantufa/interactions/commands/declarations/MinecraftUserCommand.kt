@@ -1,7 +1,7 @@
 package net.perfectdreams.pantufa.interactions.commands.declarations
 
-import net.perfectdreams.discordinteraktions.declarations.commands.slash.slashCommand
-import net.perfectdreams.discordinteraktions.declarations.commands.wrappers.SlashCommandDeclarationWrapper
+import net.perfectdreams.discordinteraktions.common.commands.SlashCommandDeclarationWrapper
+import net.perfectdreams.discordinteraktions.common.commands.slashCommand
 import net.perfectdreams.pantufa.interactions.commands.MinecraftUserDiscordUserExecutor
 import net.perfectdreams.pantufa.interactions.commands.MinecraftUserPlayerNameExecutor
 

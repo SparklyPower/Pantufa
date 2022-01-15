@@ -1,11 +1,10 @@
 package net.perfectdreams.pantufa.interactions.commands
 
 import net.perfectdreams.discordinteraktions.common.builder.message.MessageBuilder
-import net.perfectdreams.discordinteraktions.common.builder.message.create.PublicInteractionOrFollowupMessageCreateBuilder
-import net.perfectdreams.discordinteraktions.common.commands.slash.SlashCommandExecutor
-import net.perfectdreams.discordinteraktions.common.context.commands.ApplicationCommandContext
-import net.perfectdreams.discordinteraktions.common.context.commands.GuildApplicationCommandContext
-import net.perfectdreams.discordinteraktions.common.context.commands.slash.SlashCommandArguments
+import net.perfectdreams.discordinteraktions.common.commands.ApplicationCommandContext
+import net.perfectdreams.discordinteraktions.common.commands.GuildApplicationCommandContext
+import net.perfectdreams.discordinteraktions.common.commands.SlashCommandExecutor
+import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
 import net.perfectdreams.pantufa.PantufaBot
 import net.perfectdreams.pantufa.api.commands.SilentCommandException
 import net.perfectdreams.pantufa.utils.PantufaReply

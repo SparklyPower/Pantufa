@@ -1,7 +1,7 @@
 package net.perfectdreams.pantufa.interactions.commands
 
-import net.perfectdreams.discordinteraktions.common.builder.message.create.PublicInteractionOrFollowupMessageCreateBuilder
-import net.perfectdreams.discordinteraktions.common.context.commands.ApplicationCommandContext
+import net.perfectdreams.discordinteraktions.common.builder.message.create.InteractionOrFollowupMessageCreateBuilder
+import net.perfectdreams.discordinteraktions.common.commands.ApplicationCommandContext
 import net.perfectdreams.pantufa.PantufaBot
 import net.perfectdreams.pantufa.api.commands.SilentCommandException
 import net.perfectdreams.pantufa.commands.AbstractCommand
@@ -21,6 +21,10 @@ class PantufaCommandContext(val pantufa: PantufaBot, val interactionContext: App
 
     suspend fun retrieveConnectedMinecraftAccount(): AbstractCommand.MinecraftAccountInfo? {
         val discordAccount = retrieveConnectedDiscordAccount() ?: return null
+
+        // If the user didn't connect the account yet, let's return null too
+        if (!discordAccount.isConnected)
+            return null
 
         val user = transaction(Databases.sparklyPower) {
             User.find { Users.id eq discordAccount.minecraftId }.firstOrNull()
@@ -62,5 +66,6 @@ class PantufaCommandContext(val pantufa: PantufaBot, val interactionContext: App
         }
     }
 
-    suspend fun sendMessage(block: PublicInteractionOrFollowupMessageCreateBuilder.() -> kotlin.Unit) = interactionContext.sendMessage(block)
+    suspend fun sendMessage(block: InteractionOrFollowupMessageCreateBuilder.() -> Unit) = interactionContext.sendMessage(block)
+    suspend fun sendEphemeralMessage(block: InteractionOrFollowupMessageCreateBuilder.() -> Unit) = interactionContext.sendEphemeralMessage(block)
 }

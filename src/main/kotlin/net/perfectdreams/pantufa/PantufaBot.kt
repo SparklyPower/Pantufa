@@ -12,11 +12,13 @@ import net.dv8tion.jda.api.*
 import net.dv8tion.jda.api.entities.Activity
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.requests.GatewayIntent
+import net.perfectdreams.discordinteraktions.common.builder.message.MessageBuilder
 import net.perfectdreams.discordinteraktions.platforms.kord.commands.KordCommandRegistry
 import net.perfectdreams.pantufa.commands.CommandManager
 import net.perfectdreams.pantufa.commands.server.*
 import net.perfectdreams.pantufa.commands.vanilla.utils.PingCommand
 import net.perfectdreams.pantufa.dao.DiscordAccount
+import net.perfectdreams.pantufa.interactions.commands.ChangePassExecutor
 import net.perfectdreams.pantufa.interactions.commands.ChatColorExecutor
 import net.perfectdreams.pantufa.interactions.commands.GuildsExecutor
 import net.perfectdreams.pantufa.interactions.commands.LSXExecutor
@@ -143,6 +145,11 @@ class PantufaBot(val config: PantufaConfig) {
 			net.perfectdreams.pantufa.interactions.commands.declarations.VIPInfoCommand,
 			VIPInfoExecutor(this)
 		)
+
+		/* commandManager.register(
+			net.perfectdreams.pantufa.interactions.commands.declarations.ChangePassCommand,
+			ChangePassExecutor(this),
+		) */
 
 		jda = JDABuilder.create(EnumSet.allOf(GatewayIntent::class.java))
 			.addEventListeners(
