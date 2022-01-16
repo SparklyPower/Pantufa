@@ -19,7 +19,7 @@ repositories {
 
 dependencies {
     implementation(kotlin("stdlib"))
-    implementation("ch.qos.logback:logback-core:1.3.0-alpha12")
+    runtimeOnly("ch.qos.logback:logback-classic:1.3.0-alpha12")
     implementation("io.github.microutils:kotlin-logging:2.1.21")
 
     implementation("net.dv8tion:JDA:4.3.0_283")
