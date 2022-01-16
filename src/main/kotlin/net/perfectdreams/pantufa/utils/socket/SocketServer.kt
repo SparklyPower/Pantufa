@@ -43,15 +43,3 @@ class SocketServer(val socketPort: Int) {
 		}
 	}
 }
-
-fun main(args: Array<String>) {
-	thread {
-		val socket = SocketServer(60799)
-		socket.start()
-	}
-
-	Thread.sleep(2000)
-	val obj = JsonObject()
-	obj["wow"] = "test"
-	SocketUtils.send(obj, port = 60799)
-}
