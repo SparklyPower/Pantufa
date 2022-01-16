@@ -46,7 +46,7 @@ dependencies {
     implementation("io.ktor:ktor-client-cio:1.6.7")
 
     // Pudding
-    implementation("net.perfectdreams.loritta.cinnamon.pudding:client:0.0.2-20220116.022751-66")
+    implementation("net.perfectdreams.loritta.cinnamon.pudding:client:0.0.2-20220116.030656-71")
 
     // Used for unregister
     implementation("org.mindrot:jbcrypt:0.4")

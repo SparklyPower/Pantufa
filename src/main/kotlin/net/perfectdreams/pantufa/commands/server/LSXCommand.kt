@@ -29,102 +29,95 @@ class LSXCommand : AbstractCommand("transferir", listOf("transfer", "lsx", "llsx
 			} ?: throw RuntimeException()
 		}
 
-		fun withdraw(option: TransferOptions, profile: Profile, playerName: String, playerUniqueId: UUID, quantity: Long): Boolean? {
-			return when (option) {
-				TransferOptions.LORITTA -> {
-					return if (quantity > profile.money)
-						false
-					else {
-						transaction(Databases.loritta) {
-							Profiles.update({ Profiles.id eq profile.userId }) {
-								with (SqlExpressionBuilder) {
-									it.update(Profiles.money, Profiles.money - quantity)
-								}
-							}
-
-							val now = Instant.now()
-
-							val timestampLogId = SonhosTransactionsLog.insertAndGetId {
-								it[SonhosTransactionsLog.user] = profile.id
-								it[SonhosTransactionsLog.timestamp] = now
-							}
-
-							SparklyPowerLSXSonhosTransactionsLog.insert {
-								it[SparklyPowerLSXSonhosTransactionsLog.timestampLog] = timestampLogId
-								it[SparklyPowerLSXSonhosTransactionsLog.action] = SparklyPowerLSXTransactionEntryAction.EXCHANGED_TO_SPARKLYPOWER
-								it[SparklyPowerLSXSonhosTransactionsLog.sonhos] = quantity
-								it[SparklyPowerLSXSonhosTransactionsLog.playerName] = playerName
-								it[SparklyPowerLSXSonhosTransactionsLog.playerUniqueId] = playerUniqueId
-								it[SparklyPowerLSXSonhosTransactionsLog.exchangeRate] = loriToSparklyExchangeRate.toDouble()
-							}
+		fun withdrawFromLoritta(profile: Profile, playerName: String, playerUniqueId: UUID, quantity: Long, sparklyPowerQuantity: Long): Boolean {
+			return if (quantity > profile.money)
+				false
+			else {
+				transaction(Databases.loritta) {
+					Profiles.update({ Profiles.id eq profile.userId }) {
+						with (SqlExpressionBuilder) {
+							it.update(Profiles.money, Profiles.money - quantity)
 						}
+					}
 
-						true
+					val now = Instant.now()
+
+					val timestampLogId = SonhosTransactionsLog.insertAndGetId {
+						it[SonhosTransactionsLog.user] = profile.id
+						it[SonhosTransactionsLog.timestamp] = now
+					}
+
+					SparklyPowerLSXSonhosTransactionsLog.insert {
+						it[SparklyPowerLSXSonhosTransactionsLog.timestampLog] = timestampLogId
+						it[SparklyPowerLSXSonhosTransactionsLog.action] = SparklyPowerLSXTransactionEntryAction.EXCHANGED_TO_SPARKLYPOWER
+						it[SparklyPowerLSXSonhosTransactionsLog.sonhos] = quantity
+						it[SparklyPowerLSXSonhosTransactionsLog.sparklyPowerSonhos] = sparklyPowerQuantity
+						it[SparklyPowerLSXSonhosTransactionsLog.playerName] = playerName
+						it[SparklyPowerLSXSonhosTransactionsLog.playerUniqueId] = playerUniqueId
+						it[SparklyPowerLSXSonhosTransactionsLog.exchangeRate] = loriToSparklyExchangeRate.toDouble()
 					}
 				}
-				TransferOptions.PERFECTDREAMS_SURVIVAL -> {
-					val serverAccountId = CraftConomyUtils.getCraftConomyAccountId(playerUniqueId)!!
-					val ccBalance = CraftConomyUtils.getCraftConomyBalance(serverAccountId)
-
-					return if (quantity > ccBalance)
-						false
-					else {
-						transaction(Databases.craftConomy) {
-							CraftConomyBalance.update({ CraftConomyBalance.id eq serverAccountId }) {
-								with(SqlExpressionBuilder) {
-									it.update(balance, balance - quantity.toDouble())
-								}
-							}
-						}
-						true
-					}
-				}
-				else -> null
+				true
 			}
 		}
 
-		fun give(option: TransferOptions, profile: Profile, playerName: String, playerUniqueId: UUID, quantity: Long): Boolean? {
-			return when (option) {
-				TransferOptions.LORITTA -> {
-					transaction(Databases.loritta) {
-						Profiles.update({ Profiles.id eq profile.userId }) {
-							with (SqlExpressionBuilder) {
-								it.update(Profiles.money, Profiles.money + quantity)
-							}
-						}
+		fun withdrawFromSparklyPower(playerUniqueId: UUID, quantity: Long): Boolean {
+			val serverAccountId = CraftConomyUtils.getCraftConomyAccountId(playerUniqueId)!!
+			val ccBalance = CraftConomyUtils.getCraftConomyBalance(serverAccountId)
 
-						val now = Instant.now()
-
-						val timestampLogId = SonhosTransactionsLog.insertAndGetId {
-							it[SonhosTransactionsLog.user] = profile.id
-							it[SonhosTransactionsLog.timestamp] = now
-						}
-
-						SparklyPowerLSXSonhosTransactionsLog.insert {
-							it[SparklyPowerLSXSonhosTransactionsLog.timestampLog] = timestampLogId
-							it[SparklyPowerLSXSonhosTransactionsLog.action] = SparklyPowerLSXTransactionEntryAction.EXCHANGED_FROM_SPARKLYPOWER
-							it[SparklyPowerLSXSonhosTransactionsLog.sonhos] = quantity
-							it[SparklyPowerLSXSonhosTransactionsLog.playerName] = playerName
-							it[SparklyPowerLSXSonhosTransactionsLog.playerUniqueId] = playerUniqueId
-							it[SparklyPowerLSXSonhosTransactionsLog.exchangeRate] = loriToSparklyExchangeRate.toDouble()
+			return if (quantity > ccBalance)
+				false
+			else {
+				transaction(Databases.craftConomy) {
+					CraftConomyBalance.update({ CraftConomyBalance.id eq serverAccountId }) {
+						with(SqlExpressionBuilder) {
+							it.update(balance, balance - quantity.toDouble())
 						}
 					}
-					return true
 				}
-				TransferOptions.PERFECTDREAMS_SURVIVAL -> {
-					val serverAccountId = CraftConomyUtils.getCraftConomyAccountId(playerUniqueId)!!
-
-					transaction(Databases.craftConomy) {
-						CraftConomyBalance.update({ CraftConomyBalance.id eq serverAccountId }) {
-							with(SqlExpressionBuilder) {
-								it.update(balance, balance + quantity.toDouble())
-							}
-						}
-					}
-					return true
-				}
-				else -> null
+				true
 			}
+		}
+
+		fun giveToLoritta(profile: Profile, playerName: String, playerUniqueId: UUID, quantity: Long, sparklyPowerQuantity: Long): Boolean? {
+			transaction(Databases.loritta) {
+				Profiles.update({ Profiles.id eq profile.userId }) {
+					with (SqlExpressionBuilder) {
+						it.update(Profiles.money, Profiles.money + quantity)
+					}
+				}
+
+				val now = Instant.now()
+
+				val timestampLogId = SonhosTransactionsLog.insertAndGetId {
+					it[SonhosTransactionsLog.user] = profile.id
+					it[SonhosTransactionsLog.timestamp] = now
+				}
+
+				SparklyPowerLSXSonhosTransactionsLog.insert {
+					it[SparklyPowerLSXSonhosTransactionsLog.timestampLog] = timestampLogId
+					it[SparklyPowerLSXSonhosTransactionsLog.action] = SparklyPowerLSXTransactionEntryAction.EXCHANGED_FROM_SPARKLYPOWER
+					it[SparklyPowerLSXSonhosTransactionsLog.sonhos] = quantity
+					it[SparklyPowerLSXSonhosTransactionsLog.sparklyPowerSonhos] = sparklyPowerQuantity
+					it[SparklyPowerLSXSonhosTransactionsLog.playerName] = playerName
+					it[SparklyPowerLSXSonhosTransactionsLog.playerUniqueId] = playerUniqueId
+					it[SparklyPowerLSXSonhosTransactionsLog.exchangeRate] = loriToSparklyExchangeRate.toDouble()
+				}
+			}
+			return true
+		}
+
+		fun giveToSparklyPower(playerUniqueId: UUID, quantity: Long): Boolean {
+			val serverAccountId = CraftConomyUtils.getCraftConomyAccountId(playerUniqueId)!!
+
+			transaction(Databases.craftConomy) {
+				CraftConomyBalance.update({ CraftConomyBalance.id eq serverAccountId }) {
+					with(SqlExpressionBuilder) {
+						it.update(balance, balance + quantity.toDouble())
+					}
+				}
+			}
+			return true
 		}
 	}
 
@@ -246,42 +239,71 @@ class LSXCommand : AbstractCommand("transferir", listOf("transfer", "lsx", "llsx
 							if (0 >= quantity)
 								return@withLock
 
-							val fromBalance = withdraw(from, profile, context.minecraftAccountInfo!!.username, context.minecraftAccountInfo!!.uniqueId, quantity)
+							if (from == TransferOptions.LORITTA && to == TransferOptions.PERFECTDREAMS_SURVIVAL) {
+								val sparklyPowerQuantity = quantity * loriToSparklyExchangeRate
 
-							if (fromBalance == null) {
+								val fromBalance = withdrawFromLoritta(
+									profile,
+									context.minecraftAccountInfo!!.username,
+									context.minecraftAccountInfo!!.uniqueId,
+									quantity,
+									sparklyPowerQuantity
+								)
+
+								if (!fromBalance) {
+									context.sendMessage(
+										PantufaReply(
+											"Você não possui dinheiro suficiente em `${from.fancyName}` para transferência!",
+											Constants.ERROR
+										)
+									)
+									return@withLock
+								}
+
+								giveToSparklyPower(
+									context.minecraftAccountInfo!!.uniqueId,
+									sparklyPowerQuantity
+								)
+
 								context.sendMessage(
 									PantufaReply(
-										"Atualmente nós não suportamos transferências de `${from.fancyName}`...",
-										Constants.ERROR
+										"Você transferiu **${arg2} Sonhos** (Valor final: $sparklyPowerQuantity) de `${from.fancyName}` para `${to.fancyName}`!",
+										"\uD83D\uDCB8"
 									)
 								)
-								return@withLock
-							}
+							} else if (from == TransferOptions.PERFECTDREAMS_SURVIVAL && to == TransferOptions.LORITTA) {
+								val lorittaQuantity = quantity / loriToSparklyExchangeRate
 
-							if (!fromBalance) {
+								val fromBalance = withdrawFromSparklyPower(
+									context.minecraftAccountInfo!!.uniqueId,
+									quantity
+								)
+
+								if (!fromBalance) {
+									context.sendMessage(
+										PantufaReply(
+											"Você não possui dinheiro suficiente em `${from.fancyName}` para transferência!",
+											Constants.ERROR
+										)
+									)
+									return@withLock
+								}
+
+								giveToLoritta(
+									profile,
+									context.minecraftAccountInfo!!.username,
+									context.minecraftAccountInfo!!.uniqueId,
+									lorittaQuantity,
+									quantity
+								)
+
 								context.sendMessage(
 									PantufaReply(
-										"Você não possui dinheiro suficiente em `${from.fancyName}` para transferência!",
-										Constants.ERROR
+										"Você transferiu **${arg2} Sonhos** (Valor final: $lorittaQuantity) de `${from.fancyName}` para `${to.fancyName}`!",
+										"\uD83D\uDCB8"
 									)
 								)
-								return@withLock
 							}
-
-							val correctGivenBalance = if (from == TransferOptions.LORITTA && to == TransferOptions.PERFECTDREAMS_SURVIVAL) {
-								quantity * loriToSparklyExchangeRate
-							} else {
-								quantity / loriToSparklyExchangeRate
-							}
-
-							val toBalance = give(to, profile, context.minecraftAccountInfo!!.username, context.minecraftAccountInfo!!.uniqueId, correctGivenBalance)
-
-							context.sendMessage(
-								PantufaReply(
-									"Você transferiu **${arg2} Sonhos** (Valor final: $correctGivenBalance) de `${from.fancyName}` para `${to.fancyName}`!",
-									"\uD83D\uDCB8"
-								)
-							)
 							return@withLock
 						}
 					}

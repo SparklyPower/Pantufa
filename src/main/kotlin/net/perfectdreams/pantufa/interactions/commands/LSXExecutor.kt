@@ -166,42 +166,71 @@ class LSXExecutor(pantufa: PantufaBot) : PantufaInteractionCommand(
                         if (0 >= quantity)
                             return@withLock
 
-                        val fromBalance = LSXCommand.withdraw(from, profile, accountInfo.username, accountInfo.uniqueId, quantity)
+                        if (from == LSXCommand.TransferOptions.LORITTA && to == LSXCommand.TransferOptions.PERFECTDREAMS_SURVIVAL) {
+                            val sparklyPowerQuantity = quantity * LSXCommand.loriToSparklyExchangeRate
 
-                        if (fromBalance == null) {
+                            val fromBalance = LSXCommand.withdrawFromLoritta(
+                                profile,
+                                accountInfo.username,
+                                accountInfo.uniqueId,
+                                quantity,
+                                sparklyPowerQuantity
+                            )
+
+                            if (!fromBalance) {
+                                context.reply(
+                                    PantufaReply(
+                                        "Você não possui dinheiro suficiente em `${from.fancyName}` para transferência!",
+                                        Constants.ERROR
+                                    )
+                                )
+                                return@withLock
+                            }
+
+                            LSXCommand.giveToSparklyPower(
+                                accountInfo.uniqueId,
+                                sparklyPowerQuantity
+                            )
+
                             context.reply(
                                 PantufaReply(
-                                    "Atualmente nós não suportamos transferências de `${from.fancyName}`...",
-                                    Constants.ERROR
+                                    "Você transferiu **${arg2} Sonhos** (Valor final: $sparklyPowerQuantity) de `${from.fancyName}` para `${to.fancyName}`!",
+                                    "\uD83D\uDCB8"
                                 )
                             )
-                            return@withLock
-                        }
+                        } else if (from == LSXCommand.TransferOptions.PERFECTDREAMS_SURVIVAL && to == LSXCommand.TransferOptions.LORITTA) {
+                            val lorittaQuantity = quantity / LSXCommand.loriToSparklyExchangeRate
 
-                        if (!fromBalance) {
+                            val fromBalance = LSXCommand.withdrawFromSparklyPower(
+                                accountInfo.uniqueId,
+                                quantity
+                            )
+
+                            if (!fromBalance) {
+                                context.reply(
+                                    PantufaReply(
+                                        "Você não possui dinheiro suficiente em `${from.fancyName}` para transferência!",
+                                        Constants.ERROR
+                                    )
+                                )
+                                return@withLock
+                            }
+
+                            LSXCommand.giveToLoritta(
+                                profile,
+                                accountInfo.username,
+                                accountInfo.uniqueId,
+                                lorittaQuantity,
+                                quantity
+                            )
+
                             context.reply(
                                 PantufaReply(
-                                    "Você não possui dinheiro suficiente em `${from.fancyName}` para transferência!",
-                                    Constants.ERROR
+                                    "Você transferiu **${arg2} Sonhos** (Valor final: $lorittaQuantity) de `${from.fancyName}` para `${to.fancyName}`!",
+                                    "\uD83D\uDCB8"
                                 )
                             )
-                            return@withLock
                         }
-
-                        val correctGivenBalance = if (from == LSXCommand.TransferOptions.LORITTA && to == LSXCommand.TransferOptions.PERFECTDREAMS_SURVIVAL) {
-                            quantity * LSXCommand.loriToSparklyExchangeRate
-                        } else {
-                            quantity / LSXCommand.loriToSparklyExchangeRate
-                        }
-
-                        val toBalance = LSXCommand.give(to, profile, accountInfo.username, accountInfo.uniqueId, correctGivenBalance)
-
-                        context.reply(
-                            PantufaReply(
-                                "Você transferiu **${arg2} Sonhos** (Valor final: $correctGivenBalance) de `${from.fancyName}` para `${to.fancyName}`!",
-                                "\uD83D\uDCB8"
-                            )
-                        )
                         return@withLock
                     }
                 }
