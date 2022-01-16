@@ -12,6 +12,7 @@ import net.perfectdreams.pantufa.tables.DiscordAccounts
 import net.perfectdreams.pantufa.utils.CraftConomyUtils
 import org.jetbrains.exposed.sql.SqlExpressionBuilder
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+import org.jetbrains.exposed.sql.innerJoin
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.update
 
@@ -42,7 +43,7 @@ class CheckDreamPresenceThread : Thread("Check Dream Presence Thread") {
 				logger.info { "From the ${membersWithSparklyStatus.size} members that has SparklyPower's status, ${discordAccounts.size} associated their account with SparklyPower!" }
 
 				transaction(Databases.craftConomy) {
-					(CraftConomyBalance.innerJoin(CraftConomyAccounts))
+					(CraftConomyBalance.innerJoin(CraftConomyAccounts, { CraftConomyBalance.id }, { CraftConomyAccounts.id }))
 						.update({
 							CraftConomyAccounts.uuid inList (discordAccounts.map { it.minecraftId.toString() })
 						}) {
