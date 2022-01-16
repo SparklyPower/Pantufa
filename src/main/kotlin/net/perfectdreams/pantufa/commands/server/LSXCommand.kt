@@ -55,6 +55,7 @@ class LSXCommand : AbstractCommand("transferir", listOf("transfer", "lsx", "llsx
 								it[SparklyPowerLSXSonhosTransactionsLog.sonhos] = quantity
 								it[SparklyPowerLSXSonhosTransactionsLog.playerName] = playerName
 								it[SparklyPowerLSXSonhosTransactionsLog.playerUniqueId] = playerUniqueId
+								it[SparklyPowerLSXSonhosTransactionsLog.exchangeRate] = loriToSparklyExchangeRate.toDouble()
 							}
 						}
 
@@ -105,6 +106,7 @@ class LSXCommand : AbstractCommand("transferir", listOf("transfer", "lsx", "llsx
 							it[SparklyPowerLSXSonhosTransactionsLog.sonhos] = quantity
 							it[SparklyPowerLSXSonhosTransactionsLog.playerName] = playerName
 							it[SparklyPowerLSXSonhosTransactionsLog.playerUniqueId] = playerUniqueId
+							it[SparklyPowerLSXSonhosTransactionsLog.exchangeRate] = loriToSparklyExchangeRate.toDouble()
 						}
 					}
 					return true
