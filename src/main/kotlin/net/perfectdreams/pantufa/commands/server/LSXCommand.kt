@@ -1,9 +1,11 @@
 package net.perfectdreams.pantufa.commands.server
 
-import com.github.salomonbrys.kotson.jsonObject
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import net.perfectdreams.loritta.cinnamon.common.utils.SparklyPowerLSXTransactionEntryAction
+import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosTransactionsLog
+import net.perfectdreams.loritta.cinnamon.pudding.tables.SparklyPowerLSXSonhosTransactionsLog
 import net.perfectdreams.pantufa.commands.AbstractCommand
 import net.perfectdreams.pantufa.commands.CommandContext
 import net.perfectdreams.pantufa.dao.Ban
@@ -13,12 +15,13 @@ import net.perfectdreams.pantufa.tables.*
 import net.perfectdreams.pantufa.utils.*
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
+import java.time.Instant
 import java.util.*
 
 class LSXCommand : AbstractCommand("transferir", listOf("transfer", "lsx", "llsx", "lsxs", "llsxs"), requiresMinecraftAccount = true) {
 	companion object {
 		val mutex = Mutex()
-		var loriToSparklyExchangeTax = 2L
+		var loriToSparklyExchangeRate = 2L
 
 		private fun getLorittaProfile(context: CommandContext): Profile {
 			return transaction(Databases.loritta) {
@@ -26,7 +29,7 @@ class LSXCommand : AbstractCommand("transferir", listOf("transfer", "lsx", "llsx
 			} ?: throw RuntimeException()
 		}
 
-		fun withdraw(option: TransferOptions, profile: Profile, playerUniqueId: UUID, quantity: Long): Boolean? {
+		fun withdraw(option: TransferOptions, profile: Profile, playerName: String, playerUniqueId: UUID, quantity: Long): Boolean? {
 			return when (option) {
 				TransferOptions.LORITTA -> {
 					return if (quantity > profile.money)
@@ -39,14 +42,19 @@ class LSXCommand : AbstractCommand("transferir", listOf("transfer", "lsx", "llsx
 								}
 							}
 
-							SonhosTransaction.insert {
-								it[reason] = SonhosPaymentReason.SPARKLYPOWER
-								it[SonhosTransaction.quantity] = quantity.toBigDecimal()
-								it[givenBy] = profile.userId
-								it[givenAt] = System.currentTimeMillis()
-								it[metadata] = jsonObject(
-									"exchangeTax" to loriToSparklyExchangeTax
-								)
+							val now = Instant.now()
+
+							val timestampLogId = SonhosTransactionsLog.insertAndGetId {
+								it[SonhosTransactionsLog.user] = profile.id
+								it[SonhosTransactionsLog.timestamp] = now
+							}
+
+							SparklyPowerLSXSonhosTransactionsLog.insert {
+								it[SparklyPowerLSXSonhosTransactionsLog.timestampLog] = timestampLogId
+								it[SparklyPowerLSXSonhosTransactionsLog.action] = SparklyPowerLSXTransactionEntryAction.EXCHANGED_TO_SPARKLYPOWER
+								it[SparklyPowerLSXSonhosTransactionsLog.sonhos] = quantity
+								it[SparklyPowerLSXSonhosTransactionsLog.playerName] = playerName
+								it[SparklyPowerLSXSonhosTransactionsLog.playerUniqueId] = playerUniqueId
 							}
 						}
 
@@ -74,7 +82,7 @@ class LSXCommand : AbstractCommand("transferir", listOf("transfer", "lsx", "llsx
 			}
 		}
 
-		fun give(option: TransferOptions, profile: Profile, playerUniqueId: UUID, quantity: Long): Boolean? {
+		fun give(option: TransferOptions, profile: Profile, playerName: String, playerUniqueId: UUID, quantity: Long): Boolean? {
 			return when (option) {
 				TransferOptions.LORITTA -> {
 					transaction(Databases.loritta) {
@@ -84,14 +92,19 @@ class LSXCommand : AbstractCommand("transferir", listOf("transfer", "lsx", "llsx
 							}
 						}
 
-						SonhosTransaction.insert {
-							it[reason] = SonhosPaymentReason.SPARKLYPOWER
-							it[SonhosTransaction.quantity] = quantity.toBigDecimal()
-							it[givenAt] = System.currentTimeMillis()
-							it[receivedBy] = profile.userId
-							it[metadata] = jsonObject(
-								"exchangeTax" to loriToSparklyExchangeTax
-							)
+						val now = Instant.now()
+
+						val timestampLogId = SonhosTransactionsLog.insertAndGetId {
+							it[SonhosTransactionsLog.user] = profile.id
+							it[SonhosTransactionsLog.timestamp] = now
+						}
+
+						SparklyPowerLSXSonhosTransactionsLog.insert {
+							it[SparklyPowerLSXSonhosTransactionsLog.timestampLog] = timestampLogId
+							it[SparklyPowerLSXSonhosTransactionsLog.action] = SparklyPowerLSXTransactionEntryAction.EXCHANGED_FROM_SPARKLYPOWER
+							it[SparklyPowerLSXSonhosTransactionsLog.sonhos] = quantity
+							it[SparklyPowerLSXSonhosTransactionsLog.playerName] = playerName
+							it[SparklyPowerLSXSonhosTransactionsLog.playerUniqueId] = playerUniqueId
 						}
 					}
 					return true
@@ -187,7 +200,7 @@ class LSXCommand : AbstractCommand("transferir", listOf("transfer", "lsx", "llsx
 					"**Câmbio de Sonhos:**"
 				),
 				PantufaReply(
-					"Um sonho da `loritta` equivalem a $loriToSparklyExchangeTax sonhos no `survival`"
+					"Um sonho da `loritta` equivalem a $loriToSparklyExchangeRate sonhos no `survival`"
 				),
 				PantufaReply(
 					"*Locais disponíveis para transferência...*",
@@ -231,7 +244,7 @@ class LSXCommand : AbstractCommand("transferir", listOf("transfer", "lsx", "llsx
 							if (0 >= quantity)
 								return@withLock
 
-							val fromBalance = withdraw(from, profile, context.minecraftAccountInfo!!.uniqueId, quantity)
+							val fromBalance = withdraw(from, profile, context.minecraftAccountInfo!!.username, context.minecraftAccountInfo!!.uniqueId, quantity)
 
 							if (fromBalance == null) {
 								context.sendMessage(
@@ -254,12 +267,12 @@ class LSXCommand : AbstractCommand("transferir", listOf("transfer", "lsx", "llsx
 							}
 
 							val correctGivenBalance = if (from == TransferOptions.LORITTA && to == TransferOptions.PERFECTDREAMS_SURVIVAL) {
-								quantity * loriToSparklyExchangeTax
+								quantity * loriToSparklyExchangeRate
 							} else {
-								quantity / loriToSparklyExchangeTax
+								quantity / loriToSparklyExchangeRate
 							}
 
-							val toBalance = give(to, profile, context.minecraftAccountInfo!!.uniqueId, correctGivenBalance)
+							val toBalance = give(to, profile, context.minecraftAccountInfo!!.username, context.minecraftAccountInfo!!.uniqueId, correctGivenBalance)
 
 							context.sendMessage(
 								PantufaReply(

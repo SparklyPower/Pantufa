@@ -123,7 +123,7 @@ class LSXExecutor(pantufa: PantufaBot) : PantufaInteractionCommand(
                     "**Câmbio de Sonhos:**"
                 ),
                 PantufaReply(
-                    "Um sonho da `loritta` equivalem a ${LSXCommand.loriToSparklyExchangeTax} sonhos no `survival`"
+                    "Um sonho da `loritta` equivalem a ${LSXCommand.loriToSparklyExchangeRate} sonhos no `survival`"
                 ),
                 PantufaReply(
                     "*Locais disponíveis para transferência...*",
@@ -166,7 +166,7 @@ class LSXExecutor(pantufa: PantufaBot) : PantufaInteractionCommand(
                         if (0 >= quantity)
                             return@withLock
 
-                        val fromBalance = LSXCommand.withdraw(from, profile, accountInfo.uniqueId, quantity)
+                        val fromBalance = LSXCommand.withdraw(from, profile, accountInfo.username, accountInfo.uniqueId, quantity)
 
                         if (fromBalance == null) {
                             context.reply(
@@ -189,12 +189,12 @@ class LSXExecutor(pantufa: PantufaBot) : PantufaInteractionCommand(
                         }
 
                         val correctGivenBalance = if (from == LSXCommand.TransferOptions.LORITTA && to == LSXCommand.TransferOptions.PERFECTDREAMS_SURVIVAL) {
-                            quantity * LSXCommand.loriToSparklyExchangeTax
+                            quantity * LSXCommand.loriToSparklyExchangeRate
                         } else {
-                            quantity / LSXCommand.loriToSparklyExchangeTax
+                            quantity / LSXCommand.loriToSparklyExchangeRate
                         }
 
-                        val toBalance = LSXCommand.give(to, profile, accountInfo.uniqueId, correctGivenBalance)
+                        val toBalance = LSXCommand.give(to, profile, accountInfo.username, accountInfo.uniqueId, correctGivenBalance)
 
                         context.reply(
                             PantufaReply(

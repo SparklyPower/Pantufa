@@ -3,6 +3,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
     kotlin("jvm") version "1.6.10"
     kotlin("plugin.serialization") version "1.6.10"
+    id("com.google.cloud.tools.jib") version "3.1.4"
 }
 
 group = "net.perfectdreams.pantufa"
@@ -35,17 +36,17 @@ dependencies {
     implementation("net.perfectdreams.sequins.text:text-utils:1.0.0")
 
     // Database
-    implementation("org.postgresql:postgresql:42.2.19")
-    implementation("mysql:mysql-connector-java:8.0.23")
-    implementation("com.zaxxer:HikariCP:4.0.2")
+    implementation("org.postgresql:postgresql:42.3.1")
+    implementation("mysql:mysql-connector-java:8.0.25")
+    implementation("com.zaxxer:HikariCP:5.0.1")
     implementation("org.jetbrains.exposed:exposed-core:0.37.3")
     implementation("org.jetbrains.exposed:exposed-dao:0.37.3")
     implementation("org.jetbrains.exposed:exposed-jdbc:0.37.3")
 
-    implementation("io.ktor:ktor-client-cio:1.6.3")
+    implementation("io.ktor:ktor-client-cio:1.6.7")
 
     // Pudding
-    // implementation("net.perfectdreams.loritta.cinnamon:pudding:0.0.2-SNAPSHOT")
+    implementation("net.perfectdreams.loritta.cinnamon.pudding:client:0.0.2-20220116.001122-65")
 
     // Used for unregister
     implementation("org.mindrot:jbcrypt:0.4")
@@ -58,44 +59,22 @@ dependencies {
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.4.2")
 }
 
-tasks {
-    val fatJar = task("fatJar", type = Jar::class) {
-        println("Building fat jar for ${project.name}...")
-
-        archiveBaseName.set("${project.name}-fat")
-
-        manifest {
-            fun addIfAvailable(name: String, attrName: String) {
-                attributes[attrName] = System.getProperty(name) ?: "Unknown"
-            }
-
-            addIfAvailable("build.number", "Build-Number")
-            addIfAvailable("commit.hash", "Commit-Hash")
-            addIfAvailable("git.branch", "Git-Branch")
-            addIfAvailable("compiled.at", "Compiled-At")
-
-            attributes["Main-Class"] = "net.perfectdreams.pantufa.PantufaLauncher"
-            attributes["Class-Path"] = configurations.runtimeClasspath.get().joinToString(" ", transform = { "libs/" + it.name })
-        }
-
-        val libs = File(rootProject.projectDir, "libs")
-        // libs.deleteRecursively()
-        libs.mkdirs()
-
-        from(configurations.runtimeClasspath.get().mapNotNull {
-            val output = File(libs, it.name)
-
-            if (!output.exists() || output.name.contains("SNAPSHOT"))
-                it.copyTo(output, true)
-
-            null
-        })
-
-        with(jar.get() as CopySpec)
+jib {
+    container {
+        ports = listOf("8080")
     }
 
-    "build" {
-        dependsOn(fatJar)
+    to {
+        image = "ghcr.io/sparklypower/pantufa"
+
+        auth {
+            username = System.getProperty("DOCKER_USERNAME") ?: System.getenv("DOCKER_USERNAME")
+            password = System.getProperty("DOCKER_PASSWORD") ?: System.getenv("DOCKER_PASSWORD")
+        }
+    }
+
+    from {
+        image = "openjdk:17-slim-bullseye"
     }
 }
 
@@ -108,11 +87,11 @@ tasks.test {
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_15
-    targetCompatibility = JavaVersion.VERSION_15
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
 }
 
 tasks.withType<KotlinCompile> {
-    kotlinOptions.jvmTarget = "1.8"
+    kotlinOptions.jvmTarget = "16"
     kotlinOptions.javaParameters = true
 }
