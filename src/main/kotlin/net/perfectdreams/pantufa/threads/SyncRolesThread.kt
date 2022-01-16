@@ -39,31 +39,34 @@ class SyncRolesThread : Thread("Sync Dream Roles Thread") {
 	fun syncRolesEligibleForUsers(guild: Guild, roleId: String, eligibleUniqueIds: List<UUID>) {
 		val adminRole = guild.getRoleById(roleId)!!
 		val membersWithAdminRole = guild.getMembersWithRoles(adminRole)
+		val discordAccountsOfTheUsers = transaction(Databases.sparklyPower) {
+			DiscordAccount.find {
+				DiscordAccounts.discordId inList membersWithAdminRole.map { it.user.idLong }
+			}
+		}
 
 		membersWithAdminRole.forEach {
-			transaction(Databases.sparklyPower) {
-				val accountOfTheUser = DiscordAccount.find {
-					DiscordAccounts.discordId eq it.user.idLong
-				}.firstOrNull()
+			val accountOfTheUser = discordAccountsOfTheUsers.firstOrNull { account -> account.discordId == it.user.idLong }
 
-				if (accountOfTheUser == null || !accountOfTheUser.isConnected || !eligibleUniqueIds.contains(accountOfTheUser.minecraftId)) {
-					guild.removeRoleFromMember(it, adminRole).queue()
-				}
+			if (accountOfTheUser == null || !accountOfTheUser.isConnected || !eligibleUniqueIds.contains(accountOfTheUser.minecraftId)) {
+				guild.removeRoleFromMember(it, adminRole).queue()
+			}
+		}
+
+		val discordAccountsOfEligibleUniqueIds = transaction(Databases.sparklyPower) {
+			DiscordAccount.find {
+				DiscordAccounts.minecraftId inList eligibleUniqueIds
 			}
 		}
 
 		eligibleUniqueIds.forEach {
-			transaction(Databases.sparklyPower) {
-				val accountOfTheUser = DiscordAccount.find {
-					DiscordAccounts.minecraftId eq it
-				}.firstOrNull()
+			val accountOfTheUser = discordAccountsOfEligibleUniqueIds.firstOrNull { account -> account.minecraftId == it }
 
-				if (accountOfTheUser?.isConnected == true) {
-					val member = guild.getMemberById(accountOfTheUser.discordId)
+			if (accountOfTheUser?.isConnected == true) {
+				val member = guild.getMemberById(accountOfTheUser.discordId)
 
-					if (member != null && !member.roles.contains(adminRole))
-						guild.addRoleToMember(member, adminRole).queue()
-				}
+				if (member != null && !member.roles.contains(adminRole))
+					guild.addRoleToMember(member, adminRole).queue()
 			}
 		}
 	}
