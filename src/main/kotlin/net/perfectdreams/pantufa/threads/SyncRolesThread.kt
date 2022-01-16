@@ -42,7 +42,7 @@ class SyncRolesThread : Thread("Sync Dream Roles Thread") {
 		val discordAccountsOfTheUsers = transaction(Databases.sparklyPower) {
 			DiscordAccount.find {
 				DiscordAccounts.discordId inList membersWithAdminRole.map { it.user.idLong }
-			}
+			}.toList()
 		}
 
 		membersWithAdminRole.forEach {
@@ -56,7 +56,7 @@ class SyncRolesThread : Thread("Sync Dream Roles Thread") {
 		val discordAccountsOfEligibleUniqueIds = transaction(Databases.sparklyPower) {
 			DiscordAccount.find {
 				DiscordAccounts.minecraftId inList eligibleUniqueIds
-			}
+			}.toList()
 		}
 
 		eligibleUniqueIds.forEach {
