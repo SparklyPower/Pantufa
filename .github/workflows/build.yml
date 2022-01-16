@@ -35,7 +35,7 @@ jobs:
           arguments: build
 
       - name: Publish to Docker
-        if: github.ref == 'refs/heads/cinnamon'
+        if: github.ref == 'refs/heads/master'
         uses: gradle/gradle-build-action@v2
         with:
           arguments: "jib"
