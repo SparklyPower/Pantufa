@@ -8,6 +8,7 @@ import dev.kord.common.entity.Snowflake
 import dev.kord.rest.service.RestClient
 import io.ktor.client.*
 import kotlinx.coroutines.*
+import mu.KotlinLogging
 import net.dv8tion.jda.api.*
 import net.dv8tion.jda.api.entities.Activity
 import net.dv8tion.jda.api.entities.User
@@ -64,6 +65,8 @@ class PantufaBot(val config: PantufaConfig) {
 		val http = HttpClient {
 			expectSuccess = false
 		}
+
+		private val logger = KotlinLogging.logger {}
 	}
 
 	val commandManager = net.perfectdreams.discordinteraktions.common.commands.CommandManager()
@@ -91,9 +94,11 @@ class PantufaBot(val config: PantufaConfig) {
 
 	fun start() {
 		INSTANCE = this
-		println("Iniciando Pantufa...")
+		logger.info { "Starting Pantufa..." }
 
 		initPostgreSql()
+
+		logger.info { "Registering Application Commands..." }
 
 		commandManager.register(
 			net.perfectdreams.pantufa.interactions.commands.declarations.ChatColorCommand,
@@ -151,6 +156,7 @@ class PantufaBot(val config: PantufaConfig) {
 			ChangePassExecutor(this),
 		) */
 
+		logger.info { "Starting JDA..." }
 		jda = JDABuilder.create(EnumSet.allOf(GatewayIntent::class.java))
 			.addEventListeners(
 				InteractionListener(
@@ -164,6 +170,7 @@ class PantufaBot(val config: PantufaConfig) {
 			.setToken(config.token)
 			.build()
 
+		logger.info { "Registering legacy commands..." }
 		legacyCommandMap.register(PingCommand.create(this))
 		legacyCommandMap.register(MinecraftUserCommand.create(this))
 		legacyCommandMap.register(NotificarPlayerCommand.create(this))
@@ -175,20 +182,26 @@ class PantufaBot(val config: PantufaConfig) {
 		legacyCommandMap.register(MoneyCommand.create(this))
 		legacyCommandMap.register(SugerirCommand.create(this))
 
+		logger.info { "Starting SyncRolesThread..." }
 		SyncRolesThread().start()
+
+		logger.info { "Starting CheckDreamPresenceThread..." }
 		CheckDreamPresenceThread().start()
 
 		runBlocking {
 			val registry = KordCommandRegistry(applicationId, rest, commandManager)
 			if (config.discordInteractions.registerGlobally) {
+				logger.info { "Updating Pantufa's Application Commands Globally..." }
 				registry.updateAllGlobalCommands(deleteUnknownCommands = true)
 			} else {
 				for (id in config.discordInteractions.guildsToBeRegistered) {
+					logger.info { "Updating Pantufa's Application Commands on Guild $id..." }
 					registry.updateAllCommandsInGuild(Snowflake(id), deleteUnknownCommands = true)
 				}
 			}
 		}
 
+		logger.info { "Starting Pantufa's Discord Activity Updater thread..." }
 		thread {
 			while (true) {
 				try {
@@ -311,6 +324,7 @@ class PantufaBot(val config: PantufaConfig) {
 			}
 		}
 
+		logger.info { "Starting Pantufa's SocketServer thread..." }
 		thread {
 			val socket = SocketServer(60799)
 			socket.socketHandler = object: SocketHandler {
@@ -374,9 +388,13 @@ class PantufaBot(val config: PantufaConfig) {
 			socket.start()
 		}
 
+		logger.info { "Adding Event Listener..." }
 		jda.addEventListener(DiscordListener(this))
 
+		logger.info { "Starting Pantufa Tasks..." }
 		PantufaTasks(this).start()
+
+		logger.info { "Done! :3" }
 	}
 
 	fun initPostgreSql() {
