@@ -20,7 +20,7 @@ object VerificarStatusCommand {
 			val account = pantufa.getDiscordAccountFromUser(this.sender) ?: run {
 				reply(
 						PantufaReply(
-								"Você precisa registrar a sua conta antes de poder receber sonhos pelo status!"
+								"Você precisa registrar a sua conta antes de poder receber sonecas pelo status!"
 						)
 				)
 				return@executes
@@ -41,14 +41,14 @@ object VerificarStatusCommand {
 			if (customStatus.name.contains("mc.sparklypower.net") || customStatus.name.contains("discord.gg/sparklypower")) {
 				reply(
 						PantufaReply(
-								"Certinho! Você irá ganhar 15 sonhos por minuto enquanto o seu status estiver ativo! Obrigada por ajudar a divulgar o servidor, seu foof ;3",
+								"Certinho! Você irá ganhar 15 sonecas por minuto enquanto o seu status estiver ativo! Obrigada por ajudar a divulgar o servidor, seu foof ;3",
 								"<:lori_nice:726845783344939028>"
 						)
 				)
 			} else {
 				reply(
 						PantufaReply(
-								"Você precisa colocar `mc.sparklypower.net` ou `discord.gg/sparklypower` no seu status para ganhar os sonhos! Aliás, seja criativo no status! Que tal colocar `Survival 1.16.3: mc.sparklypower.net | Amo esse servidor muito daora e foof!`?",
+								"Você precisa colocar `mc.sparklypower.net` ou `discord.gg/sparklypower` no seu status para ganhar os sonecas! Aliás, seja criativo no status! Que tal colocar `Survival 1.16.3: mc.sparklypower.net | Amo esse servidor muito daora e foof!`?",
 								Constants.ERROR
 						)
 				)

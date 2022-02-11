@@ -30,7 +30,7 @@ object MoneyCommand {
 
 				reply(
 					PantufaReply(
-						content = "**`${playerData.username}`** possui **${ccBalance.formatToTwoDecimalPlaces()} Sonhos**!",
+						content = "**`${playerData.username}`** possui **${ccBalance.formatToTwoDecimalPlaces()} Sonecas**!",
 						prefix = "\uD83D\uDCB5"
 					)
 				)
@@ -42,7 +42,7 @@ object MoneyCommand {
 
 				reply(
 					PantufaReply(
-						content = "Você possui **${ccBalance.formatToTwoDecimalPlaces()} Sonhos**!",
+						content = "Você possui **${ccBalance.formatToTwoDecimalPlaces()} Sonecas**!",
 						prefix = "\uD83D\uDCB5"
 					)
 				)

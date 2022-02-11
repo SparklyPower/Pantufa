@@ -123,7 +123,7 @@ class LSXExecutor(pantufa: PantufaBot) : PantufaInteractionCommand(
                     "**Câmbio de Sonhos:**"
                 ),
                 PantufaReply(
-                    "Um sonho da `loritta` equivalem a ${LSXCommand.loriToSparklyExchangeRate} sonhos no `survival`"
+                    "Um sonho da `loritta` equivalem a ${LSXCommand.loriToSparklyExchangeRate} sonecas no `survival`"
                 ),
                 PantufaReply(
                     "*Locais disponíveis para transferência...*",
@@ -135,7 +135,7 @@ class LSXExecutor(pantufa: PantufaBot) : PantufaInteractionCommand(
                     mentionUser = false
                 ),
                 PantufaReply(
-                    "**SparklyPower Survival** `survival` (*$ccBalance sonhos*)",
+                    "**SparklyPower Survival** `survival` (*$ccBalance sonecas*)",
                     "<:pocketdreams:333655151871000576>",
                     mentionUser = false
                 )
@@ -226,7 +226,7 @@ class LSXExecutor(pantufa: PantufaBot) : PantufaInteractionCommand(
 
                             context.reply(
                                 PantufaReply(
-                                    "Você transferiu **${arg2} Sonhos** (Valor final: $lorittaQuantity) de `${from.fancyName}` para `${to.fancyName}`!",
+                                    "Você transferiu **${arg2} Sonecas** (Valor final: $lorittaQuantity) de `${from.fancyName}` para `${to.fancyName}`!",
                                     "\uD83D\uDCB8"
                                 )
                             )

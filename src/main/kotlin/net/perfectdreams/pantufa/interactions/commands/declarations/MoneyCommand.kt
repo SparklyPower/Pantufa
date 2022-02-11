@@ -7,7 +7,7 @@ import net.perfectdreams.pantufa.interactions.commands.MoneyExecutor
 object MoneyCommand : SlashCommandDeclarationWrapper {
     override fun declaration() = slashCommand(
         name = "money",
-        description = "Veja quantos sonhos você e outros jogadores do SparklyPower possuem"
+        description = "Veja quantas sonecas você e outros jogadores do SparklyPower possuem"
     ) {
         executor = MoneyExecutor
     }
