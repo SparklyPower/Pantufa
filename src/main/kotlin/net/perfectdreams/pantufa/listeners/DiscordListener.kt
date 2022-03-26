@@ -38,6 +38,9 @@ class DiscordListener(val m: PantufaBot) : ListenerAdapter() {
 	}
 
 	override fun onMessageReceived(event: MessageReceivedEvent) {
+		if (event.author.isBot)
+			return
+		
 		m.launch {
 			if (m.legacyCommandMap.dispatch(event))
 				return@launch
