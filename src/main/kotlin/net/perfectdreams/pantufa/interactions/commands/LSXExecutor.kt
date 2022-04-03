@@ -1,6 +1,7 @@
 package net.perfectdreams.pantufa.interactions.commands
 
 import kotlinx.coroutines.sync.withLock
+import kotlinx.datetime.Instant
 import net.perfectdreams.discordinteraktions.common.commands.SlashCommandExecutorDeclaration
 import net.perfectdreams.discordinteraktions.common.commands.options.ApplicationCommandOptions
 import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
@@ -11,14 +12,22 @@ import net.perfectdreams.pantufa.dao.Profile
 import net.perfectdreams.pantufa.network.Databases
 import net.perfectdreams.pantufa.tables.Bans
 import net.perfectdreams.pantufa.tables.ChatUsers
+import net.perfectdreams.pantufa.tables.SurvivalTrackedOnlineHours
 import net.perfectdreams.pantufa.utils.Constants
 import net.perfectdreams.pantufa.utils.CraftConomyUtils
 import net.perfectdreams.pantufa.utils.NumberUtils
 import net.perfectdreams.pantufa.utils.PantufaReply
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.minus
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.plus
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.or
 import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.sum
 import org.jetbrains.exposed.sql.transactions.transaction
+import java.time.Duration
+import java.time.format.DateTimeFormatter
+import java.util.concurrent.TimeUnit
 
 class LSXExecutor(pantufa: PantufaBot) : PantufaInteractionCommand(
     pantufa
@@ -90,16 +99,25 @@ class LSXExecutor(pantufa: PantufaBot) : PantufaInteractionCommand(
             return
         }
 
-        val chatUser = transaction(Databases.sparklyPower) {
-            ChatUsers.select {
-                ChatUsers._id eq accountInfo.uniqueId
-            }.firstOrNull()
+        var survivalTrackedOnlineHours: Duration? = null
+
+        val timestamp = DateTimeFormatter.ISO_INSTANT.format(
+            java.time.Instant.now()
+                .minusSeconds(86400 * 30)
+        )
+
+        transaction(Databases.sparklyPower) {
+            exec("select extract(epoch FROM SUM(logged_out - logged_in)) from survival_trackedonlinehours where player = '${accountInfo.uniqueId}' and logged_out >= $timestamp") {
+                while (it.next()) {
+                    survivalTrackedOnlineHours = Duration.ofSeconds(it.getLong(1))
+                }
+            }
         }
 
-        if (chatUser == null || (86400 * 20) >= chatUser[ChatUsers.playOneMinute] ?: 0) {
+        if (survivalTrackedOnlineHours == null || survivalTrackedOnlineHours!! >= Duration.ofHours(24)) {
             context.reply(
                 PantufaReply(
-                    "Você precisa ter mais de 24 horas online no SparklyPower antes de poder transferir sonhos!",
+                    "Você precisa ter mais de 24 horas online no SparklyPower Survival nos últimos 30 dias antes de poder transferir sonhos!",
                     "\uD83D\uDCB5"
                 )
             )

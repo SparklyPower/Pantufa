@@ -15,7 +15,9 @@ import net.perfectdreams.pantufa.tables.*
 import net.perfectdreams.pantufa.utils.*
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
+import java.time.Duration
 import java.time.Instant
+import java.time.format.DateTimeFormatter
 import java.util.*
 
 class LSXCommand : AbstractCommand("transferir", listOf("transfer", "lsx", "llsx", "lsxs", "llsxs"), requiresMinecraftAccount = true) {
@@ -161,16 +163,25 @@ class LSXCommand : AbstractCommand("transferir", listOf("transfer", "lsx", "llsx
 			return
 		}
 
-		val chatUser = transaction(Databases.sparklyPower) {
-			ChatUsers.select {
-				ChatUsers._id eq context.minecraftAccountInfo!!.uniqueId
-			}.firstOrNull()
+		var survivalTrackedOnlineHours: Duration? = null
+
+		val timestamp = DateTimeFormatter.ISO_INSTANT.format(
+			Instant.now()
+				.minusSeconds(86400 * 30)
+		)
+
+		transaction(Databases.sparklyPower) {
+			exec("select extract(epoch FROM SUM(logged_out - logged_in)) from survival_trackedonlinehours where player = '${context.minecraftAccountInfo!!.uniqueId}' and logged_out >= $timestamp") {
+				while (it.next()) {
+					survivalTrackedOnlineHours = Duration.ofSeconds(it.getLong(1))
+				}
+			}
 		}
 
-		if (chatUser == null || (86400 * 20) >= chatUser[ChatUsers.playOneMinute] ?: 0) {
+		if (survivalTrackedOnlineHours == null || survivalTrackedOnlineHours!! >= Duration.ofHours(24)) {
 			context.sendMessage(
 				PantufaReply(
-					"Você precisa ter mais de 24 horas online no SparklyPower antes de poder transferir sonhos!",
+					"Você precisa ter mais de 24 horas online no SparklyPower Survival nos últimos 30 dias antes de poder transferir sonhos!",
 					"\uD83D\uDCB5"
 				)
 			)
