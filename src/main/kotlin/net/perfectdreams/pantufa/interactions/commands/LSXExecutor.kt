@@ -115,7 +115,7 @@ class LSXExecutor(pantufa: PantufaBot) : PantufaInteractionCommand(
             }
         }
 
-        if (survivalTrackedOnlineHours == null || survivalTrackedOnlineHours!! >= Duration.ofHours(24)) {
+        if (survivalTrackedOnlineHours == null || Duration.ofHours(24) >= survivalTrackedOnlineHours) {
             context.reply(
                 PantufaReply(
                     "Você precisa ter mais de 24 horas online no SparklyPower Survival nos últimos 30 dias antes de poder transferir sonhos! Atualmente você tem ${survivalTrackedOnlineHours?.get(
