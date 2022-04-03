@@ -118,9 +118,9 @@ class LSXExecutor(pantufa: PantufaBot) : PantufaInteractionCommand(
         if (survivalTrackedOnlineHours == null || Duration.ofHours(24) >= survivalTrackedOnlineHours) {
             context.reply(
                 PantufaReply(
-                    "Você precisa ter mais de 24 horas online no SparklyPower Survival nos últimos 30 dias antes de poder transferir sonhos! Atualmente você tem ${survivalTrackedOnlineHours?.get(
-                        ChronoUnit.HOURS
-                    ) ?: 0} horas.",
+                    "Você precisa ter mais de 24 horas online no SparklyPower Survival nos últimos 30 dias antes de poder transferir sonhos! Atualmente você tem ${(survivalTrackedOnlineHours?.get(
+                        ChronoUnit.MILLIS
+                    )?.div(3_600_000)) ?: 0} horas.",
                     "\uD83D\uDCB5"
                 )
             )
