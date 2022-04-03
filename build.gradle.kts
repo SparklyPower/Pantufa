@@ -42,6 +42,7 @@ dependencies {
     implementation("org.jetbrains.exposed:exposed-core:0.37.3")
     implementation("org.jetbrains.exposed:exposed-dao:0.37.3")
     implementation("org.jetbrains.exposed:exposed-jdbc:0.37.3")
+    implementation("net.perfectdreams.exposedpowerutils:postgres-java-time:1.0.0")
 
     implementation("io.ktor:ktor-client-cio:1.6.7")
 
