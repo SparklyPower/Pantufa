@@ -184,8 +184,8 @@ class LSXCommand : AbstractCommand("transferir", listOf("transfer", "lsx", "llsx
 			context.sendMessage(
 				PantufaReply(
 					"Você precisa ter mais de 24 horas online no SparklyPower Survival nos últimos 30 dias antes de poder transferir sonhos! Atualmente você tem ${(survivalTrackedOnlineHours?.get(
-						ChronoUnit.MILLIS
-					)?.div(3_600_000)) ?: 0} horas.",
+						ChronoUnit.SECONDS
+					)?.div(3_600)) ?: 0} horas.",
 					"\uD83D\uDCB5"
 				)
 			)
