@@ -27,6 +27,7 @@ import org.jetbrains.exposed.sql.sum
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.time.Duration
 import java.time.format.DateTimeFormatter
+import java.time.temporal.ChronoUnit
 import java.util.concurrent.TimeUnit
 
 class LSXExecutor(pantufa: PantufaBot) : PantufaInteractionCommand(
@@ -107,7 +108,7 @@ class LSXExecutor(pantufa: PantufaBot) : PantufaInteractionCommand(
         )
 
         transaction(Databases.sparklyPower) {
-            exec("select extract(epoch FROM SUM(logged_out - logged_in)) from survival_trackedonlinehours where player = '${accountInfo.uniqueId}' and logged_out >= $timestamp") {
+            exec("select extract(epoch FROM SUM(logged_out - logged_in)) from survival_trackedonlinehours where player = '${accountInfo.uniqueId}' and logged_out >= '$timestamp'") {
                 while (it.next()) {
                     survivalTrackedOnlineHours = Duration.ofSeconds(it.getLong(1))
                 }
@@ -117,7 +118,9 @@ class LSXExecutor(pantufa: PantufaBot) : PantufaInteractionCommand(
         if (survivalTrackedOnlineHours == null || survivalTrackedOnlineHours!! >= Duration.ofHours(24)) {
             context.reply(
                 PantufaReply(
-                    "Você precisa ter mais de 24 horas online no SparklyPower Survival nos últimos 30 dias antes de poder transferir sonhos!",
+                    "Você precisa ter mais de 24 horas online no SparklyPower Survival nos últimos 30 dias antes de poder transferir sonhos! Atualmente você tem ${survivalTrackedOnlineHours?.get(
+                        ChronoUnit.HOURS
+                    ) ?: 0} horas.",
                     "\uD83D\uDCB5"
                 )
             )

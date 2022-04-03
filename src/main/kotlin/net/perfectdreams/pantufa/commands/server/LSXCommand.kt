@@ -18,6 +18,8 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import java.time.Duration
 import java.time.Instant
 import java.time.format.DateTimeFormatter
+import java.time.temporal.ChronoUnit
+import java.time.temporal.TemporalUnit
 import java.util.*
 
 class LSXCommand : AbstractCommand("transferir", listOf("transfer", "lsx", "llsx", "lsxs", "llsxs"), requiresMinecraftAccount = true) {
@@ -171,7 +173,7 @@ class LSXCommand : AbstractCommand("transferir", listOf("transfer", "lsx", "llsx
 		)
 
 		transaction(Databases.sparklyPower) {
-			exec("select extract(epoch FROM SUM(logged_out - logged_in)) from survival_trackedonlinehours where player = '${context.minecraftAccountInfo!!.uniqueId}' and logged_out >= $timestamp") {
+			exec("select extract(epoch FROM SUM(logged_out - logged_in)) from survival_trackedonlinehours where player = '${context.minecraftAccountInfo!!.uniqueId}' and logged_out >= '$timestamp'") {
 				while (it.next()) {
 					survivalTrackedOnlineHours = Duration.ofSeconds(it.getLong(1))
 				}
@@ -181,7 +183,9 @@ class LSXCommand : AbstractCommand("transferir", listOf("transfer", "lsx", "llsx
 		if (survivalTrackedOnlineHours == null || survivalTrackedOnlineHours!! >= Duration.ofHours(24)) {
 			context.sendMessage(
 				PantufaReply(
-					"Você precisa ter mais de 24 horas online no SparklyPower Survival nos últimos 30 dias antes de poder transferir sonhos!",
+					"Você precisa ter mais de 24 horas online no SparklyPower Survival nos últimos 30 dias antes de poder transferir sonhos! Atualmente você tem ${survivalTrackedOnlineHours?.get(
+						ChronoUnit.HOURS
+					) ?: 0} horas.",
 					"\uD83D\uDCB5"
 				)
 			)
