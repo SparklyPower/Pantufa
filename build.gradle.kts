@@ -1,8 +1,8 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    kotlin("jvm") version "1.6.10"
-    kotlin("plugin.serialization") version "1.6.10"
+    kotlin("jvm") version "1.6.20"
+    kotlin("plugin.serialization") version "1.6.20"
     id("com.google.cloud.tools.jib") version "3.1.4"
 }
 
@@ -19,17 +19,17 @@ repositories {
 
 dependencies {
     implementation(kotlin("stdlib"))
-    runtimeOnly("ch.qos.logback:logback-classic:1.3.0-alpha12")
+    runtimeOnly("ch.qos.logback:logback-classic:1.3.0-alpha14")
     implementation("io.github.microutils:kotlin-logging:2.1.21")
 
     implementation("net.dv8tion:JDA:4.3.0_283")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.1")
     api("org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:1.4.1")
     implementation("com.github.ben-manes.caffeine:caffeine:2.8.5")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.2")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-hocon:1.3.2")
 
-    implementation("net.perfectdreams.discordinteraktions:gateway-kord:0.0.12-SNAPSHOT")
+    implementation("net.perfectdreams.discordinteraktions:gateway-kord:0.0.13-SNAPSHOT")
     implementation("com.github.kevinsawicki:http-request:6.0")
 
     // Sequins
@@ -44,10 +44,10 @@ dependencies {
     implementation("org.jetbrains.exposed:exposed-jdbc:0.37.3")
     implementation("net.perfectdreams.exposedpowerutils:postgres-java-time:1.0.0")
 
-    implementation("io.ktor:ktor-client-cio:1.6.7")
+    implementation("io.ktor:ktor-client-cio:2.0.0")
 
     // Pudding
-    implementation("net.perfectdreams.loritta.cinnamon.pudding:client:0.0.2-20220116.030656-71")
+    implementation("net.perfectdreams.loritta.cinnamon.pudding:client:0.0.2-20220415.135720-330")
 
     // Used for unregister
     implementation("org.mindrot:jbcrypt:0.4")
