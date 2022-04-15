@@ -12,5 +12,7 @@ class DupeIpExecutor(
     "dupeip",
     Server.PERFECTDREAMS_BUNGEE
 ) {
-    companion object : SlashCommandExecutorDeclaration(DupeIpExecutor::class)
+    companion object : SlashCommandExecutorDeclaration(DupeIpExecutor::class) {
+        override val options = AdminConsoleBungeeExecutor.Companion.Options
+    }
 }

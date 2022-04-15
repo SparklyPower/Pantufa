@@ -12,5 +12,7 @@ class FingerprintExecutor(
     "fingerprint",
     Server.PERFECTDREAMS_BUNGEE
 ) {
-    companion object : SlashCommandExecutorDeclaration(FingerprintExecutor::class)
+    companion object : SlashCommandExecutorDeclaration(FingerprintExecutor::class) {
+        override val options = AdminConsoleBungeeExecutor.Companion.Options
+    }
 }

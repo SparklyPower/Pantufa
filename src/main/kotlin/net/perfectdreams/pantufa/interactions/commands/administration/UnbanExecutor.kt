@@ -12,5 +12,7 @@ class UnbanExecutor(
     "unban",
     Server.PERFECTDREAMS_BUNGEE
 ) {
-    companion object : SlashCommandExecutorDeclaration(UnbanExecutor::class)
+    companion object : SlashCommandExecutorDeclaration(UnbanExecutor::class) {
+        override val options = AdminConsoleBungeeExecutor.Companion.Options
+    }
 }

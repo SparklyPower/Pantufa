@@ -12,5 +12,7 @@ class AdvDupeIpExecutor(
     "advdupeip",
     Server.PERFECTDREAMS_BUNGEE
 ) {
-    companion object : SlashCommandExecutorDeclaration(AdvDupeIpExecutor::class)
+    companion object : SlashCommandExecutorDeclaration(AdvDupeIpExecutor::class) {
+        override val options = AdminConsoleBungeeExecutor.Companion.Options
+    }
 }

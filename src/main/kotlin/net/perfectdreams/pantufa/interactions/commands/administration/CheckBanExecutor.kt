@@ -12,5 +12,7 @@ class CheckBanExecutor(
     "checkban",
     Server.PERFECTDREAMS_BUNGEE
 ) {
-    companion object : SlashCommandExecutorDeclaration(CheckBanExecutor::class)
+    companion object : SlashCommandExecutorDeclaration(CheckBanExecutor::class) {
+        override val options = AdminConsoleBungeeExecutor.Companion.Options
+    }
 }

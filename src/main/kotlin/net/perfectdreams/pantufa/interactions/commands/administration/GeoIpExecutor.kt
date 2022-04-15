@@ -12,5 +12,7 @@ class GeoIpExecutor(
     "geoip",
     Server.PERFECTDREAMS_BUNGEE
 ) {
-    companion object : SlashCommandExecutorDeclaration(GeoIpExecutor::class)
+    companion object : SlashCommandExecutorDeclaration(GeoIpExecutor::class) {
+        override val options = AdminConsoleBungeeExecutor.Companion.Options
+    }
 }

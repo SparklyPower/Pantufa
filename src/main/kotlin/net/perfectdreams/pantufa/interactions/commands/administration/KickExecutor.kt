@@ -12,5 +12,7 @@ class KickExecutor(
     "kick",
     Server.PERFECTDREAMS_BUNGEE
 ) {
-    companion object : SlashCommandExecutorDeclaration(KickExecutor::class)
+    companion object : SlashCommandExecutorDeclaration(KickExecutor::class) {
+        override val options = AdminConsoleBungeeExecutor.Companion.Options
+    }
 }

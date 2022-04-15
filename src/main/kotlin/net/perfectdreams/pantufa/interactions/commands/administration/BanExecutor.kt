@@ -12,5 +12,7 @@ class BanExecutor(
     "ban",
     Server.PERFECTDREAMS_BUNGEE
 ) {
-    companion object : SlashCommandExecutorDeclaration(BanExecutor::class)
+    companion object : SlashCommandExecutorDeclaration(BanExecutor::class) {
+        override val options = AdminConsoleBungeeExecutor.Companion.Options
+    }
 }

@@ -12,5 +12,7 @@ class UnwarnExecutor(
     "unwarn",
     Server.PERFECTDREAMS_BUNGEE
 ) {
-    companion object : SlashCommandExecutorDeclaration(UnwarnExecutor::class)
+    companion object : SlashCommandExecutorDeclaration(UnwarnExecutor::class) {
+        override val options = AdminConsoleBungeeExecutor.Companion.Options
+    }
 }

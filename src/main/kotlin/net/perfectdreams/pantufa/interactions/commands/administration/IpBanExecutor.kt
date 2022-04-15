@@ -12,5 +12,7 @@ class IpBanExecutor(
     "ipban",
     Server.PERFECTDREAMS_BUNGEE
 ) {
-    companion object : SlashCommandExecutorDeclaration(IpBanExecutor::class)
+    companion object : SlashCommandExecutorDeclaration(IpBanExecutor::class) {
+        override val options = AdminConsoleBungeeExecutor.Companion.Options
+    }
 }

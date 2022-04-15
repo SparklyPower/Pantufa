@@ -12,5 +12,7 @@ class WarnExecutor(
     "warn",
     Server.PERFECTDREAMS_BUNGEE
 ) {
-    companion object : SlashCommandExecutorDeclaration(WarnExecutor::class)
+    companion object : SlashCommandExecutorDeclaration(WarnExecutor::class) {
+        override val options = AdminConsoleBungeeExecutor.Companion.Options
+    }
 }
