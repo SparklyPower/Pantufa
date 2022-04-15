@@ -62,7 +62,7 @@ open class AdminConsoleBungeeExecutor(
             jsonObject(
                 "type" to "executeCommand",
                 "player" to minecraftAccountInfo.username,
-                "command" to "$commandToBeExecuted $args"
+                "command" to "$commandToBeExecuted ${args[Options.args]}"
             )
         )
 
