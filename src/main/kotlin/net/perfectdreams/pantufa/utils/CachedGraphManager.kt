@@ -1,5 +1,6 @@
 package net.perfectdreams.pantufa.utils
 
+import io.ktor.client.call.*
 import io.ktor.client.request.*
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.GlobalScope
@@ -22,8 +23,8 @@ class CachedGraphManager(val token: String, val url: String) {
 
     suspend fun updateGraph(from: Instant, to: Instant) {
         val urlWithTime = url + "&from=${from.toEpochMilli()}&to=${to.toEpochMilli()}"
-        state.value = PantufaBot.http.get<ByteArray>(urlWithTime) {
+        state.value = PantufaBot.http.get(urlWithTime) {
             header("Authorization", "Bearer $token")
-        }
+        }.body()
     }
 }

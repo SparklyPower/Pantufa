@@ -31,6 +31,7 @@ import net.perfectdreams.pantufa.interactions.commands.PesadelosExecutor
 import net.perfectdreams.pantufa.interactions.commands.PingExecutor
 import net.perfectdreams.pantufa.interactions.commands.RegistrarExecutor
 import net.perfectdreams.pantufa.interactions.commands.VIPInfoExecutor
+import net.perfectdreams.pantufa.interactions.commands.administration.*
 import net.perfectdreams.pantufa.listeners.DiscordListener
 import net.perfectdreams.pantufa.listeners.InteractionListener
 import net.perfectdreams.pantufa.network.Databases
@@ -151,6 +152,22 @@ class PantufaBot(val config: PantufaConfig) {
 			VIPInfoExecutor(this)
 		)
 
+		commandManager.register(
+			net.perfectdreams.pantufa.interactions.commands.declarations.AdminConsoleBungeeCommand,
+			AdvDupeIpExecutor(this),
+			BanExecutor(this),
+			CheckBanExecutor(this),
+			DupeIpExecutor(this),
+			FingerprintExecutor(this),
+			GeoIpExecutor(this),
+			IpBanExecutor(this),
+			IpUnbanExecutor(this),
+			KickExecutor(this),
+			UnbanExecutor(this),
+			UnwarnExecutor(this),
+			WarnExecutor(this)
+		)
+
 		/* commandManager.register(
 			net.perfectdreams.pantufa.interactions.commands.declarations.ChangePassCommand,
 			ChangePassExecutor(this),
@@ -192,11 +209,11 @@ class PantufaBot(val config: PantufaConfig) {
 			val registry = KordCommandRegistry(applicationId, rest, commandManager)
 			if (config.discordInteractions.registerGlobally) {
 				logger.info { "Updating Pantufa's Application Commands Globally..." }
-				registry.updateAllGlobalCommands(deleteUnknownCommands = true)
+				registry.updateAllGlobalCommands()
 			} else {
 				for (id in config.discordInteractions.guildsToBeRegistered) {
 					logger.info { "Updating Pantufa's Application Commands on Guild $id..." }
-					registry.updateAllCommandsInGuild(Snowflake(id), deleteUnknownCommands = true)
+					registry.updateAllCommandsInGuild(Snowflake(id))
 				}
 			}
 		}
