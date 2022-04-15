@@ -3,6 +3,7 @@ package net.perfectdreams.pantufa.interactions.commands.administration
 import com.github.salomonbrys.kotson.array
 import com.github.salomonbrys.kotson.jsonObject
 import com.github.salomonbrys.kotson.string
+import mu.KotlinLogging
 import net.perfectdreams.discordinteraktions.common.commands.SlashCommandExecutorDeclaration
 import net.perfectdreams.discordinteraktions.common.commands.options.ApplicationCommandOptions
 import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
@@ -33,11 +34,17 @@ open class AdminConsoleBungeeExecutor(
         }
 
         override val options = Options
+
+        private val logger = KotlinLogging.logger {}
     }
 
     override suspend fun executePantufa(context: PantufaCommandContext, args: SlashCommandArguments) {
+        context.interactionContext.deferChannelMessage()
+
+        logger.info { "Retrieving ${context.senderId}'s Minecraft Account (or failing if not present)..." }
         val minecraftAccountInfo = context.retrieveConnectedMinecraftAccountOrFail()
 
+        logger.info { "Getting ${context.senderId}'s Minecraft Account (${minecraftAccountInfo.uniqueId}) permissions..." }
         val userPerms = transaction(Databases.sparklyPowerLuckPerms) {
             LuckPermsUserPermissions.select {
                 LuckPermsUserPermissions.uuid eq minecraftAccountInfo.uniqueId.toString()
@@ -49,6 +56,7 @@ open class AdminConsoleBungeeExecutor(
 
         val allPermissions = groupNames.flatMap { getGroupPermissions(it) }
 
+        logger.info { "Does ${context.senderId}'s Minecraft Account (${minecraftAccountInfo.uniqueId}) has permission $requiredServerPermission? ${requiredServerPermission !in allPermissions}" }
         if (requiredServerPermission !in allPermissions) {
             context.reply(
                 PantufaReply(
@@ -58,6 +66,7 @@ open class AdminConsoleBungeeExecutor(
             return
         }
 
+        logger.info { "Executing ${context.senderId}'s command in SparklyPower's BungeeCord with Minecraft Account (${minecraftAccountInfo.uniqueId})..." }
         val payload = server.send(
             jsonObject(
                 "type" to "executeCommand",
