@@ -272,7 +272,7 @@ class PantufaBot(val config: PantufaConfig) {
 								}
 
 								user.openPrivateChannel().queue {
-									it.sendMessage(
+									it.sendMessageEmbeds(
 										EmbedBuilder()
 											.setTitle("<a:lori_pat:706263175892566097> Seu amigx está online no SparklyPower!")
 											.setDescription("Seu amigx `${joinedPlayer}` acabou de entrar no SparklyPower! Que tal entrar para fazer companhia para elx?")
@@ -373,7 +373,7 @@ class PantufaBot(val config: PantufaConfig) {
 
 								val discordEmbed = parallaxEmbed.toDiscordEmbed(true) // tá safe
 
-								messageBuilder.setEmbed(discordEmbed)
+								messageBuilder.setEmbeds(discordEmbed)
 							}
 
 							val textChannel = jda.getTextChannelById(textChannelId)

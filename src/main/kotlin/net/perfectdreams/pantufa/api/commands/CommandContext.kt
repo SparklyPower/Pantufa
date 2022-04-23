@@ -74,7 +74,7 @@ class CommandContext(
 	}
 
 	suspend fun sendMessage(content: MessageEmbed): Message {
-		return message.channel.sendMessage(content).await()
+		return message.channel.sendMessageEmbeds(content).await()
 	}
 
 	suspend fun user(argument: Int): User? {

@@ -35,6 +35,6 @@ class CommandContext(val event: MessageReceivedEvent, val discordAccount: Discor
 	}
 
 	fun sendMessage(content: MessageEmbed): Message {
-		return event.channel.sendMessage(content).complete()
+		return event.channel.sendMessageEmbeds(content).complete()
 	}
 }

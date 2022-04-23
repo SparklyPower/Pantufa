@@ -22,10 +22,10 @@ dependencies {
     runtimeOnly("ch.qos.logback:logback-classic:1.3.0-alpha14")
     implementation("io.github.microutils:kotlin-logging:2.1.21")
 
-    implementation("net.dv8tion:JDA:4.3.0_283")
+    implementation("net.dv8tion:JDA:5.0.0-alpha.10")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.1")
-    api("org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:1.4.1")
-    implementation("com.github.ben-manes.caffeine:caffeine:2.8.5")
+    api("org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:1.6.1")
+    implementation("com.github.ben-manes.caffeine:caffeine:3.0.6")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.2")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-hocon:1.3.2")
 
@@ -36,8 +36,8 @@ dependencies {
     implementation("net.perfectdreams.sequins.text:text-utils:1.0.0")
 
     // Database
-    implementation("org.postgresql:postgresql:42.3.1")
-    implementation("mysql:mysql-connector-java:8.0.25")
+    implementation("org.postgresql:postgresql:42.3.3")
+    implementation("mysql:mysql-connector-java:8.0.28")
     implementation("com.zaxxer:HikariCP:5.0.1")
     implementation("org.jetbrains.exposed:exposed-core:0.37.3")
     implementation("org.jetbrains.exposed:exposed-dao:0.37.3")
