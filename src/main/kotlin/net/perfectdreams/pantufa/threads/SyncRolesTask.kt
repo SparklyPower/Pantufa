@@ -1,5 +1,6 @@
 package net.perfectdreams.pantufa.threads
 
+import mu.KotlinLogging
 import net.dv8tion.jda.api.entities.Guild
 import net.perfectdreams.pantufa.dao.DiscordAccount
 import net.perfectdreams.pantufa.network.Databases
@@ -14,7 +15,13 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.*
 
 class SyncRolesTask : Runnable {
-	fun getPlayersWithGroup(vararg primaryGroup: String): List<UUID> {
+	companion object {
+		private val logger = KotlinLogging.logger {}
+	}
+
+	private fun getPlayersWithGroup(vararg primaryGroup: String): List<UUID> {
+		logger.info { "Getting all players that have $primaryGroup as their primary group..." }
+
 		val primaryGroupPlayers = transaction(Databases.sparklyPowerLuckPerms) {
 			LuckPermsPlayers.select {
 				LuckPermsPlayers.primaryGroup inList primaryGroup.toMutableList()
@@ -33,10 +40,16 @@ class SyncRolesTask : Runnable {
 			}.toMutableList()
 		}
 
-		return (primaryGroupPlayers + secondaryGroupPlayers).distinct()
+		val list = (primaryGroupPlayers + secondaryGroupPlayers).distinct()
+
+		logger.info { "Players $list have $primaryGroup as their primary group!" }
+
+		return list
 	}
 
-	fun syncRolesEligibleForUsers(guild: Guild, roleId: String, eligibleUniqueIds: List<UUID>) {
+	private fun syncRolesEligibleForUsers(guild: Guild, roleId: String, eligibleUniqueIds: List<UUID>) {
+		logger.info { "Synchronizing role $roleId in $guild for $eligibleUniqueIds" }
+
 		val adminRole = guild.getRoleById(roleId)!!
 		val membersWithAdminRole = guild.getMembersWithRoles(adminRole)
 		val discordAccountsOfTheUsers = transaction(Databases.sparklyPower) {
@@ -76,6 +89,8 @@ class SyncRolesTask : Runnable {
 			val guild = Constants.SPARKLYPOWER_GUILD
 
 			if (guild != null) {
+				logger.info { "Synchronizing roles in $guild..." }
+
 				val discordAccounts = transaction(Databases.sparklyPower) {
 					DiscordAccount.find {
 						DiscordAccounts.isConnected eq true
@@ -116,6 +131,8 @@ class SyncRolesTask : Runnable {
 				syncRolesEligibleForUsers(guild, "332650495522897920", owners.toMutableList() + admins.toMutableList() + coordenadores.toMutableList() + moderators.toMutableList() + supports.toMutableList() + builders.toMutableList())
 				syncRolesEligibleForUsers(guild, "332652664544428044", vips)
 				syncRolesEligibleForUsers(guild, "373548131016507393", youtubers)
+			} else {
+				logger.warn { "Guild ${Constants.SPARKLYPOWER_GUILD_ID} does not exist or isn't loaded yet! Skipping role synchronization..." }
 			}
 		} catch (e: Exception) {
 			e.printStackTrace()
