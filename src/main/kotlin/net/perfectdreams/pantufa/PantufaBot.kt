@@ -38,8 +38,8 @@ import net.perfectdreams.pantufa.network.Databases
 import net.perfectdreams.pantufa.tables.DiscordAccounts
 import net.perfectdreams.pantufa.tables.NotifyPlayersOnline
 import net.perfectdreams.pantufa.tables.Users
-import net.perfectdreams.pantufa.threads.CheckDreamPresenceThread
-import net.perfectdreams.pantufa.threads.SyncRolesThread
+import net.perfectdreams.pantufa.threads.CheckDreamPresenceTask
+import net.perfectdreams.pantufa.threads.SyncRolesTask
 import net.perfectdreams.pantufa.utils.CachedGraphManager
 import net.perfectdreams.pantufa.utils.Constants
 import net.perfectdreams.pantufa.utils.Server
@@ -198,12 +198,6 @@ class PantufaBot(val config: PantufaConfig) {
 		legacyCommandMap.register(VIPInfoCommand.create(this))
 		legacyCommandMap.register(MoneyCommand.create(this))
 		legacyCommandMap.register(SugerirCommand.create(this))
-
-		logger.info { "Starting SyncRolesThread..." }
-		SyncRolesThread().start()
-
-		logger.info { "Starting CheckDreamPresenceThread..." }
-		CheckDreamPresenceThread().start()
 
 		runBlocking {
 			val registry = KordCommandRegistry(applicationId, rest, commandManager)
