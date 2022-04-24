@@ -3,16 +3,13 @@ package net.perfectdreams.pantufa.threads
 import mu.KotlinLogging
 import net.dv8tion.jda.api.entities.Activity
 import net.dv8tion.jda.api.entities.Member
-import net.perfectdreams.pantufa.PantufaBot
 import net.perfectdreams.pantufa.dao.DiscordAccount
 import net.perfectdreams.pantufa.network.Databases
 import net.perfectdreams.pantufa.pantufa
 import net.perfectdreams.pantufa.tables.CraftConomyAccounts
 import net.perfectdreams.pantufa.tables.CraftConomyBalance
 import net.perfectdreams.pantufa.tables.DiscordAccounts
-import net.perfectdreams.pantufa.utils.CraftConomyUtils
 import org.jetbrains.exposed.sql.SqlExpressionBuilder
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.innerJoin
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.update

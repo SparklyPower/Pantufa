@@ -13,13 +13,11 @@ import net.dv8tion.jda.api.*
 import net.dv8tion.jda.api.entities.Activity
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.requests.GatewayIntent
-import net.perfectdreams.discordinteraktions.common.builder.message.MessageBuilder
 import net.perfectdreams.discordinteraktions.platforms.kord.commands.KordCommandRegistry
 import net.perfectdreams.pantufa.commands.CommandManager
 import net.perfectdreams.pantufa.commands.server.*
 import net.perfectdreams.pantufa.commands.vanilla.utils.PingCommand
 import net.perfectdreams.pantufa.dao.DiscordAccount
-import net.perfectdreams.pantufa.interactions.commands.ChangePassExecutor
 import net.perfectdreams.pantufa.interactions.commands.ChatColorExecutor
 import net.perfectdreams.pantufa.interactions.commands.GuildsExecutor
 import net.perfectdreams.pantufa.interactions.commands.LSXExecutor
@@ -38,8 +36,6 @@ import net.perfectdreams.pantufa.network.Databases
 import net.perfectdreams.pantufa.tables.DiscordAccounts
 import net.perfectdreams.pantufa.tables.NotifyPlayersOnline
 import net.perfectdreams.pantufa.tables.Users
-import net.perfectdreams.pantufa.threads.CheckDreamPresenceTask
-import net.perfectdreams.pantufa.threads.SyncRolesTask
 import net.perfectdreams.pantufa.utils.CachedGraphManager
 import net.perfectdreams.pantufa.utils.Constants
 import net.perfectdreams.pantufa.utils.Server
@@ -77,7 +73,6 @@ class PantufaBot(val config: PantufaConfig) {
 	val coroutineDispatcher = executors.asCoroutineDispatcher()
 	lateinit var jda: JDA
 	val rest = RestClient(config.token)
-	var previousPlayers: List<String>? = null
 	val whitelistedGuildIds = listOf(
 		Snowflake(265632341530116097L), // SparklyPower (Old)
 		Snowflake(268353819409252352L), // Ideias Aleatórias
@@ -209,129 +204,6 @@ class PantufaBot(val config: PantufaConfig) {
 					logger.info { "Updating Pantufa's Application Commands on Guild $id..." }
 					registry.updateAllCommandsInGuild(Snowflake(id))
 				}
-			}
-		}
-
-		logger.info { "Starting Pantufa's Discord Activity Updater thread..." }
-		thread {
-			while (true) {
-				try {
-					val response = Server.PERFECTDREAMS_BUNGEE.send(
-						jsonObject("type" to "getOnlinePlayers")
-					)
-					val plural = if (response["players"].array.size() == 1) "" else "s"
-					println("Player Count: ${response["players"].array.size()}")
-
-					val oldPreviousPlayers = previousPlayers
-					val currentPlayers = response["players"].array.map { it.string }
-					if (oldPreviousPlayers != null) {
-						val joinedPlayers = currentPlayers.toMutableList().also { it.removeAll(oldPreviousPlayers) }
-						println("Newly joined players: $joinedPlayers")
-
-						for (joinedPlayer in joinedPlayers) {
-							val uniqueId = UUID.nameUUIDFromBytes("OfflinePlayer:$joinedPlayer".toByteArray())
-
-							val trackedEntries = transaction(Databases.sparklyPower) {
-								NotifyPlayersOnline.select { NotifyPlayersOnline.tracked eq uniqueId }
-									.toList()
-							}
-
-							println("Users tracking ${joinedPlayer} ($uniqueId): $trackedEntries")
-
-							for (trackedEntry in trackedEntries) {
-								val minecraftUser = getMinecraftUserFromUniqueId(trackedEntry[NotifyPlayersOnline.player])
-
-								if (minecraftUser == null) {
-									println("There is a $trackedEntry, but there isn't a minecraft user!")
-									continue
-								}
-
-								if (minecraftUser.username in currentPlayers) {
-									println("There is a $trackedEntry, but the tracking player is already online!")
-									continue
-								}
-
-								val account = getDiscordAccountFromUniqueId(minecraftUser.id.value)
-
-								if (account == null) {
-									println("There is a $trackedEntry, but there isn't a discord account!")
-									continue
-								}
-
-								val user = jda.getUserById(account.discordId)
-
-								if (user == null) {
-									println("There is a $trackedEntry, but I wasn't able to find the user!")
-									continue
-								}
-
-								user.openPrivateChannel().queue {
-									it.sendMessageEmbeds(
-										EmbedBuilder()
-											.setTitle("<a:lori_pat:706263175892566097> Seu amigx está online no SparklyPower!")
-											.setDescription("Seu amigx `${joinedPlayer}` acabou de entrar no SparklyPower! Que tal entrar para fazer companhia para elx?")
-											.setColor(Constants.LORITTA_AQUA)
-											.setThumbnail("https://sparklypower.net/api/v1/render/avatar?name=${joinedPlayer}&scale=16")
-											.setTimestamp(Instant.now())
-											.build()
-									).queue()
-								}
-							}
-						}
-					}
-
-					previousPlayers = currentPlayers
-					val prefix = when (response["players"].array.size()) {
-						in 45 until 50 -> "\uD83D\uDE18"
-						in 40 until 45 -> "\uD83D\uDE0E"
-						in 35 until 40 -> "\uD83D\uDE06"
-						in 30 until 35 -> "\uD83D\uDE04"
-						in 25 until 30 -> "\uD83D\uDE03"
-						in 20 until 25 -> "\uD83D\uDE0B"
-						in 15 until 20 -> "\uD83D\uDE09"
-						in 10 until 15 -> "\uD83D\uDE43"
-						in 5 until 10 -> "\uD83D\uDE0A"
-						in 1 until 5 -> "\uD83D\uDE42"
-						0 -> "\uD83D\uDE34"
-						else -> "\uD83D\uDE0D"
-					}
-
-					val payload = Server.PERFECTDREAMS_SURVIVAL.send(
-						jsonObject(
-							"type" to "getTps"
-						)
-					)
-
-					println(payload)
-
-					val tps = payload["tps"].array
-					val currentTps = tps[0].double
-
-					val status = if (currentTps > 19.2) {
-						OnlineStatus.ONLINE
-					} else if (currentTps > 17.4) {
-						OnlineStatus.IDLE
-					} else {
-						OnlineStatus.DO_NOT_DISTURB
-					}
-
-					jda.presence.setPresence(
-						status,
-						Activity.watching(
-							"$prefix ${response["players"].array.size()} player$plural online no SparklyPower! | \uD83C\uDFAE mc.sparklypower.net | TPS: ${
-								"%.2f".format(
-									currentTps
-								)
-							}"
-						)
-					)
-				} catch (e: Exception) {
-					e.printStackTrace()
-
-					jda.presence.activity = Activity.playing("\uD83D\uDEAB SparklyPower está offline \uD83D\uDE2D | \uD83C\uDFAE mc.sparklypower.net")
-				}
-
-				Thread.sleep(15000) // rate limit de presence é 5 a cada 60 segundos
 			}
 		}
 
