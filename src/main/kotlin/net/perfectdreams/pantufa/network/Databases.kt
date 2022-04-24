@@ -29,9 +29,9 @@ object Databases {
 
     val hikariConfigLuckPerms by lazy {
         val config = HikariConfig()
-        config.jdbcUrl = "jdbc:postgresql://${pantufa.config.postgreSqlSparklyPower.ip}:${pantufa.config.postgreSqlSparklyPower.port}/${pantufa.config.postgreSqlLuckPerms.databaseName}"
-        config.username = pantufa.config.postgreSqlSparklyPower.username
-        config.password = pantufa.config.postgreSqlSparklyPower.password
+        config.jdbcUrl = "jdbc:postgresql://${pantufa.config.postgreSqlLuckPerms.ip}:${pantufa.config.postgreSqlLuckPerms.port}/${pantufa.config.postgreSqlLuckPerms.databaseName}"
+        config.username = pantufa.config.postgreSqlLuckPerms.username
+        config.password = pantufa.config.postgreSqlLuckPerms.password
         config.driverClassName = "org.postgresql.Driver"
         // Exposed uses autoCommit = false, so we need to set this to false to avoid HikariCP resetting the connection to
         // autoCommit = true when the transaction goes back to the pool, because resetting this has a "big performance impact"
