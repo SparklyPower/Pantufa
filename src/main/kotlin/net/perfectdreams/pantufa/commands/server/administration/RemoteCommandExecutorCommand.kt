@@ -74,7 +74,7 @@ open class RemoteCommandExecutorCommand(label: String,
 		}
 	}
 
-	fun getGroupPermissions(groupName: String): List<String> {
+	private fun getGroupPermissions(groupName: String): List<String> {
 		val perms = mutableListOf<String>()
 
 		val permissions = transaction(Databases.sparklyPowerLuckPerms) {

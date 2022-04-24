@@ -7,7 +7,6 @@ import org.jetbrains.exposed.sql.Database
 
 object Databases {
     val hikariConfigPantufa by lazy {
-        println("Starting Hikari Pantufa")
         val config = HikariConfig()
         config.jdbcUrl = "jdbc:postgresql://${pantufa.config.postgreSqlSparklyPower.ip}:${pantufa.config.postgreSqlSparklyPower.port}/${pantufa.config.postgreSqlSparklyPower.databaseName}"
         config.username = pantufa.config.postgreSqlSparklyPower.username
@@ -18,18 +17,17 @@ object Databases {
         // https://stackoverflow.com/a/41206003/7271796
         config.isAutoCommit = false
 
-        config.maximumPoolSize = 16
+        config.maximumPoolSize = 4
         config.addDataSourceProperty("cachePrepStmts", "true")
         config.addDataSourceProperty("prepStmtCacheSize", "250")
         config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048")
         return@lazy config
     }
 
-    val dataSourcePantufa by lazy { println("Starting Data Source Pantufa"); HikariDataSource(hikariConfigPantufa); }
-    val sparklyPower by lazy { println("Connecting Database Pantufa"); val db = Database.connect(dataSourcePantufa); println("Done db pantufa!"); db }
+    val dataSourcePantufa by lazy { HikariDataSource(hikariConfigPantufa); }
+    val sparklyPower by lazy { Database.connect(dataSourcePantufa); }
 
     val hikariConfigLuckPerms by lazy {
-        println("LuckPerms Hikari")
         val config = HikariConfig()
         config.jdbcUrl = "jdbc:postgresql://${pantufa.config.postgreSqlSparklyPower.ip}:${pantufa.config.postgreSqlSparklyPower.port}/${pantufa.config.postgreSqlLuckPerms.databaseName}"
         config.username = pantufa.config.postgreSqlSparklyPower.username
@@ -40,18 +38,17 @@ object Databases {
         // https://stackoverflow.com/a/41206003/7271796
         config.isAutoCommit = false
 
-        config.maximumPoolSize = 16
+        config.maximumPoolSize = 4
         config.addDataSourceProperty("cachePrepStmts", "true")
         config.addDataSourceProperty("prepStmtCacheSize", "250")
         config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048")
         return@lazy config
     }
 
-    val dataSourceLuckPerms by lazy { println("LuckPerms DataSource Pantufa"); HikariDataSource(hikariConfigLuckPerms) }
-    val sparklyPowerLuckPerms by lazy { println("LuckPerms Db Pantufa"); Database.connect(dataSourceLuckPerms) }
+    val dataSourceLuckPerms by lazy { HikariDataSource(hikariConfigLuckPerms) }
+    val sparklyPowerLuckPerms by lazy { Database.connect(dataSourceLuckPerms) }
 
     val hikariConfigLoritta by lazy {
-        println("Loritta Hikari Pantufa");
         val config = HikariConfig()
         config.jdbcUrl = "jdbc:postgresql://${pantufa.config.postgreSqlLoritta.ip}:${pantufa.config.postgreSqlLoritta.port}/${pantufa.config.postgreSqlLoritta.databaseName}"
         config.username = pantufa.config.postgreSqlLoritta.username
@@ -62,18 +59,17 @@ object Databases {
         // https://stackoverflow.com/a/41206003/7271796
         config.isAutoCommit = false
 
-        config.maximumPoolSize = 16
+        config.maximumPoolSize = 4
         config.addDataSourceProperty("cachePrepStmts", "true")
         config.addDataSourceProperty("prepStmtCacheSize", "250")
         config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048")
         return@lazy config
     }
 
-    val dataSourceLoritta by lazy { println("Loritta DataSource Pantufa"); HikariDataSource(hikariConfigLoritta) }
-    val loritta by lazy { println("Loritta Database Pantufa"); Database.connect(dataSourceLoritta) }
+    val dataSourceLoritta by lazy { HikariDataSource(hikariConfigLoritta) }
+    val loritta by lazy { Database.connect(dataSourceLoritta) }
 
     val hikariConfigCraftConomy by lazy {
-        println("CC Hikari Pantufa");
         val config = HikariConfig()
         config.jdbcUrl = "jdbc:mysql://${pantufa.config.mariaDbCraftConomy.ip}:${pantufa.config.mariaDbCraftConomy.port}/${pantufa.config.mariaDbCraftConomy.databaseName}"
         config.username = pantufa.config.mariaDbCraftConomy.username
@@ -83,13 +79,13 @@ object Databases {
         // https://stackoverflow.com/a/41206003/7271796
         config.isAutoCommit = false
 
-        config.maximumPoolSize = 16
+        config.maximumPoolSize = 4
         config.addDataSourceProperty("cachePrepStmts", "true")
         config.addDataSourceProperty("prepStmtCacheSize", "250")
         config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048")
         return@lazy config
     }
 
-    val dataSourceCraftConomy by lazy { println("CC DataSource Pantufa"); HikariDataSource(hikariConfigCraftConomy) }
-    val craftConomy by lazy { println("CC Db Pantufa"); Database.connect(dataSourceCraftConomy) }
+    val dataSourceCraftConomy by lazy { HikariDataSource(hikariConfigCraftConomy) }
+    val craftConomy by lazy { Database.connect(dataSourceCraftConomy) }
 }
