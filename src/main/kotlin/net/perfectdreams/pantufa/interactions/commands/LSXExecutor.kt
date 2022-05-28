@@ -9,6 +9,8 @@ import net.perfectdreams.pantufa.PantufaBot
 import net.perfectdreams.pantufa.commands.server.LSXCommand
 import net.perfectdreams.pantufa.dao.Ban
 import net.perfectdreams.pantufa.dao.Profile
+import net.perfectdreams.pantufa.interactions.components.utils.TransactionCurrency
+import net.perfectdreams.pantufa.interactions.components.utils.TransactionType
 import net.perfectdreams.pantufa.network.Databases
 import net.perfectdreams.pantufa.tables.Bans
 import net.perfectdreams.pantufa.tables.ChatUsers
@@ -219,6 +221,17 @@ class LSXExecutor(pantufa: PantufaBot) : PantufaInteractionCommand(
                                     "\uD83D\uDCB8"
                                 )
                             )
+
+                            transaction(Databases.sparklyPower) {
+                                net.perfectdreams.pantufa.dao.Transaction.new {
+                                    this.type = TransactionType.LSX
+                                    this.receiver = accountInfo.uniqueId
+                                    this.currency = TransactionCurrency.MONEY
+                                    this.time = System.currentTimeMillis()
+                                    this.amount = quantity.toDouble()
+                                    this.extra = context.senderId.toString()
+                                }
+                            }
                         } else if (from == LSXCommand.TransferOptions.PERFECTDREAMS_SURVIVAL && to == LSXCommand.TransferOptions.LORITTA) {
                             val lorittaQuantity = quantity / LSXCommand.loriToSparklyExchangeRate
 
@@ -251,6 +264,17 @@ class LSXExecutor(pantufa: PantufaBot) : PantufaInteractionCommand(
                                     "\uD83D\uDCB8"
                                 )
                             )
+
+                            transaction(Databases.sparklyPower) {
+                                net.perfectdreams.pantufa.dao.Transaction.new {
+                                    this.type = TransactionType.LSX
+                                    this.payer = accountInfo.uniqueId
+                                    this.currency = TransactionCurrency.MONEY
+                                    this.time = System.currentTimeMillis()
+                                    this.amount = quantity.toDouble()
+                                    this.extra = context.senderId.toString()
+                                }
+                            }
                         }
                         return@withLock
                     }

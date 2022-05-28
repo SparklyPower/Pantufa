@@ -18,17 +18,7 @@ import net.perfectdreams.pantufa.commands.CommandManager
 import net.perfectdreams.pantufa.commands.server.*
 import net.perfectdreams.pantufa.commands.vanilla.utils.PingCommand
 import net.perfectdreams.pantufa.dao.DiscordAccount
-import net.perfectdreams.pantufa.interactions.commands.ChatColorExecutor
-import net.perfectdreams.pantufa.interactions.commands.GuildsExecutor
-import net.perfectdreams.pantufa.interactions.commands.LSXExecutor
-import net.perfectdreams.pantufa.interactions.commands.MinecraftUserDiscordUserExecutor
-import net.perfectdreams.pantufa.interactions.commands.MinecraftUserPlayerNameExecutor
-import net.perfectdreams.pantufa.interactions.commands.MoneyExecutor
-import net.perfectdreams.pantufa.interactions.commands.OnlineExecutor
-import net.perfectdreams.pantufa.interactions.commands.PesadelosExecutor
-import net.perfectdreams.pantufa.interactions.commands.PingExecutor
-import net.perfectdreams.pantufa.interactions.commands.RegistrarExecutor
-import net.perfectdreams.pantufa.interactions.commands.VIPInfoExecutor
+import net.perfectdreams.pantufa.interactions.commands.*
 import net.perfectdreams.pantufa.interactions.commands.administration.*
 import net.perfectdreams.pantufa.listeners.DiscordListener
 import net.perfectdreams.pantufa.listeners.InteractionListener
@@ -145,6 +135,26 @@ class PantufaBot(val config: PantufaConfig) {
 		commandManager.register(
 			net.perfectdreams.pantufa.interactions.commands.declarations.VIPInfoCommand,
 			VIPInfoExecutor(this)
+		)
+
+		commandManager.register(
+			net.perfectdreams.pantufa.interactions.commands.declarations.CommandsLogCommand,
+			CommandsLogExecutor(this)
+		)
+
+		commandManager.register(
+			net.perfectdreams.pantufa.interactions.commands.declarations.TransactionsCommand,
+			TransactionsExecutor(this)
+		)
+
+		commandManager.register(
+			net.perfectdreams.pantufa.interactions.components.ChangePageButtonClickExecutor,
+			net.perfectdreams.pantufa.interactions.components.ChangePageButtonClickExecutor()
+		)
+
+		commandManager.register(
+			net.perfectdreams.pantufa.interactions.components.TransactionFilterSelectMenuExecutor,
+			net.perfectdreams.pantufa.interactions.components.TransactionFilterSelectMenuExecutor()
 		)
 
 		commandManager.register(
