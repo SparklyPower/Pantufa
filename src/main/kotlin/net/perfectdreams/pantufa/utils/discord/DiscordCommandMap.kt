@@ -105,7 +105,14 @@ class DiscordCommandMap(val pantufa: PantufaBot) : CommandMap<Command<CommandCon
 			val rawArgs = ev.message.contentRaw.split(Constants.WHITE_SPACE_MULTIPLE_REGEX).toMutableList()
 			val strippedArgs = ev.message.contentStripped.split(Constants.WHITE_SPACE_MULTIPLE_REGEX).toMutableList()
 
-			if (ev.channel.idLong !in Constants.ALLOWED_CHANNELS_IDS && ev.guild.idLong != 268353819409252352L && ev.member?.roles?.any { it.idLong == 332650495522897920L } == false) { // Ideias Aleatórias
+			val allowedRoles = setOf(
+				332650495522897920L, // SparklyPower staff,
+				351473717194522647L, // Loritta staff
+				493150630173605928L, // SparklyPower staff in Loritta's server
+				505144985591480333L // Beeps & boops
+			)
+
+			if (ev.channel.idLong !in Constants.ALLOWED_CHANNELS_IDS && ev.guild.idLong != 268353819409252352L && ev.member?.roles?.any { it.idLong in allowedRoles } == false) { // Ideias Aleatórias
 				ev.textChannel.sendMessage("${Constants.ERROR} **|** ${ev.author.asMention} Você só pode usar meus lindos e incríveis comandos nos canais de comandos!").complete()
 				return true
 			}

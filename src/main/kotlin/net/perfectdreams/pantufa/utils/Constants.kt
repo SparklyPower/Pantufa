@@ -1,5 +1,7 @@
 package net.perfectdreams.pantufa.utils
 
+import dev.kord.common.entity.DiscordPartialEmoji
+import dev.kord.common.entity.Snowflake
 import net.dv8tion.jda.api.entities.Guild
 import net.perfectdreams.pantufa.PantufaBot
 import net.perfectdreams.pantufa.commands.CommandContext
@@ -58,4 +60,8 @@ object Constants {
 	val LORITTA_AQUA = Color(0, 193, 223)
 
 	val WHITE_SPACE_MULTIPLE_REGEX = Regex(" +")
+
+	val LEFT_EMOJI = DiscordPartialEmoji(Snowflake(930922528715722782L), "chevron_left")
+
+	val RIGHT_EMOJI = DiscordPartialEmoji(Snowflake(930922702011773038L), "chevron_right")
 }

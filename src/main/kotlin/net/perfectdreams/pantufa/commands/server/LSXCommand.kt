@@ -10,6 +10,8 @@ import net.perfectdreams.pantufa.commands.AbstractCommand
 import net.perfectdreams.pantufa.commands.CommandContext
 import net.perfectdreams.pantufa.dao.Ban
 import net.perfectdreams.pantufa.dao.Profile
+import net.perfectdreams.pantufa.interactions.components.utils.TransactionCurrency
+import net.perfectdreams.pantufa.interactions.components.utils.TransactionType
 import net.perfectdreams.pantufa.network.Databases
 import net.perfectdreams.pantufa.tables.*
 import net.perfectdreams.pantufa.utils.*
@@ -286,6 +288,17 @@ class LSXCommand : AbstractCommand("transferir", listOf("transfer", "lsx", "llsx
 										"\uD83D\uDCB8"
 									)
 								)
+
+								transaction(Databases.sparklyPower) {
+									net.perfectdreams.pantufa.dao.Transaction.new {
+										this.type = TransactionType.LSX
+										this.payer = context.minecraftAccountInfo.uniqueId
+										this.currency = TransactionCurrency.MONEY
+										this.time = System.currentTimeMillis()
+										this.amount = quantity.toDouble()
+										this.extra = context.user.id
+									}
+								}
 							} else if (from == TransferOptions.PERFECTDREAMS_SURVIVAL && to == TransferOptions.LORITTA) {
 								val lorittaQuantity = quantity / loriToSparklyExchangeRate
 
@@ -318,6 +331,17 @@ class LSXCommand : AbstractCommand("transferir", listOf("transfer", "lsx", "llsx
 										"\uD83D\uDCB8"
 									)
 								)
+
+								transaction(Databases.sparklyPower) {
+									net.perfectdreams.pantufa.dao.Transaction.new {
+										this.type = TransactionType.LSX
+										this.receiver = context.minecraftAccountInfo.uniqueId
+										this.currency = TransactionCurrency.MONEY
+										this.time = System.currentTimeMillis()
+										this.amount = quantity.toDouble()
+										this.extra = context.user.id
+									}
+								}
 							}
 							return@withLock
 						}

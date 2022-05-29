@@ -29,7 +29,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.2")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-hocon:1.3.2")
 
-    implementation("net.perfectdreams.discordinteraktions:gateway-kord:0.0.13-SNAPSHOT")
+    implementation("net.perfectdreams.discordinteraktions:gateway-kord:0.0.14-SNAPSHOT")
     implementation("com.github.kevinsawicki:http-request:6.0")
 
     // Sequins
