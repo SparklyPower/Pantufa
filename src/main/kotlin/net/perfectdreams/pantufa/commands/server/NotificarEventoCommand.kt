@@ -20,7 +20,7 @@ object NotificarEventoCommand {
 			"labirinto" to 539471142772146176L,
 			"corrida" to 477979984275701760L,
 			"fight" to 798697267312853002L,
-			"build" to 798697126573506571L,
+			"especial" to 798697126573506571L,
 			"mcmmo2x" to 798696876052185119L
 	)
 
