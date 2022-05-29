@@ -10,7 +10,6 @@ import net.perfectdreams.pantufa.interactions.components.utils.MessagePanelType
 import net.perfectdreams.pantufa.interactions.components.utils.buildCommandsLogMessage
 import net.perfectdreams.pantufa.interactions.components.utils.invalidPageMessage
 import net.perfectdreams.pantufa.interactions.components.utils.saveAndCreateData
-import net.perfectdreams.pantufa.utils.Constants
 import org.jetbrains.exposed.sql.transactions.transaction
 
 class CommandsLogExecutor(pantufa: PantufaBot) : PantufaInteractionCommand(pantufa) {
@@ -26,14 +25,14 @@ class CommandsLogExecutor(pantufa: PantufaBot) : PantufaInteractionCommand(pantu
         override val options = Options
     }
 
-    private val guild = Constants.SPARKLYPOWER_GUILD!!
-    private val staffRole = guild.getRoleById(332650495522897920L)
+    private val staffRoleId = Snowflake(332650495522897920)
 
     override suspend fun executePantufa(context: PantufaCommandContext, args: SlashCommandArguments) {
-        if (staffRole !in guild.getMemberById(context.senderId.toString())!!.roles) {
+        if (staffRoleId !in context.interactionContext.member.roles) {
             context.sendEphemeralMessage {
                 content = "<:pantufa_analise:853048446813470762> **|** Você não pode usar esse comando."
             }
+            return
         }
 
         val fetchedCommands = Command.fetchCommands(
