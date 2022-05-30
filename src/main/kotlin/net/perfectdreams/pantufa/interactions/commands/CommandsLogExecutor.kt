@@ -10,6 +10,7 @@ import net.perfectdreams.pantufa.interactions.components.utils.MessagePanelType
 import net.perfectdreams.pantufa.interactions.components.utils.buildCommandsLogMessage
 import net.perfectdreams.pantufa.interactions.components.utils.invalidPageMessage
 import net.perfectdreams.pantufa.interactions.components.utils.saveAndCreateData
+import net.perfectdreams.pantufa.network.Databases
 import org.jetbrains.exposed.sql.transactions.transaction
 
 class CommandsLogExecutor(pantufa: PantufaBot) : PantufaInteractionCommand(pantufa) {
@@ -42,7 +43,7 @@ class CommandsLogExecutor(pantufa: PantufaBot) : PantufaInteractionCommand(pantu
             args[options.args]
         )
 
-        val size = transaction { fetchedCommands.count() }
+        val size = transaction(Databases.sparklyPower) { fetchedCommands.count() }
 
         val page = args[options.page]?.let {
             if (it < 1 || it * MessagePanelType.COMMANDS_LOG.entriesPerPage > size) return context.reply(invalidPageMessage)
