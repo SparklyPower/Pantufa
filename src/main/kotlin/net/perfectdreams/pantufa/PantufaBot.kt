@@ -10,7 +10,6 @@ import io.ktor.client.*
 import kotlinx.coroutines.*
 import mu.KotlinLogging
 import net.dv8tion.jda.api.*
-import net.dv8tion.jda.api.entities.Activity
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.requests.GatewayIntent
 import net.perfectdreams.discordinteraktions.platforms.kord.commands.KordCommandRegistry
@@ -28,7 +27,6 @@ import net.perfectdreams.pantufa.tables.NotifyPlayersOnline
 import net.perfectdreams.pantufa.tables.Users
 import net.perfectdreams.pantufa.utils.CachedGraphManager
 import net.perfectdreams.pantufa.utils.Constants
-import net.perfectdreams.pantufa.utils.Server
 import net.perfectdreams.pantufa.utils.config.PantufaConfig
 import net.perfectdreams.pantufa.utils.discord.DiscordCommandMap
 import net.perfectdreams.pantufa.utils.parallax.ParallaxEmbed
@@ -36,10 +34,8 @@ import net.perfectdreams.pantufa.utils.socket.SocketHandler
 import net.perfectdreams.pantufa.utils.socket.SocketServer
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.Transaction
-import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.awt.image.BufferedImage
-import java.time.Instant
 import java.util.*
 import java.util.concurrent.Executors
 import kotlin.concurrent.thread

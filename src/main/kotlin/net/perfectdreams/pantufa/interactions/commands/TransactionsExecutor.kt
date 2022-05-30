@@ -1,12 +1,10 @@
-package net.perfectdreams.pantufa.interactions.commands.administration
+package net.perfectdreams.pantufa.interactions.commands
 
 import net.perfectdreams.discordinteraktions.common.commands.SlashCommandExecutorDeclaration
 import net.perfectdreams.discordinteraktions.common.commands.options.ApplicationCommandOptions
 import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
 import net.perfectdreams.pantufa.PantufaBot
 import net.perfectdreams.pantufa.dao.Transaction
-import net.perfectdreams.pantufa.interactions.commands.PantufaCommandContext
-import net.perfectdreams.pantufa.interactions.commands.PantufaInteractionCommand
 import net.perfectdreams.pantufa.interactions.components.utils.*
 import net.perfectdreams.pantufa.utils.extensions.uuid
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -29,9 +27,9 @@ class TransactionsExecutor(pantufa: PantufaBot) : PantufaInteractionCommand(pant
     override suspend fun executePantufa(context: PantufaCommandContext, args: SlashCommandArguments) {
         val selfId = pantufa.retrieveDiscordAccountFromUser(context.sender.id.value.toLong())?.minecraftId
 
-        val payer = args[options.payer]?.uuid()
-        val receiver = args[options.receiver]?.uuid()
-        val currency = args[options.currency]?.let(TransactionCurrency::valueOf)
+        val payer = args[Options.payer]?.uuid()
+        val receiver = args[Options.receiver]?.uuid()
+        val currency = args[Options.currency]?.let(TransactionCurrency::valueOf)
 
         /**
          * If the user has a connected Minecraft Account and does not specify either payer or receiver, we will
@@ -45,14 +43,14 @@ class TransactionsExecutor(pantufa: PantufaBot) : PantufaInteractionCommand(pant
 
         val size = transaction { fetchedTransactions.count() }
 
-        val page = args[options.page]?.let {
+        val page = args[Options.page]?.let {
             if (it < 1 || it * MessagePanelType.TRANSACTIONS.entriesPerPage > size) return context.reply(invalidPageMessage)
             it - 1
         } ?: 0
 
         val arguments = mutableListOf<String>().apply {
-            payer?.let { add("<:lori_card:956406538887634985> **Remetente**: `$it`") }
-            receiver?.let { add("<:pantufa_coffee:853048446981111828> **Destinatário**: `$it`") }
+            args[Options.payer]?.let { add("<:lori_card:956406538887634985> **Remetente**: `$it`") }
+            args[Options.receiver]?.let { add("<:pantufa_coffee:853048446981111828> **Destinatário**: `$it`") }
             currency?.let { add(":coin: **Moeda**: `${currency.displayName.replaceFirstChar { it.uppercase() }}`") }
         }
 

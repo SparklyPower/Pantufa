@@ -85,15 +85,15 @@ enum class TransactionType(
         // If there is a receiver, then the player has sent money from Loritta to SparklyPower
         it.receiver("Você")?.run {
             val sonhos = it.currency.format(it.amount, "sonhos")
-            val sonecas = it.currency.format(it.amount / 2)
+            val sonecas = it.currency.format(it.amount * 2)
 
             ":euro: $this transferiu $sonhos da Loritta [ID da conta: `${it.extra}`] para o SparklyPower ($sonecas)"
         } ?:
         // If there is a payer, then the player has sent money from SparklyPower to Loritta
         it.payer!!.run {
-            val sonhos = it.currency.format(it.amount * 2, "sonhos")
+            val sonhos = it.currency.format(it.amount / 2, "sonhos")
 
-            ":euro: $this transferiu ${it.money} do SparklyPower para a Loritta ($sonhos) `[ID da conta: `${it.extra}`]`"
+            ":euro: $this transferiu ${it.money} do SparklyPower para a Loritta ($sonhos) [ID da conta: `${it.extra}`]"
         }
     }),
 
