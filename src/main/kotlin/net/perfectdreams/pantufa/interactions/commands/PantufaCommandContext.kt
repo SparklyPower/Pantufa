@@ -2,6 +2,7 @@ package net.perfectdreams.pantufa.interactions.commands
 
 import net.perfectdreams.discordinteraktions.common.builder.message.create.InteractionOrFollowupMessageCreateBuilder
 import net.perfectdreams.discordinteraktions.common.commands.ApplicationCommandContext
+import net.perfectdreams.discordinteraktions.common.commands.GuildApplicationCommandContext
 import net.perfectdreams.pantufa.PantufaBot
 import net.perfectdreams.pantufa.api.commands.SilentCommandException
 import net.perfectdreams.pantufa.commands.AbstractCommand
@@ -12,7 +13,7 @@ import net.perfectdreams.pantufa.utils.Constants
 import net.perfectdreams.pantufa.utils.PantufaReply
 import org.jetbrains.exposed.sql.transactions.transaction
 
-class PantufaCommandContext(val pantufa: PantufaBot, val interactionContext: ApplicationCommandContext) {
+class PantufaCommandContext(val pantufa: PantufaBot, val interactionContext: GuildApplicationCommandContext) {
     val sender = interactionContext.sender
     val senderId = sender.id.value
 

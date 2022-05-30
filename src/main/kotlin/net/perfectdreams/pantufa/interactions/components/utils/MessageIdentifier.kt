@@ -58,7 +58,7 @@ data class BaseMessagePanelData(
 
     val lastPage get() = floor(size.toDouble() / type.entriesPerPage).toLong()
 
-    fun <T> fetchPage(page: Long) = transaction {
+    fun <T> fetchPage(page: Long) = transaction(Databases.sparklyPower) {
         (data as SizedIterable<T>).limit(type.entriesPerPage, page * type.entriesPerPage).toList()
     }
 }
