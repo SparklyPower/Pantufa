@@ -8,6 +8,7 @@ import net.perfectdreams.pantufa.dao.Transaction
 import net.perfectdreams.pantufa.interactions.commands.PantufaCommandContext
 import net.perfectdreams.pantufa.interactions.commands.PantufaInteractionCommand
 import net.perfectdreams.pantufa.interactions.components.utils.*
+import net.perfectdreams.pantufa.network.Databases
 import net.perfectdreams.pantufa.utils.extensions.uuid
 import org.jetbrains.exposed.sql.transactions.transaction
 
@@ -43,7 +44,7 @@ class TransactionsExecutor(pantufa: PantufaBot) : PantufaInteractionCommand(pant
             else
                 Transaction.fetchTransactions(payer, receiver, currency)
 
-        val size = transaction { fetchedTransactions.count() }
+        val size = transaction(Databases.sparklyPower) { fetchedTransactions.count() }
 
         val page = args[options.page]?.let {
             if (it < 1 || it * MessagePanelType.TRANSACTIONS.entriesPerPage > size) return context.reply(invalidPageMessage)
