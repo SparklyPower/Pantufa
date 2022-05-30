@@ -292,7 +292,7 @@ class LSXCommand : AbstractCommand("transferir", listOf("transfer", "lsx", "llsx
 								transaction(Databases.sparklyPower) {
 									net.perfectdreams.pantufa.dao.Transaction.new {
 										this.type = TransactionType.LSX
-										this.payer = context.minecraftAccountInfo.uniqueId
+										this.receiver = context.minecraftAccountInfo.uniqueId
 										this.currency = TransactionCurrency.MONEY
 										this.time = System.currentTimeMillis()
 										this.amount = quantity.toDouble()
@@ -335,7 +335,7 @@ class LSXCommand : AbstractCommand("transferir", listOf("transfer", "lsx", "llsx
 								transaction(Databases.sparklyPower) {
 									net.perfectdreams.pantufa.dao.Transaction.new {
 										this.type = TransactionType.LSX
-										this.receiver = context.minecraftAccountInfo.uniqueId
+										this.payer = context.minecraftAccountInfo.uniqueId
 										this.currency = TransactionCurrency.MONEY
 										this.time = System.currentTimeMillis()
 										this.amount = quantity.toDouble()
