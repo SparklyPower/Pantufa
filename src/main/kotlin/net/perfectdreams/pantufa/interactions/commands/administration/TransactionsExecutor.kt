@@ -52,8 +52,8 @@ class TransactionsExecutor(pantufa: PantufaBot) : PantufaInteractionCommand(pant
         } ?: 0
 
         val arguments = mutableListOf<String>().apply {
-            payer?.let { add("<:lori_card:956406538887634985> **Remetente**: `$it`") }
-            receiver?.let { add("<:pantufa_coffee:853048446981111828> **Destinatário**: `$it`") }
+            args[options.payer]?.let { add("<:lori_card:956406538887634985> **Remetente**: `$it`") }
+            args[options.receiver]?.let { add("<:pantufa_coffee:853048446981111828> **Destinatário**: `$it`") }
             currency?.let { add(":coin: **Moeda**: `${currency.displayName.replaceFirstChar { it.uppercase() }}`") }
         }
 
