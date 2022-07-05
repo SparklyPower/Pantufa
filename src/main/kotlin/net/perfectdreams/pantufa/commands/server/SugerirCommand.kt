@@ -1,22 +1,11 @@
 package net.perfectdreams.pantufa.commands.server
 
-import net.dv8tion.jda.api.entities.Emoji
-import net.dv8tion.jda.api.entities.Emote
+import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.perfectdreams.pantufa.PantufaBot
 import net.perfectdreams.pantufa.api.commands.command
-import net.perfectdreams.pantufa.commands.AbstractCommand
-import net.perfectdreams.pantufa.commands.CommandContext
-import net.perfectdreams.pantufa.dao.CashInfo
-import net.perfectdreams.pantufa.network.Databases
-import net.perfectdreams.pantufa.tables.LuckPermsUserPermissions
 import net.perfectdreams.pantufa.utils.Constants
-import net.perfectdreams.pantufa.utils.DateUtils
 import net.perfectdreams.pantufa.utils.PantufaReply
 import net.perfectdreams.pantufa.utils.extensions.await
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
-import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.transactions.transaction
-import java.awt.Color
 
 object SugerirCommand {
 	fun create(pantufa: PantufaBot) = command(pantufa, "SugerirCommand", listOf("sugerir")) {
@@ -35,9 +24,9 @@ object SugerirCommand {
 					.allowedMentions(listOf())
 					.await()
 
-				message.addReaction("pantufa_thumbsup:853048446826840104")
+				message.addReaction(Emoji.fromCustom("pantufa_thumbsup", 53048446826840104, false))
 					.await()
-				message.addReaction("pantufa_analise:853048446813470762")
+				message.addReaction(Emoji.fromCustom("pantufa_analise", 853048446813470762, false))
 					.await()
 
 				reply(

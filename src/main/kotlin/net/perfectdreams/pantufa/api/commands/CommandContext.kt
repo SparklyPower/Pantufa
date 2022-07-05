@@ -82,7 +82,7 @@ class CommandContext(
 			val link = this.args[argument] // Ok, será que isto é uma URL?
 
 			// Vamos verificar por menções, uma menção do Discord é + ou - assim: <@123170274651668480>
-			for (user in this.message.mentionedUsers) {
+			for (user in this.message.mentions.users) {
 				if (user.asMention == link.replace("!", "")) { // O replace é necessário já que usuários com nick tem ! no mention (?)
 					// Diferente de null? Então vamos usar o avatar do usuário!
 					return user

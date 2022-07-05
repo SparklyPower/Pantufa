@@ -22,14 +22,14 @@ dependencies {
     runtimeOnly("ch.qos.logback:logback-classic:1.3.0-alpha14")
     implementation("io.github.microutils:kotlin-logging:2.1.21")
 
-    implementation("net.dv8tion:JDA:5.0.0-alpha.10")
+    implementation("net.dv8tion:JDA:5.0.0-alpha.13")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.1")
     api("org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:1.6.1")
     implementation("com.github.ben-manes.caffeine:caffeine:3.0.6")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.2")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-hocon:1.3.2")
 
-    implementation("net.perfectdreams.discordinteraktions:gateway-kord:0.0.14-SNAPSHOT")
+    implementation("net.perfectdreams.discordinteraktions:gateway-kord:0.0.15-SNAPSHOT")
     implementation("com.github.kevinsawicki:http-request:6.0")
 
     // Sequins

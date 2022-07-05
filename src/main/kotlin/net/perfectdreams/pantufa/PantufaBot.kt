@@ -19,6 +19,9 @@ import net.perfectdreams.pantufa.commands.vanilla.utils.PingCommand
 import net.perfectdreams.pantufa.dao.DiscordAccount
 import net.perfectdreams.pantufa.interactions.commands.*
 import net.perfectdreams.pantufa.interactions.commands.administration.*
+import net.perfectdreams.pantufa.interactions.commands.declarations.SayCommand
+import net.perfectdreams.pantufa.interactions.commands.say.SaySendExecutor
+import net.perfectdreams.pantufa.interactions.commands.say.SaySendModalSubmitExecutor
 import net.perfectdreams.pantufa.listeners.DiscordListener
 import net.perfectdreams.pantufa.listeners.InteractionListener
 import net.perfectdreams.pantufa.network.Databases
@@ -169,6 +172,16 @@ class PantufaBot(val config: PantufaConfig) {
 			WarnExecutor(this)
 		)
 
+		commandManager.register(
+			SayCommand,
+			SaySendExecutor(this)
+		)
+
+		commandManager.register(
+			SaySendModalSubmitExecutor,
+			SaySendModalSubmitExecutor(this)
+		)
+		
 		/* commandManager.register(
 			net.perfectdreams.pantufa.interactions.commands.declarations.ChangePassCommand,
 			ChangePassExecutor(this),
