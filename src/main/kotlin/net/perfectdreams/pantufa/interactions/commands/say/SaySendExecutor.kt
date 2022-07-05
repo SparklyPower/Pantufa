@@ -31,7 +31,8 @@ class SaySendExecutor(pantufa: PantufaBot) : PantufaInteractionCommand(pantufa) 
 
         context.interactionContext.sendModal(
             SaySendModalSubmitExecutor,
-            args[Options.channel].id.toString()
+            args[Options.channel].id.toString(),
+            "Mensagem"
         ) {
             actionRow {
                 textInput(SaySendModalSubmitExecutor.options.text, TextInputStyle.Paragraph, "Texto da Mensagem") {
