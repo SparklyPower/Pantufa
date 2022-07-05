@@ -17,6 +17,7 @@ import net.perfectdreams.discordinteraktions.common.requests.managers.InitialHtt
 import net.perfectdreams.discordinteraktions.common.utils.Observable
 import net.perfectdreams.discordinteraktions.platforms.kord.utils.KordCommandChecker
 import net.perfectdreams.discordinteraktions.platforms.kord.utils.KordComponentChecker
+import net.perfectdreams.discordinteraktions.platforms.kord.utils.KordModalSubmitChecker
 
 @OptIn(KordPreview::class)
 class InteractionListener(
@@ -35,6 +36,7 @@ class InteractionListener(
 
     private val kordCommandChecker = KordCommandChecker(commandManager)
     private val kordComponentChecker = KordComponentChecker(commandManager)
+    private val kordModalSubmitChecker = KordModalSubmitChecker(commandManager)
 
     override fun onRawGateway(event: RawGatewayEvent) {
         // Workaround for Discord InteraKTions!
@@ -67,6 +69,11 @@ class InteractionListener(
             )
         else if (request.type == InteractionType.Component) {
             kordComponentChecker.checkAndExecute(
+                request,
+                requestManager
+            )
+        } else if (request.type == InteractionType.ModalSubmit) {
+            kordModalSubmitChecker.checkAndExecute(
                 request,
                 requestManager
             )

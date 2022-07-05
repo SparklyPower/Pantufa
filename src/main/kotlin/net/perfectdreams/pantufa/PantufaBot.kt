@@ -181,7 +181,7 @@ class PantufaBot(val config: PantufaConfig) {
 			SaySendModalSubmitExecutor,
 			SaySendModalSubmitExecutor(this)
 		)
-		
+
 		/* commandManager.register(
 			net.perfectdreams.pantufa.interactions.commands.declarations.ChangePassCommand,
 			ChangePassExecutor(this),
