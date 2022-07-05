@@ -20,6 +20,9 @@ import net.perfectdreams.pantufa.dao.DiscordAccount
 import net.perfectdreams.pantufa.interactions.commands.*
 import net.perfectdreams.pantufa.interactions.commands.administration.*
 import net.perfectdreams.pantufa.interactions.commands.declarations.SayCommand
+import net.perfectdreams.pantufa.interactions.commands.say.SayEditMessageCommand
+import net.perfectdreams.pantufa.interactions.commands.say.SayEditMessageExecutor
+import net.perfectdreams.pantufa.interactions.commands.say.SayEditModalSubmitExecutor
 import net.perfectdreams.pantufa.interactions.commands.say.SaySendExecutor
 import net.perfectdreams.pantufa.interactions.commands.say.SaySendModalSubmitExecutor
 import net.perfectdreams.pantufa.listeners.DiscordListener
@@ -178,8 +181,18 @@ class PantufaBot(val config: PantufaConfig) {
 		)
 
 		commandManager.register(
+			SayEditMessageCommand,
+			SayEditMessageExecutor(this)
+		)
+
+		commandManager.register(
 			SaySendModalSubmitExecutor,
 			SaySendModalSubmitExecutor(this)
+		)
+
+		commandManager.register(
+			SayEditModalSubmitExecutor,
+			SayEditModalSubmitExecutor(this)
 		)
 
 		/* commandManager.register(
