@@ -28,7 +28,7 @@ class ChangePassExecutor(pantufa: PantufaBot) : PantufaInteractionCommand(
         val account = context.retrieveConnectedMinecraftAccountOrFail()
 
         val password = args[options.password]
-        val repeatPassword = args[options.password]
+        val repeatPassword = args[options.repeatPassword]
 
         if (6 > password.length) {
             context.sendEphemeralMessage {
@@ -41,7 +41,7 @@ class ChangePassExecutor(pantufa: PantufaBot) : PantufaInteractionCommand(
             return
         }
 
-        if (6 > password.length) {
+        if (6 > repeatPassword.length) {
             context.sendEphemeralMessage {
                 styled(
                     PantufaReply(

@@ -195,10 +195,10 @@ class PantufaBot(val config: PantufaConfig) {
 			SayEditModalSubmitExecutor(this)
 		)
 
-		/* commandManager.register(
+		commandManager.register(
 			net.perfectdreams.pantufa.interactions.commands.declarations.ChangePassCommand,
 			ChangePassExecutor(this),
-		) */
+		)
 
 		logger.info { "Starting JDA..." }
 		jda = JDABuilder.create(EnumSet.allOf(GatewayIntent::class.java))
