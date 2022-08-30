@@ -3,7 +3,7 @@ package net.perfectdreams.pantufa.commands.server
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import net.perfectdreams.loritta.cinnamon.common.utils.SparklyPowerLSXTransactionEntryAction
+import net.perfectdreams.loritta.cinnamon.utils.SparklyPowerLSXTransactionEntryAction
 import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.SparklyPowerLSXSonhosTransactionsLog
 import net.perfectdreams.pantufa.commands.AbstractCommand
