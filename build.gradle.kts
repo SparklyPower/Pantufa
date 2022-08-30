@@ -29,7 +29,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.2")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-hocon:1.3.2")
 
-    implementation("net.perfectdreams.discordinteraktions:gateway-kord:0.0.15-SNAPSHOT")
+    implementation("net.perfectdreams.discordinteraktions:gateway-kord:0.0.16-SNAPSHOT")
     implementation("com.github.kevinsawicki:http-request:6.0")
 
     // Sequins
@@ -47,7 +47,7 @@ dependencies {
     implementation("io.ktor:ktor-client-cio:2.0.0")
 
     // Pudding
-    implementation("net.perfectdreams.loritta.cinnamon.pudding:client:0.0.2-20220415.135720-330")
+    implementation("net.perfectdreams.loritta.cinnamon.pudding:client:0.0.2-20220829.182502-714")
 
     // Used for unregister
     implementation("org.mindrot:jbcrypt:0.4")
