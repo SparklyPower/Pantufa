@@ -1,7 +1,10 @@
 package net.perfectdreams.pantufa.interactions.commands
 
+import dev.kord.common.DiscordTimestampStyle
+import dev.kord.common.toMessageFormat
 import kotlinx.coroutines.sync.withLock
 import kotlinx.datetime.Instant
+import kotlinx.datetime.toKotlinInstant
 import net.perfectdreams.discordinteraktions.common.commands.options.ApplicationCommandOptions
 import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
 import net.perfectdreams.pantufa.PantufaBot
@@ -100,27 +103,16 @@ class LSXExecutor(pantufa: PantufaBot) : PantufaInteractionCommand(
             return
         }
 
-        var survivalTrackedOnlineHours: Duration? = null
+        val survivalOnlineTrackedHours = pantufa.getPlayerTimeOnlineInTheLastXDays(accountInfo.uniqueId, 30)
 
-        val timestamp = DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(
-            OffsetDateTime.now(ZoneId.of("America/Sao_Paulo"))
-                .minusMonths(1L)
-        )
-
-        transaction(Databases.sparklyPower) {
-            exec("select extract(epoch FROM SUM(logged_out - logged_in)) from survival_trackedonlinehours where player = '${accountInfo.uniqueId}' and logged_out >= '$timestamp'") {
-                while (it.next()) {
-                    survivalTrackedOnlineHours = Duration.ofSeconds(it.getLong(1))
-                }
-            }
-        }
-
-        if (survivalTrackedOnlineHours == null || Duration.ofHours(24) >= survivalTrackedOnlineHours) {
+        if (Duration.ofHours(24) >= survivalOnlineTrackedHours.duration) {
             context.reply(
                 PantufaReply(
-                    "Você precisa ter mais de 24 horas online no SparklyPower Survival nos últimos 30 dias antes de poder transferir sonhos! Atualmente você tem ${(survivalTrackedOnlineHours?.get(
-                        ChronoUnit.SECONDS
-                    )?.div(3_600)) ?: 0} horas.",
+                    "Você precisa ter mais de 24 horas online no SparklyPower Survival nos últimos 30 dias (desde ${survivalOnlineTrackedHours.since.toInstant().toKotlinInstant().toMessageFormat(DiscordTimestampStyle.ShortDate)}) antes de poder transferir sonhos! Atualmente você tem ${
+                        (survivalOnlineTrackedHours.duration.get(
+                            ChronoUnit.SECONDS
+                        ).div(3_600))
+                    } horas.",
                     "\uD83D\uDCB5"
                 )
             )

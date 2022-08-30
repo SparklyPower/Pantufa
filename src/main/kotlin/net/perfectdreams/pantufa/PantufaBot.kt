@@ -40,8 +40,13 @@ import net.perfectdreams.pantufa.utils.socket.SocketHandler
 import net.perfectdreams.pantufa.utils.socket.SocketServer
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.Transaction
+import org.jetbrains.exposed.sql.statements.jdbc.JdbcConnectionImpl
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.awt.image.BufferedImage
+import java.time.Duration
+import java.time.OffsetDateTime
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 import java.util.*
 import java.util.concurrent.Executors
 import kotlin.concurrent.thread
@@ -305,10 +310,50 @@ class PantufaBot(val config: PantufaConfig) {
 		net.perfectdreams.pantufa.dao.User.find { Users.username eq username }.firstOrNull()
 	}
 
+	/**
+	 * Gets how much time [uniqueId] spent online in the last [dayOffset]
+	 */
+	fun getPlayerTimeOnlineInTheLastXDays(uniqueId: UUID, dayOffset: Long): PlayerTimeOnlineResult {
+		var survivalTrackedOnlineHours = Duration.ZERO
+
+		val timestamp = OffsetDateTime.now(ZoneId.of("America/Sao_Paulo"))
+			.minusDays(dayOffset)
+			.withHour(0)
+			.withMinute(0)
+			.withSecond(0)
+			.withNano(0)
+
+		transaction(Databases.sparklyPower) {
+			(this.connection as JdbcConnectionImpl)
+				.connection
+				.prepareStatement("select extract(epoch FROM SUM(logged_out - logged_in)) from survival_trackedonlinehours where player = ? and logged_out >= ?")
+				.apply {
+					this.setObject(1, uniqueId)
+					this.setObject(2, timestamp)
+				}
+				.executeQuery()
+				.also {
+					while (it.next()) {
+						survivalTrackedOnlineHours = Duration.ofSeconds(it.getLong(1))
+					}
+				}
+		}
+
+		return PlayerTimeOnlineResult(
+			survivalTrackedOnlineHours,
+			timestamp
+		)
+	}
+
 	fun launch(block: suspend CoroutineScope.() -> Unit): Job {
 		val job = GlobalScope.launch(coroutineDispatcher, block = block)
 		return job
 	}
+
+	data class PlayerTimeOnlineResult(
+		val duration: Duration,
+		val since: OffsetDateTime
+	)
 }
 
 val pantufa get() = PantufaBot.INSTANCE

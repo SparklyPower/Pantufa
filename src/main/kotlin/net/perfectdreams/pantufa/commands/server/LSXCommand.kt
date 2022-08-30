@@ -1,8 +1,11 @@
 package net.perfectdreams.pantufa.commands.server
 
+import dev.kord.common.DiscordTimestampStyle
+import dev.kord.common.toMessageFormat
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import kotlinx.datetime.toKotlinInstant
 import net.perfectdreams.loritta.cinnamon.utils.SparklyPowerLSXTransactionEntryAction
 import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.SparklyPowerLSXSonhosTransactionsLog
@@ -13,17 +16,14 @@ import net.perfectdreams.pantufa.dao.Profile
 import net.perfectdreams.pantufa.interactions.components.utils.TransactionCurrency
 import net.perfectdreams.pantufa.interactions.components.utils.TransactionType
 import net.perfectdreams.pantufa.network.Databases
+import net.perfectdreams.pantufa.pantufa
 import net.perfectdreams.pantufa.tables.*
 import net.perfectdreams.pantufa.utils.*
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.time.Duration
 import java.time.Instant
-import java.time.OffsetDateTime
-import java.time.ZoneId
-import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
-import java.time.temporal.TemporalUnit
 import java.util.*
 
 class LSXCommand : AbstractCommand("transferir", listOf("transfer", "lsx", "llsx", "lsxs", "llsxs"), requiresMinecraftAccount = true) {
@@ -169,27 +169,14 @@ class LSXCommand : AbstractCommand("transferir", listOf("transfer", "lsx", "llsx
 			return
 		}
 
-		var survivalTrackedOnlineHours: Duration? = null
+		val survivalOnlineTrackedHours = pantufa.getPlayerTimeOnlineInTheLastXDays(context.minecraftAccountInfo!!.uniqueId, 30)
 
-		val timestamp = DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(
-			OffsetDateTime.now(ZoneId.of("America/Sao_Paulo"))
-				.minusMonths(1L)
-		)
-
-		transaction(Databases.sparklyPower) {
-			exec("select extract(epoch FROM SUM(logged_out - logged_in)) from survival_trackedonlinehours where player = '${context.minecraftAccountInfo!!.uniqueId}' and logged_out >= '$timestamp'") {
-				while (it.next()) {
-					survivalTrackedOnlineHours = Duration.ofSeconds(it.getLong(1))
-				}
-			}
-		}
-
-		if (survivalTrackedOnlineHours == null || Duration.ofHours(24) >= survivalTrackedOnlineHours!!) {
+		if (Duration.ofHours(24) >= survivalOnlineTrackedHours.duration) {
 			context.sendMessage(
 				PantufaReply(
-					"Você precisa ter mais de 24 horas online no SparklyPower Survival nos últimos 30 dias antes de poder transferir sonhos! Atualmente você tem ${(survivalTrackedOnlineHours?.get(
+					"Você precisa ter mais de 24 horas online no SparklyPower Survival nos últimos 30 dias (desde ${survivalOnlineTrackedHours.since.toInstant().toKotlinInstant().toMessageFormat(DiscordTimestampStyle.ShortDate)}) antes de poder transferir sonhos! Atualmente você tem ${(survivalOnlineTrackedHours.duration.get(
 						ChronoUnit.SECONDS
-					)?.div(3_600)) ?: 0} horas.",
+					).div(3_600))} horas.",
 					"\uD83D\uDCB5"
 				)
 			)
