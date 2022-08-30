@@ -20,7 +20,7 @@ object MinecraftUserDisplayUtils {
 
         val replies = mutableListOf(
             PantufaReply(
-                "**Informações da conta de <@${discordAccount?.id}>**"
+                "**Informações da conta de <@${discordAccount?.discordId}>**"
             ),
             PantufaReply(
                 "**Nome:** `${userInfo?.username}`",
