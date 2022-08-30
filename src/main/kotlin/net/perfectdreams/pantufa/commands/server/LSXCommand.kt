@@ -19,6 +19,8 @@ import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.time.Duration
 import java.time.Instant
+import java.time.OffsetDateTime
+import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 import java.time.temporal.TemporalUnit
@@ -169,9 +171,9 @@ class LSXCommand : AbstractCommand("transferir", listOf("transfer", "lsx", "llsx
 
 		var survivalTrackedOnlineHours: Duration? = null
 
-		val timestamp = DateTimeFormatter.ISO_INSTANT.format(
-			Instant.now()
-				.minusSeconds(86400 * 30)
+		val timestamp = DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(
+			OffsetDateTime.now(ZoneId.of("America/Sao_Paulo"))
+				.minusMonths(1L)
 		)
 
 		transaction(Databases.sparklyPower) {

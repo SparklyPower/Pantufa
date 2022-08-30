@@ -8,6 +8,8 @@ import net.perfectdreams.pantufa.network.Databases
 import net.perfectdreams.pantufa.utils.PantufaReply
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.time.Duration
+import java.time.OffsetDateTime
+import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
 class MinecraftUserPlayerNameExecutor(pantufa: PantufaBot) : PantufaInteractionCommand(
@@ -37,9 +39,9 @@ class MinecraftUserPlayerNameExecutor(pantufa: PantufaBot) : PantufaInteractionC
         val userInfo = pantufa.getDiscordAccountFromUniqueId(minecraftUser.id.value)
 
         val minecraftId = userInfo?.minecraftId
-        val timestamp = DateTimeFormatter.ISO_INSTANT.format(
-            java.time.Instant.now()
-                .minusSeconds(86400 * 30)
+        val timestamp = DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(
+            OffsetDateTime.now(ZoneId.of("America/Sao_Paulo"))
+                .minusMonths(1L)
         )
 
         val survivalTrackedOnlineHoursDuration = if (minecraftId != null) {
@@ -82,7 +84,7 @@ class MinecraftUserPlayerNameExecutor(pantufa: PantufaBot) : PantufaInteractionC
                 mentionUser = false
             ),
             PantufaReply(
-                "**Tempo Online no SparklyPower Survival:** $survivalTrackedOnlineHours",
+                "**Tempo Online no SparklyPower Survival nos Últimos 30 Dias:** $survivalTrackedOnlineHours",
                 mentionUser = false
             )
         )
