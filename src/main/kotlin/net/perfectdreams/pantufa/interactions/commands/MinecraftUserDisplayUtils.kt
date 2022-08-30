@@ -11,27 +11,27 @@ object MinecraftUserDisplayUtils {
     suspend fun replyWithAccountInformation(
         pantufa: PantufaBot,
         context: PantufaCommandContext,
-        minecraftUser: DiscordAccount?,
+        discordAccount: DiscordAccount?,
         userInfo: net.perfectdreams.pantufa.dao.User?,
     ) {
-        val minecraftId = minecraftUser?.minecraftId
+        val minecraftId = discordAccount?.minecraftId
 
         val survivalOnlineTrackedHours = minecraftId?.let { pantufa.getPlayerTimeOnlineInTheLastXDays(it, 30) }
 
         val replies = mutableListOf(
             PantufaReply(
-                "**Informações da conta de <@${userInfo?.id?.value}>**"
+                "**Informações da conta de <@${discordAccount?.id}>**"
             ),
             PantufaReply(
                 "**Nome:** `${userInfo?.username}`",
                 mentionUser = false
             ),
             PantufaReply(
-                "**UUID:** `${minecraftUser?.minecraftId}`",
+                "**UUID:** `${userInfo?.id}`",
                 mentionUser = false
             ),
             PantufaReply(
-                "**A conta já foi conectada?** ${minecraftUser?.isConnected}",
+                "**A conta já foi conectada?** ${discordAccount?.isConnected}",
                 mentionUser = false
             ),
         )
