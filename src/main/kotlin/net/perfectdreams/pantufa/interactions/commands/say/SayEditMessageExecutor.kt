@@ -5,18 +5,15 @@ import dev.kord.common.entity.TextInputStyle
 import net.perfectdreams.discordinteraktions.common.commands.ApplicationCommandContext
 import net.perfectdreams.discordinteraktions.common.commands.GuildApplicationCommandContext
 import net.perfectdreams.discordinteraktions.common.commands.MessageCommandExecutor
-import net.perfectdreams.discordinteraktions.common.commands.MessageCommandExecutorDeclaration
 import net.perfectdreams.discordinteraktions.common.entities.messages.Message
 import net.perfectdreams.discordinteraktions.common.modals.components.textInput
 import net.perfectdreams.pantufa.PantufaBot
 
 class SayEditMessageExecutor(val pantufa: PantufaBot) : MessageCommandExecutor() {
-    companion object : MessageCommandExecutorDeclaration()
-
     private val staffRoleId = Snowflake(332650495522897920)
 
     override suspend fun execute(context: ApplicationCommandContext, targetMessage: Message) {
-        if (context !is GuildApplicationCommandContext || staffRoleId !in context.member.roles) {
+        if (context !is GuildApplicationCommandContext || staffRoleId !in context.member.roleIds) {
             context.sendEphemeralMessage {
                 content = "<:pantufa_analise:853048446813470762> **|** Você não pode usar esse comando."
             }
@@ -35,10 +32,9 @@ class SayEditMessageExecutor(val pantufa: PantufaBot) : MessageCommandExecutor()
             "Mensagem"
         ) {
             actionRow {
-                textInput(SaySendModalSubmitExecutor.options.text, TextInputStyle.Paragraph, "Texto da Mensagem") {
+                textInput(SaySendModalSubmitExecutor.options.text, "Texto da Mensagem") {
                     this.placeholder = "Pantufa é muit fof"
                     this.value = targetMessage.content
-                    this.required = true
                 }
             }
         }

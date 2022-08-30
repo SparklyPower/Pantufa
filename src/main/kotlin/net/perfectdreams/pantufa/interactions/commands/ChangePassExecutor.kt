@@ -1,6 +1,5 @@
 package net.perfectdreams.pantufa.interactions.commands
 
-import net.perfectdreams.discordinteraktions.common.commands.SlashCommandExecutorDeclaration
 import net.perfectdreams.discordinteraktions.common.commands.options.ApplicationCommandOptions
 import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
 import net.perfectdreams.pantufa.PantufaBot
@@ -12,17 +11,12 @@ import org.mindrot.jbcrypt.BCrypt
 class ChangePassExecutor(pantufa: PantufaBot) : PantufaInteractionCommand(
     pantufa
 ) {
-    companion object : SlashCommandExecutorDeclaration(ChangePassExecutor::class) {
-        object Options : ApplicationCommandOptions() {
-            val password = string("password", "Escreva a sua nova senha")
-                .register()
-
-            val repeatPassword = string("repeat_password", "Escreva a sua nova senha novamente")
-                .register()
-        }
-
-        override val options = Options
+    inner class Options : ApplicationCommandOptions() {
+        val password = string("password", "Escreva a sua nova senha")
+        val repeatPassword = string("repeat_password", "Escreva a sua nova senha novamente")
     }
+
+    override val options = Options()
 
     override suspend fun executePantufa(context: PantufaCommandContext, args: SlashCommandArguments) {
         val account = context.retrieveConnectedMinecraftAccountOrFail()

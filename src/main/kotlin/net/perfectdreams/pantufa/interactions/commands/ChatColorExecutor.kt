@@ -1,6 +1,5 @@
 package net.perfectdreams.pantufa.interactions.commands
 
-import net.perfectdreams.discordinteraktions.common.commands.SlashCommandExecutorDeclaration
 import net.perfectdreams.discordinteraktions.common.commands.options.ApplicationCommandOptions
 import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
 import net.perfectdreams.pantufa.PantufaBot
@@ -9,20 +8,13 @@ import net.perfectdreams.pantufa.utils.PantufaReply
 import java.awt.Color
 
 class ChatColorExecutor(pantufa: PantufaBot) : PantufaInteractionCommand(pantufa) {
-    companion object : SlashCommandExecutorDeclaration(ChatColorExecutor::class) {
-        object Options : ApplicationCommandOptions() {
-            val red = integer("red", "Quantidade de cor vermelha (em formato (R, G, B), é o primeiro número)")
-                .register()
-
-            val green = integer("green", "Quantidade de cor verde (em formato (R, G, B), é o segundo número)")
-                .register()
-
-            val blue = integer("blue", "Quantidade de cor azul (em formato (R, G, B), é o terceiro número)")
-                .register()
-        }
-
-        override val options = Options
+    inner class Options : ApplicationCommandOptions() {
+        val red = integer("red", "Quantidade de cor vermelha (em formato (R, G, B), é o primeiro número)")
+        val green = integer("green", "Quantidade de cor verde (em formato (R, G, B), é o segundo número)")
+        val blue = integer("blue", "Quantidade de cor azul (em formato (R, G, B), é o terceiro número)")
     }
+
+    override val options = Options()
 
     override suspend fun executePantufa(context: PantufaCommandContext, args: SlashCommandArguments) {
         val r = args[options.red].toInt()

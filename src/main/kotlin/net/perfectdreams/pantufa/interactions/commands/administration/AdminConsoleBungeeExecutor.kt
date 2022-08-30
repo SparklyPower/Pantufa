@@ -4,11 +4,9 @@ import com.github.salomonbrys.kotson.array
 import com.github.salomonbrys.kotson.jsonObject
 import com.github.salomonbrys.kotson.string
 import mu.KotlinLogging
-import net.perfectdreams.discordinteraktions.common.commands.SlashCommandExecutorDeclaration
 import net.perfectdreams.discordinteraktions.common.commands.options.ApplicationCommandOptions
 import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
 import net.perfectdreams.pantufa.PantufaBot
-import net.perfectdreams.pantufa.interactions.commands.ChangePassExecutor
 import net.perfectdreams.pantufa.interactions.commands.PantufaCommandContext
 import net.perfectdreams.pantufa.interactions.commands.PantufaInteractionCommand
 import net.perfectdreams.pantufa.network.Databases
@@ -27,16 +25,15 @@ open class AdminConsoleBungeeExecutor(
 ) : PantufaInteractionCommand(
     pantufa,
 ) {
-    companion object : SlashCommandExecutorDeclaration(AdminConsoleBungeeExecutor::class) {
-        object Options : ApplicationCommandOptions() {
-            val args = string("args", "Argumentos do comando")
-                .register()
-        }
-
-        override val options = Options
-
+    companion object {
         private val logger = KotlinLogging.logger {}
     }
+
+    inner class Options : ApplicationCommandOptions() {
+        val args = string("args", "Argumentos do comando")
+    }
+
+    override val options = Options()
 
     override suspend fun executePantufa(context: PantufaCommandContext, args: SlashCommandArguments) {
         context.interactionContext.deferChannelMessage()
@@ -71,7 +68,7 @@ open class AdminConsoleBungeeExecutor(
             jsonObject(
                 "type" to "executeCommand",
                 "player" to minecraftAccountInfo.username,
-                "command" to "$commandToBeExecuted ${args[Options.args]}"
+                "command" to "$commandToBeExecuted ${args[options.args]}"
             )
         )
 

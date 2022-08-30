@@ -1,6 +1,5 @@
 package net.perfectdreams.pantufa.interactions.commands
 
-import net.perfectdreams.discordinteraktions.common.commands.SlashCommandExecutorDeclaration
 import net.perfectdreams.discordinteraktions.common.commands.options.ApplicationCommandOptions
 import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
 import net.perfectdreams.pantufa.PantufaBot
@@ -17,14 +16,11 @@ import org.jetbrains.exposed.sql.deleteWhere
 class RegistrarExecutor(pantufa: PantufaBot) : PantufaInteractionCommand(
     pantufa
 ) {
-    companion object : SlashCommandExecutorDeclaration(RegistrarExecutor::class) {
-        object Options : ApplicationCommandOptions() {
-            val username = string("username", "Seu nome no SparklyPower (ou seja, da sua conta do Minecraft)")
-                .register()
-        }
-
-        override val options = Options
+    inner class Options : ApplicationCommandOptions() {
+        val username = string("username", "Seu nome no SparklyPower (ou seja, da sua conta do Minecraft)")
     }
+
+    override val options = Options()
 
     override suspend fun executePantufa(context: PantufaCommandContext, args: SlashCommandArguments) {
         val arg0 = args[options.username]

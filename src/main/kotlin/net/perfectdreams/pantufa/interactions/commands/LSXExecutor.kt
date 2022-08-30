@@ -2,7 +2,6 @@ package net.perfectdreams.pantufa.interactions.commands
 
 import kotlinx.coroutines.sync.withLock
 import kotlinx.datetime.Instant
-import net.perfectdreams.discordinteraktions.common.commands.SlashCommandExecutorDeclaration
 import net.perfectdreams.discordinteraktions.common.commands.options.ApplicationCommandOptions
 import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
 import net.perfectdreams.pantufa.PantufaBot
@@ -37,24 +36,21 @@ import java.util.concurrent.TimeUnit
 class LSXExecutor(pantufa: PantufaBot) : PantufaInteractionCommand(
     pantufa
 ) {
-    companion object : SlashCommandExecutorDeclaration(LSXExecutor::class) {
-        override val options = Options
-
-        object Options : ApplicationCommandOptions() {
-            val source = optionalString("source", "Fonte dos Sonhos")
-                .choice("survival", "SparklyPower Survival")
-                .choice("loritta", "Loritta :3")
-                .register()
-
-            val destination = optionalString("destination", "Destino dos Sonhos")
-                .choice("survival", "SparklyPower Survival")
-                .choice("loritta", "Loritta :3")
-                .register()
-
-            val quantity = optionalString("quantity", "Quantidade de sonhos que você deseja transferir")
-                .register()
+    inner class Options : ApplicationCommandOptions() {
+        val source = optionalString("source", "Fonte dos Sonhos") {
+            choice("survival", "SparklyPower Survival")
+            choice("loritta", "Loritta :3")
         }
+
+        val destination = optionalString("destination", "Destino dos Sonhos") {
+            choice("survival", "SparklyPower Survival")
+            choice("loritta", "Loritta :3")
+        }
+
+        val quantity = optionalString("quantity", "Quantidade de sonhos que você deseja transferir")
     }
+
+    override val options = Options()
 
     private fun getLorittaProfile(userId: Long): Profile {
         return transaction(Databases.loritta) {

@@ -1,6 +1,5 @@
 package net.perfectdreams.pantufa.interactions.commands
 
-import net.perfectdreams.discordinteraktions.common.commands.SlashCommandExecutorDeclaration
 import net.perfectdreams.discordinteraktions.common.commands.options.ApplicationCommandOptions
 import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
 import net.perfectdreams.pantufa.PantufaBot
@@ -11,26 +10,24 @@ import net.perfectdreams.pantufa.utils.extensions.uuid
 import org.jetbrains.exposed.sql.transactions.transaction
 
 class TransactionsExecutor(pantufa: PantufaBot) : PantufaInteractionCommand(pantufa) {
-    companion object : SlashCommandExecutorDeclaration(TransactionsExecutor::class) {
-        object Options : ApplicationCommandOptions() {
-            val currency = optionalString("currency", "Nome da moeda").apply {
-                choice("MONEY", "Sonecas")
-                choice("CASH", "Pesadelos")
-            }.register()
-            val payer = optionalString("source", "Nome do usuário de onde o dinheiro saiu").register()
-            val receiver = optionalString("destination", "Nome do usuário que recebeu o dinheiro").register()
-            val page = optionalInteger("page", "A página que você quer visualizar").register()
+    inner class Options : ApplicationCommandOptions() {
+        val currency = optionalString("currency", "Nome da moeda") {
+            choice("MONEY", "Sonecas")
+            choice("CASH", "Pesadelos")
         }
-
-        override val options = Options
+        val payer = optionalString("source", "Nome do usuário de onde o dinheiro saiu")
+        val receiver = optionalString("destination", "Nome do usuário que recebeu o dinheiro")
+        val page = optionalInteger("page", "A página que você quer visualizar")
     }
+
+    override val options = Options()
 
     override suspend fun executePantufa(context: PantufaCommandContext, args: SlashCommandArguments) {
         val selfId = pantufa.retrieveDiscordAccountFromUser(context.sender.id.value.toLong())?.minecraftId
 
-        val payer = args[Options.payer]?.uuid()
-        val receiver = args[Options.receiver]?.uuid()
-        val currency = args[Options.currency]?.let(TransactionCurrency::valueOf)
+        val payer = args[options.payer]?.uuid()
+        val receiver = args[options.receiver]?.uuid()
+        val currency = args[options.currency]?.let(TransactionCurrency::valueOf)
 
         /**
          * If the user has a connected Minecraft Account and does not specify either payer or receiver, we will
@@ -44,14 +41,14 @@ class TransactionsExecutor(pantufa: PantufaBot) : PantufaInteractionCommand(pant
 
         val size = transaction(Databases.sparklyPower) { fetchedTransactions.count() }
 
-        val page = args[Options.page]?.let {
+        val page = args[options.page]?.let {
             if (it < 1 || it * MessagePanelType.TRANSACTIONS.entriesPerPage > size) return context.reply(invalidPageMessage)
             it - 1
         } ?: 0
 
         val arguments = mutableListOf<String>().apply {
-            args[Options.payer]?.let { add("<:lori_card:956406538887634985> **Remetente**: `$it`") }
-            args[Options.receiver]?.let { add("<:pantufa_coffee:853048446981111828> **Destinatário**: `$it`") }
+            args[options.payer]?.let { add("<:lori_card:956406538887634985> **Remetente**: `$it`") }
+            args[options.receiver]?.let { add("<:pantufa_coffee:853048446981111828> **Destinatário**: `$it`") }
             currency?.let { add(":coin: **Moeda**: `${currency.displayName.replaceFirstChar { it.uppercase() }}`") }
         }
 

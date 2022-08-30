@@ -12,7 +12,7 @@ import mu.KotlinLogging
 import net.dv8tion.jda.api.*
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.requests.GatewayIntent
-import net.perfectdreams.discordinteraktions.platforms.kord.commands.KordCommandRegistry
+import net.perfectdreams.discordinteraktions.common.DiscordInteraKTions
 import net.perfectdreams.pantufa.commands.CommandManager
 import net.perfectdreams.pantufa.commands.server.*
 import net.perfectdreams.pantufa.commands.vanilla.utils.PingCommand
@@ -58,7 +58,8 @@ class PantufaBot(val config: PantufaConfig) {
 		private val logger = KotlinLogging.logger {}
 	}
 
-	val commandManager = net.perfectdreams.discordinteraktions.common.commands.CommandManager()
+	val applicationId = Snowflake(390927821997998081L)
+	val interaKTions = DiscordInteraKTions(config.token, applicationId)
 	val legacyCommandManager = CommandManager()
 	val legacyCommandMap = DiscordCommandMap(this)
 	val executors = Executors.newCachedThreadPool()
@@ -77,7 +78,6 @@ class PantufaBot(val config: PantufaConfig) {
 		Snowflake(392482696720416775L), // Pantufa's Emoji Server
 		Snowflake(626604568741937199L) // Loritta's Emoji Server 4
 	)
-	val applicationId = Snowflake(390927821997998081L)
 	val playersOnlineGraph = CachedGraphManager(config.grafana.token, "${config.grafana.url}/render/d-solo/JeZauCDnk/sparklypower-network?orgId=1&var-sparklypower_server=sparklypower_survival&var-world=All&panelId=87&width=800&height=300&tz=America%2FSao_Paulo")
 
 	fun start() {
@@ -88,117 +88,47 @@ class PantufaBot(val config: PantufaConfig) {
 
 		logger.info { "Registering Application Commands..." }
 
-		commandManager.register(
-			net.perfectdreams.pantufa.interactions.commands.declarations.ChatColorCommand,
-			ChatColorExecutor(this)
-		)
-
-		commandManager.register(
-			net.perfectdreams.pantufa.interactions.commands.declarations.GuildsCommand,
-			GuildsExecutor(this)
-		)
-
-		commandManager.register(
-			net.perfectdreams.pantufa.interactions.commands.declarations.LSXCommand,
-			LSXExecutor(this)
-		)
-
-		commandManager.register(
-			net.perfectdreams.pantufa.interactions.commands.declarations.MinecraftUserCommand,
-			MinecraftUserPlayerNameExecutor(this),
-			MinecraftUserDiscordUserExecutor(this)
-		)
-
-		commandManager.register(
-			net.perfectdreams.pantufa.interactions.commands.declarations.MoneyCommand,
-			MoneyExecutor(this)
-		)
-
-		commandManager.register(
-			net.perfectdreams.pantufa.interactions.commands.declarations.OnlineCommand,
-			OnlineExecutor(this)
-		)
-
-		commandManager.register(
-			net.perfectdreams.pantufa.interactions.commands.declarations.PesadelosCommand,
-			PesadelosExecutor(this)
-		)
-
-		commandManager.register(
-			net.perfectdreams.pantufa.interactions.commands.declarations.PingCommand,
-			PingExecutor(this)
-		)
-
-		commandManager.register(
-			net.perfectdreams.pantufa.interactions.commands.declarations.RegistrarCommand,
-			RegistrarExecutor(this)
-		)
-
-		commandManager.register(
-			net.perfectdreams.pantufa.interactions.commands.declarations.VIPInfoCommand,
-			VIPInfoExecutor(this)
-		)
-
-		commandManager.register(
-			net.perfectdreams.pantufa.interactions.commands.declarations.CommandsLogCommand,
-			CommandsLogExecutor(this)
-		)
-
-		commandManager.register(
-			net.perfectdreams.pantufa.interactions.commands.declarations.TransactionsCommand,
-			TransactionsExecutor(this)
-		)
-
-		commandManager.register(
+		interaKTions.manager.register(net.perfectdreams.pantufa.interactions.commands.declarations.ChatColorCommand(this))
+		interaKTions.manager.register(net.perfectdreams.pantufa.interactions.commands.declarations.GuildsCommand(this))
+		interaKTions.manager.register(net.perfectdreams.pantufa.interactions.commands.declarations.LSXCommand(this))
+		interaKTions.manager.register(net.perfectdreams.pantufa.interactions.commands.declarations.MinecraftUserCommand(this))
+		interaKTions.manager.register(net.perfectdreams.pantufa.interactions.commands.declarations.MoneyCommand(this))
+		interaKTions.manager.register(net.perfectdreams.pantufa.interactions.commands.declarations.OnlineCommand(this))
+		interaKTions.manager.register(net.perfectdreams.pantufa.interactions.commands.declarations.PesadelosCommand(this))
+		interaKTions.manager.register(net.perfectdreams.pantufa.interactions.commands.declarations.PingCommand(this))
+		interaKTions.manager.register(net.perfectdreams.pantufa.interactions.commands.declarations.RegistrarCommand(this))
+		interaKTions.manager.register(net.perfectdreams.pantufa.interactions.commands.declarations.VIPInfoCommand(this))
+		interaKTions.manager.register(net.perfectdreams.pantufa.interactions.commands.declarations.CommandsLogCommand(this))
+		interaKTions.manager.register(net.perfectdreams.pantufa.interactions.commands.declarations.TransactionsCommand(this))
+		interaKTions.manager.register(
 			net.perfectdreams.pantufa.interactions.components.ChangePageButtonClickExecutor,
 			net.perfectdreams.pantufa.interactions.components.ChangePageButtonClickExecutor()
 		)
 
-		commandManager.register(
+		interaKTions.manager.register(
 			net.perfectdreams.pantufa.interactions.components.TransactionFilterSelectMenuExecutor,
 			net.perfectdreams.pantufa.interactions.components.TransactionFilterSelectMenuExecutor()
 		)
 
-		commandManager.register(
-			net.perfectdreams.pantufa.interactions.commands.declarations.AdminConsoleBungeeCommand,
-			AdvDupeIpExecutor(this),
-			BanExecutor(this),
-			CheckBanExecutor(this),
-			DupeIpExecutor(this),
-			FingerprintExecutor(this),
-			GeoIpExecutor(this),
-			IpBanExecutor(this),
-			IpUnbanExecutor(this),
-			KickExecutor(this),
-			UnbanExecutor(this),
-			UnwarnExecutor(this),
-			WarnExecutor(this)
+		interaKTions.manager.register(
+			net.perfectdreams.pantufa.interactions.commands.declarations.AdminConsoleBungeeCommand(this)
 		)
 
-		commandManager.register(
-			SayCommand,
-			SaySendExecutor(this)
-		)
+		interaKTions.manager.register(SayCommand(this))
 
-		commandManager.register(
-			SayEditMessageCommand,
-			SayEditMessageExecutor(this)
-		)
+		interaKTions.manager.register(SayEditMessageCommand(this))
 
-		commandManager.register(
+		interaKTions.manager.register(
 			SaySendModalSubmitExecutor,
 			SaySendModalSubmitExecutor(this)
 		)
 
-		commandManager.register(
+		interaKTions.manager.register(
 			SayEditModalSubmitExecutor,
 			SayEditModalSubmitExecutor(this)
 		)
 
-		commandManager.register(
-			net.perfectdreams.pantufa.interactions.commands.declarations.ChangePassCommand,
-			ChangePassExecutor(this),
-		)
+		interaKTions.manager.register(net.perfectdreams.pantufa.interactions.commands.declarations.ChangePassCommand(this))
 
 		logger.info { "Starting JDA..." }
 		jda = JDABuilder.create(EnumSet.allOf(GatewayIntent::class.java))
@@ -206,7 +136,7 @@ class PantufaBot(val config: PantufaConfig) {
 				InteractionListener(
 					rest,
 					Snowflake(390927821997998081L),
-					commandManager
+					interaKTions
 				)
 			)
 			.setRawEventsEnabled(true) // Required for InteractionListener
@@ -227,14 +157,13 @@ class PantufaBot(val config: PantufaConfig) {
 		legacyCommandMap.register(SugerirCommand.create(this))
 
 		runBlocking {
-			val registry = KordCommandRegistry(applicationId, rest, commandManager)
 			if (config.discordInteractions.registerGlobally) {
 				logger.info { "Updating Pantufa's Application Commands Globally..." }
-				registry.updateAllGlobalCommands()
+				interaKTions.updateAllGlobalCommands()
 			} else {
 				for (id in config.discordInteractions.guildsToBeRegistered) {
 					logger.info { "Updating Pantufa's Application Commands on Guild $id..." }
-					registry.updateAllCommandsInGuild(Snowflake(id))
+					interaKTions.updateAllCommandsInGuild(Snowflake(id))
 				}
 			}
 		}

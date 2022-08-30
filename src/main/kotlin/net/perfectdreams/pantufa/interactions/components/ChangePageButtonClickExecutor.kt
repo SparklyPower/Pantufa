@@ -1,19 +1,17 @@
 package net.perfectdreams.pantufa.interactions.components
 
-import net.perfectdreams.discordinteraktions.common.components.ButtonClickExecutorDeclaration
-import net.perfectdreams.discordinteraktions.common.components.ButtonClickWithDataExecutor
-import net.perfectdreams.discordinteraktions.common.components.ComponentContext
-import net.perfectdreams.discordinteraktions.common.entities.User
+import dev.kord.core.entity.User
+import net.perfectdreams.discordinteraktions.common.components.*
 import net.perfectdreams.pantufa.interactions.components.utils.*
 import net.perfectdreams.pantufa.pantufa
 
-class ChangePageButtonClickExecutor : ButtonClickWithDataExecutor {
-    companion object : ButtonClickExecutorDeclaration("0001")
+class ChangePageButtonClickExecutor : ButtonExecutor {
+    companion object : ButtonExecutorDeclaration("0001")
 
-    override suspend fun onClick(user: User, context: ComponentContext, data: String) {
+    override suspend fun onClick(user: User, context: ComponentContext) {
         val minecraftId = pantufa.retrieveDiscordAccountFromUser(user.id.value.toLong())?.minecraftId
 
-        val decoded = data.decoded?.also {
+        val decoded = context.data.decoded?.also {
             if (it.first.userId != user.id) return context.notForYou()
         } ?: return context.invalid()
 

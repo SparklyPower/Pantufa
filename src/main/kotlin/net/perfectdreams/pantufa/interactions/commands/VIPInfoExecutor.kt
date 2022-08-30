@@ -1,6 +1,5 @@
 package net.perfectdreams.pantufa.interactions.commands
 
-import net.perfectdreams.discordinteraktions.common.commands.SlashCommandExecutorDeclaration
 import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
 import net.perfectdreams.pantufa.PantufaBot
 import net.perfectdreams.pantufa.tables.LuckPermsUserPermissions
@@ -11,8 +10,6 @@ import org.jetbrains.exposed.sql.select
 class VIPInfoExecutor(pantufa: PantufaBot) : PantufaInteractionCommand(
     pantufa
 ) {
-    companion object : SlashCommandExecutorDeclaration(VIPInfoExecutor::class)
-
     override suspend fun executePantufa(context: PantufaCommandContext, args: SlashCommandArguments) {
         val accountInfo = context.retrieveConnectedMinecraftAccountOrFail()
         val playerUniqueId = accountInfo.uniqueId

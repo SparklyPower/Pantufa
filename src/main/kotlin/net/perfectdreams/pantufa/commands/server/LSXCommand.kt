@@ -5,7 +5,7 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import net.perfectdreams.loritta.cinnamon.utils.SparklyPowerLSXTransactionEntryAction
 import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosTransactionsLog
-import net.perfectdreams.loritta.cinnamon.pudding.tables.SparklyPowerLSXSonhosTransactionsLog
+import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.SparklyPowerLSXSonhosTransactionsLog
 import net.perfectdreams.pantufa.commands.AbstractCommand
 import net.perfectdreams.pantufa.commands.CommandContext
 import net.perfectdreams.pantufa.dao.Ban

@@ -1,25 +1,23 @@
 package net.perfectdreams.pantufa.interactions.commands.say
 
 import dev.kord.common.entity.Snowflake
-import net.perfectdreams.discordinteraktions.common.modals.ModalSubmitContext
-import net.perfectdreams.discordinteraktions.common.modals.ModalSubmitExecutorDeclaration
-import net.perfectdreams.discordinteraktions.common.modals.ModalSubmitWithDataExecutor
+import dev.kord.common.entity.TextInputStyle
+import net.perfectdreams.discordinteraktions.common.modals.*
 import net.perfectdreams.discordinteraktions.common.modals.components.ModalArguments
 import net.perfectdreams.discordinteraktions.common.modals.components.ModalComponents
 import net.perfectdreams.pantufa.PantufaBot
 
-class SayEditModalSubmitExecutor(val m: PantufaBot) : ModalSubmitWithDataExecutor {
-    companion object : ModalSubmitExecutorDeclaration("say_edit") {
+class SayEditModalSubmitExecutor(val m: PantufaBot) : ModalExecutor {
+    companion object : ModalExecutorDeclaration("say_edit") {
         object Options : ModalComponents() {
-            val text = textInput("text")
-                .register()
+            val text = textInput("text", TextInputStyle.Paragraph)
         }
 
         override val options = Options
     }
 
-    override suspend fun onModalSubmit(context: ModalSubmitContext, args: ModalArguments, data: String) {
-        val (channelIdAsString, messageIdAsString) = data.split(":")
+    override suspend fun onSubmit(context: ModalContext, args: ModalArguments) {
+        val (channelIdAsString, messageIdAsString) = context.data.split(":")
 
         m.rest.channel.editMessage(
             Snowflake(channelIdAsString),

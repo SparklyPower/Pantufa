@@ -10,20 +10,17 @@ import kotlinx.serialization.json.Json
 import mu.KotlinLogging
 import net.dv8tion.jda.api.events.RawGatewayEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
-import net.perfectdreams.discordinteraktions.common.commands.CommandManager
+import net.perfectdreams.discordinteraktions.common.DiscordInteraKTions
 import net.perfectdreams.discordinteraktions.common.requests.InteractionRequestState
 import net.perfectdreams.discordinteraktions.common.requests.RequestBridge
 import net.perfectdreams.discordinteraktions.common.requests.managers.InitialHttpRequestManager
 import net.perfectdreams.discordinteraktions.common.utils.Observable
-import net.perfectdreams.discordinteraktions.platforms.kord.utils.KordCommandChecker
-import net.perfectdreams.discordinteraktions.platforms.kord.utils.KordComponentChecker
-import net.perfectdreams.discordinteraktions.platforms.kord.utils.KordModalSubmitChecker
 
 @OptIn(KordPreview::class)
 class InteractionListener(
     val rest: RestClient,
     val applicationId: Snowflake,
-    val commandManager: CommandManager
+    val interaKTions: DiscordInteraKTions
 ) : ListenerAdapter() {
     companion object {
         private val json = Json {
@@ -33,10 +30,6 @@ class InteractionListener(
 
         private val logger = KotlinLogging.logger {}
     }
-
-    private val kordCommandChecker = KordCommandChecker(commandManager)
-    private val kordComponentChecker = KordComponentChecker(commandManager)
-    private val kordModalSubmitChecker = KordModalSubmitChecker(commandManager)
 
     override fun onRawGateway(event: RawGatewayEvent) {
         // Workaround for Discord InteraKTions!
@@ -54,7 +47,7 @@ class InteractionListener(
 
         val requestManager = InitialHttpRequestManager(
             bridge,
-            rest,
+            interaKTions.kord,
             applicationId,
             request.id,
             request.token,
@@ -63,17 +56,17 @@ class InteractionListener(
         bridge.manager = requestManager
 
         if (request.type == InteractionType.ApplicationCommand)
-            kordCommandChecker.checkAndExecute(
+            interaKTions.commandChecker.checkAndExecute(
                 request,
                 requestManager
             )
         else if (request.type == InteractionType.Component) {
-            kordComponentChecker.checkAndExecute(
+            interaKTions.componentChecker.checkAndExecute(
                 request,
                 requestManager
             )
         } else if (request.type == InteractionType.ModalSubmit) {
-            kordModalSubmitChecker.checkAndExecute(
+            interaKTions.modalChecker.checkAndExecute(
                 request,
                 requestManager
             )

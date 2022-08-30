@@ -1,7 +1,6 @@
 package net.perfectdreams.pantufa.interactions.commands
 
 import dev.kord.common.entity.Snowflake
-import net.perfectdreams.discordinteraktions.common.commands.SlashCommandExecutorDeclaration
 import net.perfectdreams.discordinteraktions.common.commands.options.ApplicationCommandOptions
 import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
 import net.perfectdreams.pantufa.PantufaBot
@@ -14,22 +13,20 @@ import net.perfectdreams.pantufa.network.Databases
 import org.jetbrains.exposed.sql.transactions.transaction
 
 class CommandsLogExecutor(pantufa: PantufaBot) : PantufaInteractionCommand(pantufa) {
-    companion object : SlashCommandExecutorDeclaration(CommandsLogExecutor::class) {
-        object Options : ApplicationCommandOptions() {
-            val player = optionalString("player", "Nome do jogador").register()
-            val world = optionalString("world", "Mundo em que o comando foi usado").register()
-            val alias = optionalString("alias", "Comando usado").register()
-            val page = optionalInteger("page", "A página que você quer visualizar").register()
-            var args = optionalString("args", "Argumentos usados dentro do comando").register()
-        }
-
-        override val options = Options
+    inner class Options : ApplicationCommandOptions() {
+        val player = optionalString("player", "Nome do jogador")
+        val world = optionalString("world", "Mundo em que o comando foi usado")
+        val alias = optionalString("alias", "Comando usado")
+        val page = optionalInteger("page", "A página que você quer visualizar")
+        var args = optionalString("args", "Argumentos usados dentro do comando")
     }
+
+    override val options = Options()
 
     private val staffRoleId = Snowflake(332650495522897920)
 
     override suspend fun executePantufa(context: PantufaCommandContext, args: SlashCommandArguments) {
-        if (staffRoleId !in context.interactionContext.member.roles) {
+        if (staffRoleId !in context.interactionContext.member.roleIds) {
             context.sendEphemeralMessage {
                 content = "<:pantufa_analise:853048446813470762> **|** Você não pode usar esse comando."
             }

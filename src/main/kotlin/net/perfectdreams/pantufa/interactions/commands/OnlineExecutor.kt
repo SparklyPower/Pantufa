@@ -8,7 +8,6 @@ import com.github.salomonbrys.kotson.string
 import com.google.gson.JsonObject
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import net.perfectdreams.discordinteraktions.common.commands.SlashCommandExecutorDeclaration
 import net.perfectdreams.discordinteraktions.common.commands.options.ApplicationCommandOptions
 import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
 import net.perfectdreams.pantufa.PantufaBot
@@ -20,22 +19,13 @@ import net.perfectdreams.pantufa.utils.socket.SocketUtils
 class OnlineExecutor(pantufa: PantufaBot) : PantufaInteractionCommand(
     pantufa
 ) {
-    companion object : SlashCommandExecutorDeclaration(OnlineExecutor::class) {
-        object Options : ApplicationCommandOptions() {
-            val showGraph = optionalBoolean("show_graph", "Mostra o gráfico de players online")
-                .register()
-        }
-
-        override val options = Options
-
-        val serverToFancyName = mapOf(
-            "sparklypower_lobby" to "SparklyPower Lobby",
-            "sparklypower_survival" to "SparklyPower Survival"
-        )
-    }
+    val serverToFancyName = mapOf(
+        "sparklypower_lobby" to "SparklyPower Lobby",
+        "sparklypower_survival" to "SparklyPower Survival"
+    )
 
     override suspend fun executePantufa(context: PantufaCommandContext, args: SlashCommandArguments) {
-        val showGraph = args[options.showGraph]
+        val showGraph = false // args[options.showGraph]
         val jsonObject = JsonObject()
         jsonObject["type"] = "getOnlinePlayersInfo"
 
