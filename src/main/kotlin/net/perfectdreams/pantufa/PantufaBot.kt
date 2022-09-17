@@ -159,7 +159,6 @@ class PantufaBot(val config: PantufaConfig) {
 		legacyCommandMap.register(PesadelosCommand.create(this))
 		legacyCommandMap.register(VIPInfoCommand.create(this))
 		legacyCommandMap.register(MoneyCommand.create(this))
-		legacyCommandMap.register(SugerirCommand.create(this))
 
 		runBlocking {
 			if (config.discordInteractions.registerGlobally) {
