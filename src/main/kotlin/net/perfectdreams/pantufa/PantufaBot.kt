@@ -33,6 +33,8 @@ import net.perfectdreams.pantufa.tables.NotifyPlayersOnline
 import net.perfectdreams.pantufa.tables.Users
 import net.perfectdreams.pantufa.utils.CachedGraphManager
 import net.perfectdreams.pantufa.utils.Constants
+import net.perfectdreams.pantufa.utils.PostgreSQLNotificationListener
+import net.perfectdreams.pantufa.utils.Server
 import net.perfectdreams.pantufa.utils.config.PantufaConfig
 import net.perfectdreams.pantufa.utils.discord.DiscordCommandMap
 import net.perfectdreams.pantufa.utils.parallax.ParallaxEmbed
@@ -253,6 +255,43 @@ class PantufaBot(val config: PantufaConfig) {
 				NotifyPlayersOnline
 			)
 		}
+
+		Thread(
+			null,
+			PostgreSQLNotificationListener(
+				Databases.dataSourceLoritta,
+				mapOf(
+					"loritta_lori_bans" to {
+						// Someone got banned, omg!
+						logger.info { "Received Loritta Ban for $it!" }
+
+						GlobalScope.launch {
+							val discordAccount = retrieveDiscordAccountFromUser(it.toLong())
+
+							if (discordAccount != null && discordAccount.isConnected) {
+								val userInfo = pantufa.getMinecraftUserFromUniqueId(discordAccount.minecraftId)
+
+								if (userInfo != null) {
+									logger.info { "Banning ${discordAccount.minecraftId} because their Discord account  ${discordAccount.discordId} is banned" }
+									Server.PERFECTDREAMS_BUNGEE.send(
+										jsonObject(
+											"type" to "executeCommand",
+											"player" to "Pantufinha",
+											"command" to "ban ${userInfo.username} Banido da Loritta | ID da Conta no Discord: ${discordAccount.discordId}"
+										)
+									)
+								} else {
+									logger.info { "Ignoring Loritta Ban notification because the user $it doesn't have an associated user info data... Minecraft ID: ${discordAccount.minecraftId}" }
+								}
+							} else {
+								logger.info { "Ignoring Loritta Ban notification because the user $it didn't connect an account..." }
+							}
+						}
+					}
+				)
+			),
+			"Loritta PostgreSQL Notification Listener"
+		).start()
 	}
 
 	suspend fun <T> transactionOnSparklyPowerDatabase(statement: Transaction.() -> T): T {
