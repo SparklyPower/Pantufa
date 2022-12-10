@@ -21,7 +21,7 @@ data class TransactionContext(private val transaction: Transaction) {
     val amount = transaction.amount
     val currency = transaction.currency
     val money = currency.format(amount)
-    val payer = transaction.payer?.let { "`$it.username}`" }
+    val payer = transaction.payer?.let { "`${it.username}`" }
     fun receiver(pronoun: String = "") = transaction.receiver?.let {  "`${it.username}`" }
 }
 
