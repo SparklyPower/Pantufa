@@ -11,6 +11,7 @@ import net.perfectdreams.pantufa.interactions.components.utils.invalidPageMessag
 import net.perfectdreams.pantufa.interactions.components.utils.saveAndCreateData
 import net.perfectdreams.pantufa.network.Databases
 import org.jetbrains.exposed.sql.transactions.transaction
+import java.util.*
 
 class CommandsLogExecutor(pantufa: PantufaBot) : PantufaInteractionCommand(pantufa) {
     inner class Options : ApplicationCommandOptions() {
@@ -57,9 +58,9 @@ class CommandsLogExecutor(pantufa: PantufaBot) : PantufaInteractionCommand(pantu
         val messageData = saveAndCreateData(
             size,
             context.sender.id,
+            UUID.randomUUID(),
             MessagePanelType.COMMANDS_LOG,
-            fetchedCommands,
-            arguments
+            fetchedCommands
         )
 
         context.sendMessage {

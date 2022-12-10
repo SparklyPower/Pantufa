@@ -52,15 +52,11 @@ fun BaseMessagePanelData.buildTransactionsMessage(page: Long, selfId: UUID?) = M
         title = "Transações \u2014 Página ${page + 1}"
         color = Color(0x2090DF)
 
-        args.forEach { inlineField(EmbedBuilder.ZERO_WIDTH_SPACE, it) }
-
         description = transactions.joinToString("\n") {
             val timestamp = it.time / 1000
 
             "[<t:$timestamp:d> <t:$timestamp:t> | <t:$timestamp:R>] " +
-            it.type.buildDisplayMessage.invoke(
-                TransactionContext(it, it.payer == selfId, it.receiver == selfId)
-            )
+            it.type.buildDisplayMessage.invoke(TransactionContext(it, it.payer == selfId, it.receiver == selfId))
         }
 
         footer {
@@ -87,7 +83,7 @@ fun BaseMessagePanelData.buildCommandsLogMessage(page: Long) = Message().apply {
         title = "Log de comandos \u2014 Página ${page + 1}"
         color = Color(0x2090DF)
 
-        args.forEach { inlineField(EmbedBuilder.ZERO_WIDTH_SPACE, it) }
+        // args.forEach { inlineField(EmbedBuilder.ZERO_WIDTH_SPACE, it) }
 
         commands.forEach { pair ->
             field {

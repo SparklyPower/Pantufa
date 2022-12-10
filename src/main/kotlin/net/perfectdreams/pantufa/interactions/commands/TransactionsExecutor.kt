@@ -15,8 +15,7 @@ class TransactionsExecutor(pantufa: PantufaBot) : PantufaInteractionCommand(pant
             choice("MONEY", "Sonecas")
             choice("CASH", "Pesadelos")
         }
-        val payer = optionalString("source", "Nome do usuário de onde o dinheiro saiu")
-        val receiver = optionalString("destination", "Nome do usuário que recebeu o dinheiro")
+        val user = optionalString("user", "Nome do usuário")
         val page = optionalInteger("page", "A página que você quer visualizar")
     }
 
@@ -25,8 +24,7 @@ class TransactionsExecutor(pantufa: PantufaBot) : PantufaInteractionCommand(pant
     override suspend fun executePantufa(context: PantufaCommandContext, args: SlashCommandArguments) {
         val selfId = pantufa.retrieveDiscordAccountFromUser(context.sender.id.value.toLong())?.minecraftId
 
-        val payer = args[options.payer]?.uuid()
-        val receiver = args[options.receiver]?.uuid()
+        val user = args[options.user]?.uuid()
         val currency = args[options.currency]?.let(TransactionCurrency::valueOf)
 
         /**
@@ -34,10 +32,16 @@ class TransactionsExecutor(pantufa: PantufaBot) : PantufaInteractionCommand(pant
          * just fetch any transactions that they are a part of
          */
         val fetchedTransactions =
-            if (selfId != null && payer == null && receiver == null)
+            if (selfId != null)
                 Transaction.fetchTransactionsFromSingleUser(selfId, currency)
-            else
-                Transaction.fetchTransactions(payer, receiver, currency)
+            else if (user != null)
+                Transaction.fetchTransactionsFromSingleUser(user, currency)
+            else {
+                context.sendEphemeralMessage {
+                    content = "Você não colocou um usuário!"
+                }
+                return
+            }
 
         val size = transaction(Databases.sparklyPower) { fetchedTransactions.count() }
 
@@ -46,21 +50,14 @@ class TransactionsExecutor(pantufa: PantufaBot) : PantufaInteractionCommand(pant
             it - 1
         } ?: 0
 
-        val arguments = mutableListOf<String>().apply {
-            args[options.payer]?.let { add("<:lori_card:956406538887634985> **Remetente**: `$it`") }
-            args[options.receiver]?.let { add("<:pantufa_coffee:853048446981111828> **Destinatário**: `$it`") }
-            currency?.let { add(":coin: **Moeda**: `${currency.displayName.replaceFirstChar { it.uppercase() }}`") }
-        }
-
         val messageData = saveAndCreateData(
             size,
             context.sender.id,
+            user ?: selfId!!,
             MessagePanelType.TRANSACTIONS,
-            fetchedTransactions,
-            arguments
+            fetchedTransactions
         ).apply {
-            minecraftId = selfId
-            options = Triple(payer, receiver, currency)
+            options = currency ?: TransactionCurrency.CASH
         }
 
         context.interactionContext.sendMessage {

@@ -29,29 +29,18 @@ data class BaseMessagePanelData(
     val userId: Snowflake,
     val type: MessagePanelType,
     var data: SizedIterable<*>,
-    val args: List<String>,
-    val key: UUID
+    val key: UUID,
+    val minecraftId: UUID
 ) {
     // TODO: Optimize this
-    lateinit var options: Triple<UUID?, UUID?, TransactionCurrency?>
-    var minecraftId: UUID? = null
+    lateinit var options: TransactionCurrency
 
     var showOnly: List<TransactionType>? = null
         set(value) {
             field = value
             data = transaction(Databases.sparklyPower) {
                 TTransaction.find {
-                    minecraftId?.let { uuid ->
-                        (Transactions.payer eq uuid) or
-                        (Transactions.receiver eq uuid) and
-                        (options.third?.let { Transactions.currency eq it } ?: Op.TRUE) and
-                        (Transactions.type inList showOnly!!)
-                    } ?: run {
-                        (options.first?.let { Transactions.payer eq it } ?: Op.TRUE) and
-                        (options.second?.let { Transactions.receiver eq it } ?: Op.TRUE) and
-                        (options.third?.let { Transactions.currency eq it } ?: Op.TRUE) and
-                        (Transactions.type inList showOnly!!)
-                    }
+                    (Transactions.payer eq minecraftId) or (Transactions.receiver eq minecraftId) and ((Transactions.currency eq options) and (Transactions.type inList showOnly!!))
                 }.orderBy(Transactions.time to SortOrder.DESC).apply { size = count() }
             }
         }
@@ -71,12 +60,12 @@ enum class MessagePanelType(val entriesPerPage: Int) {
 fun saveAndCreateData(
     size: Long,
     userId: Snowflake,
+    minecraftId: UUID,
     type: MessagePanelType,
     data: SizedIterable<*>,
-    args: List<String>
 ): BaseMessagePanelData {
     val uuid = UUID.randomUUID()
-    val panelData = BaseMessagePanelData(size, userId, type, data, args, uuid)
+    val panelData = BaseMessagePanelData(size, userId, type, data, uuid, minecraftId)
     activeMessagePanels[uuid] = panelData
     return panelData
 }
