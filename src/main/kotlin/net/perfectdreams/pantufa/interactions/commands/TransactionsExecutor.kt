@@ -56,9 +56,7 @@ class TransactionsExecutor(pantufa: PantufaBot) : PantufaInteractionCommand(pant
             user ?: selfId!!,
             MessagePanelType.TRANSACTIONS,
             fetchedTransactions
-        ).apply {
-            options = currency ?: TransactionCurrency.CASH
-        }
+        )
 
         context.interactionContext.sendMessage {
             messageData.buildTransactionsMessage(page, selfId).let {

@@ -16,17 +16,13 @@ enum class TransactionCurrency(val displayName: String) {
         "**${formatter.format(amount)} ${(if (amount == 1.0) name.dropLast(1) else name)}**"
 }
 
-data class TransactionContext(
-    private val transaction: Transaction,
-    val isPayerSelf: Boolean,
-    val isReceiverSelf: Boolean,
-) {
+data class TransactionContext(private val transaction: Transaction) {
     val extra = transaction.extra
     val amount = transaction.amount
     val currency = transaction.currency
     val money = currency.format(amount)
-    val payer = transaction.payer?.let { "`${if (isPayerSelf) "Você" else it.username}`" }
-    fun receiver(pronoun: String = "") = transaction.receiver?.let {  "`${if (isReceiverSelf) pronoun else it.username}`" }
+    val payer = transaction.payer?.let { "`$it.username}`" }
+    fun receiver(pronoun: String = "") = transaction.receiver?.let {  "`${it.username}`" }
 }
 
 enum class TransactionType(
@@ -42,7 +38,7 @@ enum class TransactionType(
     BUY_SHOP_ITEM("Compras em Lojas", "compras em lojas", {
         // Player Shop
         it.receiver("sua")?.run {
-            ":moneybag: ${it.payer} comprou `${it.extra}` por ${it.money} em uma loja ${if (!it.isReceiverSelf) "de " else ""}$this"
+            ":moneybag: ${it.payer} comprou `${it.extra}` por ${it.money} em uma loja de $this"
         } ?:
         // Admin Shop
             ":moneybag: ${it.payer} comprou `${it.extra}` por ${it.money} numa loja oficial do servidor"
@@ -51,7 +47,7 @@ enum class TransactionType(
     SELL_SHOP_ITEM("Vendas em Lojas", "vendas em lojas", {
         // Player Shop
         it.receiver("sua")?.run {
-            ":credit_card: ${it.receiver("Você")} vendeu `${it.extra}` por ${it.money} em uma loja ${if (!it.isPayerSelf) "de " else ""}$this"
+            ":credit_card: ${it.receiver("Você")} vendeu `${it.extra}` por ${it.money} em uma loja de $this"
         } ?:
         // Admin Shop
             ":credit_card: ${it.receiver("Você")} vendeu `${it.extra}` por ${it.money} numa loja oficial do servidor"

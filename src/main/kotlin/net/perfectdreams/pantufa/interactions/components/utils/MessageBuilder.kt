@@ -56,7 +56,7 @@ fun BaseMessagePanelData.buildTransactionsMessage(page: Long, selfId: UUID?) = M
             val timestamp = it.time / 1000
 
             "[<t:$timestamp:d> <t:$timestamp:t> | <t:$timestamp:R>] " +
-            it.type.buildDisplayMessage.invoke(TransactionContext(it, it.payer == selfId, it.receiver == selfId))
+            it.type.buildDisplayMessage.invoke(TransactionContext(it))
         }
 
         footer {

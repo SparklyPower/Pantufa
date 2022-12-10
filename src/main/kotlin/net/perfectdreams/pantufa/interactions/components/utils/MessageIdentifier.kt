@@ -32,15 +32,12 @@ data class BaseMessagePanelData(
     val key: UUID,
     val minecraftId: UUID
 ) {
-    // TODO: Optimize this
-    lateinit var options: TransactionCurrency
-
     var showOnly: List<TransactionType>? = null
         set(value) {
             field = value
             data = transaction(Databases.sparklyPower) {
                 TTransaction.find {
-                    (Transactions.payer eq minecraftId) or (Transactions.receiver eq minecraftId) and ((Transactions.currency eq options) and (Transactions.type inList showOnly!!))
+                    (Transactions.payer eq minecraftId) or (Transactions.receiver eq minecraftId) and (Transactions.type inList showOnly!!)
                 }.orderBy(Transactions.time to SortOrder.DESC).apply { size = count() }
             }
         }
