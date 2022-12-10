@@ -32,10 +32,10 @@ class TransactionsExecutor(pantufa: PantufaBot) : PantufaInteractionCommand(pant
          * just fetch any transactions that they are a part of
          */
         val fetchedTransactions =
-            if (selfId != null)
-                Transaction.fetchTransactionsFromSingleUser(selfId, currency)
-            else if (user != null)
+            if (user != null)
                 Transaction.fetchTransactionsFromSingleUser(user, currency)
+            else if (selfId != null)
+                Transaction.fetchTransactionsFromSingleUser(selfId, currency)
             else {
                 context.sendEphemeralMessage {
                     content = "Você não colocou um usuário!"
