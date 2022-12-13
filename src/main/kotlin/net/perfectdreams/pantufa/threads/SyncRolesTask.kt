@@ -119,6 +119,7 @@ class SyncRolesTask : Runnable {
 				val coordenadores = getPlayersWithGroup("coordenador")
 				val supports = getPlayersWithGroup("suporte")
 				val builders = getPlayersWithGroup("construtor")
+				val developers = getPlayersWithGroup("developer")
 				val vips = getPlayersWithGroup("vip", "vip+", "vip++", "sonhador", "sonhador+", "sonhador++")
 				val youtubers = getPlayersWithGroup("youtuber")
 
@@ -128,7 +129,8 @@ class SyncRolesTask : Runnable {
 				syncRolesEligibleForUsers(guild, "333602209621344267", moderators)
 				syncRolesEligibleForUsers(guild, "333602241564901378", supports)
 				syncRolesEligibleForUsers(guild, "359014713599983625", builders)
-				syncRolesEligibleForUsers(guild, "332650495522897920", owners.toMutableList() + admins.toMutableList() + coordenadores.toMutableList() + moderators.toMutableList() + supports.toMutableList() + builders.toMutableList())
+				syncRolesEligibleForUsers(guild, "1052266915810254908", developers)
+				syncRolesEligibleForUsers(guild, "332650495522897920", owners.toMutableList() + admins.toMutableList() + coordenadores.toMutableList() + moderators.toMutableList() + supports.toMutableList() + builders.toMutableList() + developers.toMutableList())
 				syncRolesEligibleForUsers(guild, "332652664544428044", vips)
 				syncRolesEligibleForUsers(guild, "373548131016507393", youtubers)
 			} else {
