@@ -12,9 +12,9 @@ import java.net.ConnectException
 class Server(val host: String, val socketPort: Int, val internalName: String, val fancyName: String, val name: String) {
 	companion object {
 		val LORITTA = Server(LOCAL_HOST, LORITTA_PORT, "loritta", "Loritta", "Loritta")
-		val PERFECTDREAMS_BUNGEE = Server("100.122.174.53", PERFECTDREAMS_BUNGEE_PORT, "bungeecord", "SparklyPower BungeeCord", "BungeeCord")
-		val PERFECTDREAMS_LOBBY = Server("100.122.174.53", PERFECTDREAMS_LOBBY_PORT, "sparklypower_lobby", "SparklyPower Lobby", "Lobby")
-		val PERFECTDREAMS_SURVIVAL = Server("100.122.174.53", PERFECTDREAMS_SURVIVAL_PORT, "sparklypower_survival", "SparklyPower Survival", "Survival")
+		val PERFECTDREAMS_BUNGEE = Server("100.93.58.40", PERFECTDREAMS_BUNGEE_PORT, "bungeecord", "SparklyPower BungeeCord", "BungeeCord")
+		val PERFECTDREAMS_LOBBY = Server("100.99.177.96", PERFECTDREAMS_LOBBY_PORT, "sparklypower_lobby", "SparklyPower Lobby", "Lobby")
+		val PERFECTDREAMS_SURVIVAL = Server("100.68.175.126", PERFECTDREAMS_SURVIVAL_PORT, "sparklypower_survival", "SparklyPower Survival", "Survival")
 		val servers = mutableListOf<Server>()
 
 		init {
