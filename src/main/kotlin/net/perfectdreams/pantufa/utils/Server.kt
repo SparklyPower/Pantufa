@@ -14,7 +14,7 @@ class Server(val host: String, val socketPort: Int, val internalName: String, va
 		val LORITTA = Server(LOCAL_HOST, LORITTA_PORT, "loritta", "Loritta", "Loritta")
 		val PERFECTDREAMS_BUNGEE = Server("10.5.0.2", PERFECTDREAMS_BUNGEE_PORT, "bungeecord", "SparklyPower BungeeCord", "BungeeCord")
 		val PERFECTDREAMS_LOBBY = Server("10.5.0.3", PERFECTDREAMS_LOBBY_PORT, "sparklypower_lobby", "SparklyPower Lobby", "Lobby")
-		val PERFECTDREAMS_SURVIVAL = Server("100.68.175.126", PERFECTDREAMS_SURVIVAL_PORT, "sparklypower_survival", "SparklyPower Survival", "Survival")
+		val PERFECTDREAMS_SURVIVAL = Server("10.5.0.4", PERFECTDREAMS_SURVIVAL_PORT, "sparklypower_survival", "SparklyPower Survival", "Survival")
 		val servers = mutableListOf<Server>()
 
 		init {
