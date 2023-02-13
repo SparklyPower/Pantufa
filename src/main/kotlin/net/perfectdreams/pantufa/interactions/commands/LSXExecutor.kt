@@ -158,7 +158,7 @@ class LSXExecutor(pantufa: PantufaBot) : PantufaInteractionCommand(
             if (arg1 != null) {
                 LSXCommand.mutex.withLock {
                     // Get the profile again within the mutex, to get the updated money value (if the user spammed the command)
-                    val profile = getLorittaProfile(context)
+                    val profile = getLorittaProfile(context.senderId.toLong())
 
                     val from = LSXCommand.TransferOptions.values().firstOrNull { it.codename == arg0 }
                     val to = LSXCommand.TransferOptions.values().firstOrNull { it.codename == arg1 }
