@@ -223,6 +223,9 @@ class LSXCommand : AbstractCommand("transferir", listOf("transfer", "lsx", "llsx
 			if (arg1 != null) {
 				runBlocking {
 					mutex.withLock {
+						// Get the profile again within the mutex, to get the updated money value (if the user spammed the command)
+						val profile = getLorittaProfile(context)
+
 						val from = TransferOptions.values().firstOrNull { it.codename == arg0 }
 						val to = TransferOptions.values().firstOrNull { it.codename == arg1 }
 
