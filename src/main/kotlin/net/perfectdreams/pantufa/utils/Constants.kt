@@ -57,7 +57,7 @@ object Constants {
 		)
 	}
 
-	val LORITTA_AQUA = Color(0, 193, 223)
+	val LORITTA_AQUA = Color(26, 160, 254)
 
 	val WHITE_SPACE_MULTIPLE_REGEX = Regex(" +")
 

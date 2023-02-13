@@ -31,10 +31,7 @@ import net.perfectdreams.pantufa.network.Databases
 import net.perfectdreams.pantufa.tables.DiscordAccounts
 import net.perfectdreams.pantufa.tables.NotifyPlayersOnline
 import net.perfectdreams.pantufa.tables.Users
-import net.perfectdreams.pantufa.utils.CachedGraphManager
-import net.perfectdreams.pantufa.utils.Constants
-import net.perfectdreams.pantufa.utils.PostgreSQLNotificationListener
-import net.perfectdreams.pantufa.utils.Server
+import net.perfectdreams.pantufa.utils.*
 import net.perfectdreams.pantufa.utils.config.PantufaConfig
 import net.perfectdreams.pantufa.utils.discord.DiscordCommandMap
 import net.perfectdreams.pantufa.utils.parallax.ParallaxEmbed
@@ -52,6 +49,7 @@ import java.time.format.DateTimeFormatter
 import java.util.*
 import java.util.concurrent.Executors
 import kotlin.concurrent.thread
+import kotlin.time.Duration.Companion.minutes
 
 class PantufaBot(val config: PantufaConfig) {
 	companion object {
@@ -86,6 +84,7 @@ class PantufaBot(val config: PantufaConfig) {
 		Snowflake(626604568741937199L) // Loritta's Emoji Server 4
 	)
 	val playersOnlineGraph = CachedGraphManager(config.grafana.token, "${config.grafana.url}/render/d-solo/JeZauCDnk/sparklypower-network?orgId=1&var-sparklypower_server=sparklypower_survival&var-world=All&panelId=87&width=800&height=300&tz=America%2FSao_Paulo")
+	val tasksScope = CoroutineScope(Dispatchers.Default + SupervisorJob())
 
 	fun start() {
 		INSTANCE = this
@@ -243,6 +242,7 @@ class PantufaBot(val config: PantufaConfig) {
 
 		logger.info { "Starting Pantufa Tasks..." }
 		PantufaTasks(this).start()
+		scheduleCoroutineAtFixedRate(ServerVotesNotifier::class.simpleName!!, 1.minutes, action = ServerVotesNotifier(this))
 
 		logger.info { "Done! :3" }
 	}
@@ -293,6 +293,19 @@ class PantufaBot(val config: PantufaConfig) {
 			),
 			"Loritta PostgreSQL Notification Listener"
 		).start() */
+	}
+
+	/**
+	 * Schedules [action] to be executed on [tasksScope] every [period] with a [initialDelay]
+	 */
+	private fun scheduleCoroutineAtFixedRate(
+		taskName: String,
+		period: kotlin.time.Duration,
+		initialDelay: kotlin.time.Duration = kotlin.time.Duration.ZERO,
+		action: RunnableCoroutine
+	) {
+		logger.info { "Scheduling ${action::class.simpleName} to be ran every $period with a $initialDelay initial delay" }
+		scheduleCoroutineAtFixedRate(taskName, tasksScope, period, initialDelay, action)
 	}
 
 	suspend fun <T> transactionOnSparklyPowerDatabase(statement: Transaction.() -> T): T {
