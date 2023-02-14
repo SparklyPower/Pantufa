@@ -16,6 +16,7 @@ import net.dv8tion.jda.api.requests.GatewayIntent
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder
 import net.perfectdreams.discordinteraktions.common.DiscordInteraKTions
 import net.perfectdreams.loritta.morenitta.interactions.commands.UnleashedCommandManager
+import net.perfectdreams.loritta.morenitta.interactions.listeners.InteractionsListener
 import net.perfectdreams.pantufa.commands.CommandManager
 import net.perfectdreams.pantufa.commands.server.*
 import net.perfectdreams.pantufa.commands.vanilla.utils.PingCommand
@@ -145,6 +146,7 @@ class PantufaBot(val config: PantufaConfig) {
 					interaKTions
 				)
 			)
+			.addEventListeners(InteractionsListener(this))
 			.setRawEventsEnabled(true) // Required for InteractionListener
 			.setStatus(OnlineStatus.ONLINE)
 			.setToken(config.token)
@@ -153,7 +155,7 @@ class PantufaBot(val config: PantufaConfig) {
 
 		logger.info { "Registering Unleashed commands..." }
 		commandManager.register(PingCommand())
-		
+
 		logger.info { "Registering legacy commands..." }
 		legacyCommandMap.register(PingCommand.create(this))
 		legacyCommandMap.register(MinecraftUserCommand.create(this))
