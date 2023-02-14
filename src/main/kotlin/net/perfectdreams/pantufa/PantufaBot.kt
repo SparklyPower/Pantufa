@@ -6,6 +6,7 @@ import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import dev.kord.common.entity.Snowflake
 import dev.kord.rest.service.RestClient
+import dev.minn.jda.ktx.interactions.commands.updateCommands
 import io.ktor.client.*
 import kotlinx.coroutines.*
 import mu.KotlinLogging
@@ -14,6 +15,7 @@ import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.requests.GatewayIntent
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder
 import net.perfectdreams.discordinteraktions.common.DiscordInteraKTions
+import net.perfectdreams.loritta.morenitta.interactions.commands.UnleashedCommandManager
 import net.perfectdreams.pantufa.commands.CommandManager
 import net.perfectdreams.pantufa.commands.server.*
 import net.perfectdreams.pantufa.commands.vanilla.utils.PingCommand
@@ -66,6 +68,7 @@ class PantufaBot(val config: PantufaConfig) {
 
 	val applicationId = Snowflake(390927821997998081L)
 	val interaKTions = DiscordInteraKTions(config.token, applicationId)
+	val commandManager = UnleashedCommandManager(this)
 	val legacyCommandManager = CommandManager()
 	val legacyCommandMap = DiscordCommandMap(this)
 	val executors = Executors.newCachedThreadPool()
@@ -150,6 +153,7 @@ class PantufaBot(val config: PantufaConfig) {
 			.setStatus(OnlineStatus.ONLINE)
 			.setToken(config.token)
 			.build()
+			.awaitReady()
 
 		logger.info { "Registering legacy commands..." }
 		legacyCommandMap.register(PingCommand.create(this))
@@ -162,15 +166,30 @@ class PantufaBot(val config: PantufaConfig) {
 		legacyCommandMap.register(VIPInfoCommand.create(this))
 		legacyCommandMap.register(MoneyCommand.create(this))
 
-		runBlocking {
-			if (config.discordInteractions.registerGlobally) {
-				logger.info { "Updating Pantufa's Application Commands Globally..." }
-				interaKTions.updateAllGlobalCommands()
-			} else {
-				for (id in config.discordInteractions.guildsToBeRegistered) {
-					logger.info { "Updating Pantufa's Application Commands on Guild $id..." }
-					interaKTions.updateAllCommandsInGuild(Snowflake(id))
-				}
+		if (config.discordInteractions.registerGlobally) {
+			logger.info { "Updating Pantufa's Application Commands Globally..." }
+			jda.updateCommands {
+				addCommands(*interaKTions.manager.applicationCommandsDeclarations.map {
+					commandManager.convertInteraKTionsDeclarationToJDA(
+						it
+					)
+				}.toTypedArray())
+				addCommands(*commandManager.slashCommands.map { commandManager.convertDeclarationToJDA(it) }
+					.toTypedArray())
+			}.complete()
+		} else {
+			for (id in config.discordInteractions.guildsToBeRegistered) {
+				val guild = jda.getGuildById(id) ?: continue
+				logger.info { "Updating Pantufa's Application Commands on Guild $id..." }
+				guild.updateCommands {
+					addCommands(*interaKTions.manager.applicationCommandsDeclarations.map {
+						commandManager.convertInteraKTionsDeclarationToJDA(
+							it
+						)
+					}.toTypedArray())
+					addCommands(*commandManager.slashCommands.map { commandManager.convertDeclarationToJDA(it) }
+						.toTypedArray())
+				}.complete()
 			}
 		}
 
