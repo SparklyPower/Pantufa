@@ -149,7 +149,7 @@ class LSXExecutor(pantufa: PantufaBot) : PantufaInteractionCommand(
                 ),
                 PantufaReply(
                     "**SparklyPower Survival** `survival` (*$ccBalance sonecas*)",
-                    "<:pocketdreams:333655151871000576>",
+                    "<a:pantufa_pickaxe:997671670468853770>",
                     mentionUser = false
                 )
             )

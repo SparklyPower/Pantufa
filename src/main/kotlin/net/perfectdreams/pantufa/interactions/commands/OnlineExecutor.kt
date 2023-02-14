@@ -40,7 +40,7 @@ class OnlineExecutor(pantufa: PantufaBot) : PantufaInteractionCommand(
             replies.add(
                 PantufaReply(
                     content = "**Players Online no SparklyPower Network ($totalPlayersOnline players online)**",
-                    prefix = "<:pocketdreams:333655151871000576>"
+                    prefix = "<a:pantufa_pickaxe:997671670468853770>"
                 )
             )
 

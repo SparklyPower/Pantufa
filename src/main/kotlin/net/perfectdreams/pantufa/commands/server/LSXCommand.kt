@@ -214,7 +214,7 @@ class LSXCommand : AbstractCommand("transferir", listOf("transfer", "lsx", "llsx
 				),
 				PantufaReply(
 					"**SparklyPower Survival** `survival` (*$ccBalance sonecas*)",
-					"<:pocketdreams:333655151871000576>",
+					"<a:pantufa_pickaxe:997671670468853770>",
 					mentionUser = false
 				)
 			)
