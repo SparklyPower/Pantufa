@@ -15,6 +15,7 @@ repositories {
     maven("https://repo.perfectdreams.net/")
     maven("https://jcenter.bintray.com")
     maven("https://m2.dv8tion.net/releases")
+    maven("https://jitpack.io/")
 }
 
 dependencies {
@@ -23,6 +24,7 @@ dependencies {
     implementation("io.github.microutils:kotlin-logging:2.1.23")
 
     implementation("net.dv8tion:JDA:5.0.0-beta.3")
+    implementation("com.github.MinnDevelopment:jda-ktx:0.10.0-beta.1")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
     api("org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:1.6.4")
     implementation("com.github.ben-manes.caffeine:caffeine:3.1.1")
