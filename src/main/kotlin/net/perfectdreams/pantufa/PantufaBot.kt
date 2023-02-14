@@ -24,9 +24,7 @@ import net.perfectdreams.pantufa.interactions.commands.*
 import net.perfectdreams.pantufa.interactions.commands.administration.*
 import net.perfectdreams.pantufa.interactions.commands.declarations.SayCommand
 import net.perfectdreams.pantufa.interactions.commands.say.SayEditMessageCommand
-import net.perfectdreams.pantufa.interactions.commands.say.SayEditMessageExecutor
 import net.perfectdreams.pantufa.interactions.commands.say.SayEditModalSubmitExecutor
-import net.perfectdreams.pantufa.interactions.commands.say.SaySendExecutor
 import net.perfectdreams.pantufa.interactions.commands.say.SaySendModalSubmitExecutor
 import net.perfectdreams.pantufa.listeners.DiscordListener
 import net.perfectdreams.pantufa.listeners.InteractionListener
@@ -48,7 +46,6 @@ import java.awt.image.BufferedImage
 import java.time.Duration
 import java.time.OffsetDateTime
 import java.time.ZoneId
-import java.time.format.DateTimeFormatter
 import java.util.*
 import java.util.concurrent.Executors
 import kotlin.concurrent.thread
@@ -105,7 +102,6 @@ class PantufaBot(val config: PantufaConfig) {
 		interaKTions.manager.register(net.perfectdreams.pantufa.interactions.commands.declarations.MoneyCommand(this))
 		interaKTions.manager.register(net.perfectdreams.pantufa.interactions.commands.declarations.OnlineCommand(this))
 		interaKTions.manager.register(net.perfectdreams.pantufa.interactions.commands.declarations.PesadelosCommand(this))
-		interaKTions.manager.register(net.perfectdreams.pantufa.interactions.commands.declarations.PingCommand(this))
 		interaKTions.manager.register(net.perfectdreams.pantufa.interactions.commands.declarations.RegistrarCommand(this))
 		interaKTions.manager.register(net.perfectdreams.pantufa.interactions.commands.declarations.VIPInfoCommand(this))
 		interaKTions.manager.register(net.perfectdreams.pantufa.interactions.commands.declarations.CommandsLogCommand(this))
@@ -155,6 +151,9 @@ class PantufaBot(val config: PantufaConfig) {
 			.build()
 			.awaitReady()
 
+		logger.info { "Registering Unleashed commands..." }
+		commandManager.register(PingCommand())
+		
 		logger.info { "Registering legacy commands..." }
 		legacyCommandMap.register(PingCommand.create(this))
 		legacyCommandMap.register(MinecraftUserCommand.create(this))
