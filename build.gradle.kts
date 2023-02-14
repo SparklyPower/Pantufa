@@ -31,8 +31,11 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.0")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-hocon:1.4.0")
 
-    implementation("net.perfectdreams.discordinteraktions:common:0.0.17-20220830.011145-9")
-    implementation("net.perfectdreams.discordinteraktions:gateway-kord:0.0.17-20220830.011145-9")
+    // Remove this after everything has been migrated to InteraKTions Unleashed
+    implementation("dev.kord:kord-rest:0.8.x-lori-fork-20221109.172532-14")
+    implementation("dev.kord:kord-gateway:0.8.x-lori-fork-20221109.172532-15")
+    implementation("dev.kord:kord-core:0.8.x-lori-fork-20221109.172532-14")
+
     implementation("com.github.kevinsawicki:http-request:6.0")
 
     // Sequins
