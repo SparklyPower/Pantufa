@@ -1,15 +1,13 @@
 package net.perfectdreams.pantufa.utils.discord
 
 import mu.KotlinLogging
-import net.dv8tion.jda.api.Permission
-import net.dv8tion.jda.api.entities.ChannelType
+import net.dv8tion.jda.api.entities.channel.ChannelType
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.exceptions.ErrorResponseException
 import net.perfectdreams.pantufa.PantufaBot
 import net.perfectdreams.pantufa.api.commands.*
 import net.perfectdreams.pantufa.utils.Constants
 import net.perfectdreams.pantufa.utils.PantufaReply
-import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.concurrent.CancellationException
 
 class DiscordCommandMap(val pantufa: PantufaBot) : CommandMap<Command<CommandContext>> {
@@ -113,7 +111,7 @@ class DiscordCommandMap(val pantufa: PantufaBot) : CommandMap<Command<CommandCon
 			)
 
 			if (ev.channel.idLong !in Constants.ALLOWED_CHANNELS_IDS && ev.guild.idLong != 268353819409252352L && ev.member?.roles?.any { it.idLong in allowedRoles } == false) { // Ideias Aleatórias
-				ev.textChannel.sendMessage("${Constants.ERROR} **|** ${ev.author.asMention} Você só pode usar meus lindos e incríveis comandos nos canais de comandos!").complete()
+				ev.channel.sendMessage("${Constants.ERROR} **|** ${ev.author.asMention} Você só pode usar meus lindos e incríveis comandos nos canais de comandos!").complete()
 				return true
 			}
 
@@ -154,7 +152,7 @@ class DiscordCommandMap(val pantufa: PantufaBot) : CommandMap<Command<CommandCon
 
 				if (e is ErrorResponseException) {
 					if (e.errorCode == 40005) { // Request entity too large
-						if (ev.isFromType(ChannelType.PRIVATE) || (ev.isFromType(ChannelType.TEXT) && ev.textChannel != null && ev.textChannel.canTalk()))
+						if (ev.isFromType(ChannelType.PRIVATE) || (ev.isFromType(ChannelType.TEXT) && ev.guildChannel.canTalk()))
 							context.reply(
 									PantufaReply(
 											"A imagem é grande demais!",
@@ -187,7 +185,7 @@ class DiscordCommandMap(val pantufa: PantufaBot) : CommandMap<Command<CommandCon
 				if (!e.message.isNullOrEmpty())
 					reply += " `${e.message!!}`"
 
-				if (ev.isFromType(ChannelType.PRIVATE) || (ev.isFromType(ChannelType.TEXT) && ev.textChannel != null && ev.textChannel.canTalk()))
+				if (ev.isFromType(ChannelType.PRIVATE) || (ev.isFromType(ChannelType.TEXT) && ev.guildChannel.canTalk()))
 					ev.channel.sendMessage(reply).queue()
 
 				return true

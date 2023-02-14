@@ -12,6 +12,7 @@ import mu.KotlinLogging
 import net.dv8tion.jda.api.*
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.requests.GatewayIntent
+import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder
 import net.perfectdreams.discordinteraktions.common.DiscordInteraKTions
 import net.perfectdreams.pantufa.commands.CommandManager
 import net.perfectdreams.pantufa.commands.server.*
@@ -195,7 +196,7 @@ class PantufaBot(val config: PantufaConfig) {
 								// TODO: Parse image
 							}
 
-							val messageBuilder = MessageBuilder()
+							val messageBuilder = MessageCreateBuilder()
 								.setContent(message)
 
 							val embed = json["embed"].nullObj

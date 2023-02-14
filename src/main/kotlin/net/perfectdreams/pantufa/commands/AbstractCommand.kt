@@ -27,7 +27,7 @@ abstract class AbstractCommand(val label: String, val aliases: List<String> = li
 			return false
 
 		if (event.channel.idLong !in Constants.ALLOWED_CHANNELS_IDS && event.guild.idLong != 268353819409252352L && event.member?.roles?.any { it.idLong == 332650495522897920L } == false) { // Ideias Aleatórias
-			event.textChannel.sendMessage("${Constants.ERROR} **|** ${event.author.asMention} Você só pode usar meus lindos e incríveis comandos nos canais de comandos!").complete()
+			event.channel.sendMessage("${Constants.ERROR} **|** ${event.author.asMention} Você só pode usar meus lindos e incríveis comandos nos canais de comandos!").complete()
 			return true
 		}
 
@@ -39,7 +39,7 @@ abstract class AbstractCommand(val label: String, val aliases: List<String> = li
 
 		if (requiresMinecraftAccount) {
 			if (discordAccount == null || !discordAccount.isConnected) {
-				event.textChannel.sendMessage("${Constants.ERROR} **|** ${event.author.asMention} Você precisa associar a sua conta do SparklyPower antes de poder usar este comando! Para associar, use `-registrar NomeNoServidor`!").complete()
+				event.channel.sendMessage("${Constants.ERROR} **|** ${event.author.asMention} Você precisa associar a sua conta do SparklyPower antes de poder usar este comando! Para associar, use `-registrar NomeNoServidor`!").complete()
 				return true
 			} else {
 				val user = transaction(Databases.sparklyPower) {
@@ -47,7 +47,7 @@ abstract class AbstractCommand(val label: String, val aliases: List<String> = li
 				}
 
 				if (user == null) {
-					event.textChannel.sendMessage("${Constants.ERROR} **|** ${event.author.asMention} Parece que você tem uma conta associada, mas não existe o seu username salvo no banco de dados! Bug?").complete()
+					event.channel.sendMessage("${Constants.ERROR} **|** ${event.author.asMention} Parece que você tem uma conta associada, mas não existe o seu username salvo no banco de dados! Bug?").complete()
 					return true
 				}
 

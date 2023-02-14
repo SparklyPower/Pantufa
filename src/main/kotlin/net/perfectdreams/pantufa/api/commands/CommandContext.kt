@@ -33,7 +33,7 @@ class CommandContext(
 		}
 
 		if (user == null) {
-			message.textChannel.sendMessage("${Constants.ERROR} **|** ${sender.asMention} Parece que você tem uma conta associada, mas não existe o seu username salvo no banco de dados! Bug?").complete()
+			message.channel.sendMessage("${Constants.ERROR} **|** ${sender.asMention} Parece que você tem uma conta associada, mas não existe o seu username salvo no banco de dados! Bug?").complete()
 			return null
 		}
 
