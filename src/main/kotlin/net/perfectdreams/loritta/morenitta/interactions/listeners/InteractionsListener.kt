@@ -16,12 +16,10 @@ class InteractionsListener(val m: PantufaBot) : ListenerAdapter() {
         private val logger = KotlinLogging.logger {}
     }
 
-    val manager = UnleashedCommandManager(m)
+    val manager = m.commandManager
     private var hasAlreadyGloballyUpdatedTheCommands = false
 
     override fun onSlashCommandInteraction(event: SlashCommandInteractionEvent) {
-        logger.info { "Received SlashCommandInteractionEvent" }
-
         GlobalScope.launch {
             var slashDeclaration: SlashCommandDeclaration? = null
 
@@ -58,8 +56,6 @@ class InteractionsListener(val m: PantufaBot) : ListenerAdapter() {
                     break
                 }
             }
-
-            logger.info { "InteraKTions Unleashed: $slashDeclaration" }
 
             // We should throw an error here
             // But we won't because we still use Discord InteraKTions
