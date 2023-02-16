@@ -38,6 +38,9 @@ dependencies {
 
     implementation("com.github.kevinsawicki:http-request:6.0")
 
+    // Web API
+    api("io.ktor:ktor-server-netty:2.2.3")
+
     // Sequins
     implementation("net.perfectdreams.sequins.text:text-utils:1.0.0")
 
