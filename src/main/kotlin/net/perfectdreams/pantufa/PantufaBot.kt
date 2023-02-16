@@ -153,6 +153,11 @@ class PantufaBot(val config: PantufaConfig) {
 			.build()
 			.awaitReady()
 
+		logger.info { "Starting API server..." }
+		
+		val apiServer = APIServer(this)
+		apiServer.start()
+
 		logger.info { "Registering Unleashed commands..." }
 		commandManager.register(PingCommand())
 
