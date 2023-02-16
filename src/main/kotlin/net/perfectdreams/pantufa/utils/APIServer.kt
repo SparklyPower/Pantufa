@@ -14,6 +14,10 @@ import kotlinx.serialization.json.Json
 import mu.KotlinLogging
 import net.dv8tion.jda.api.exceptions.ErrorResponseException
 import net.perfectdreams.pantufa.PantufaBot
+import net.perfectdreams.pantufa.rpc.GetDiscordUserRequest
+import net.perfectdreams.pantufa.rpc.GetDiscordUserResponse
+import net.perfectdreams.pantufa.rpc.PantufaRPCRequest
+import net.perfectdreams.pantufa.rpc.PantufaRPCResponse
 import net.perfectdreams.pantufa.utils.extensions.await
 import java.util.*
 

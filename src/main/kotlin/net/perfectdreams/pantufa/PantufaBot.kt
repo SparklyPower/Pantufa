@@ -154,7 +154,7 @@ class PantufaBot(val config: PantufaConfig) {
 			.awaitReady()
 
 		logger.info { "Starting API server..." }
-		
+
 		val apiServer = APIServer(this)
 		apiServer.start()
 
