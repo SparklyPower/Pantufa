@@ -7,7 +7,6 @@ import io.ktor.server.netty.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -19,7 +18,6 @@ import net.perfectdreams.pantufa.rpc.GetDiscordUserResponse
 import net.perfectdreams.pantufa.rpc.PantufaRPCRequest
 import net.perfectdreams.pantufa.rpc.PantufaRPCResponse
 import net.perfectdreams.pantufa.utils.extensions.await
-import java.util.*
 
 class APIServer(private val m: PantufaBot) {
     companion object {

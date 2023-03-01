@@ -16,6 +16,7 @@ import net.perfectdreams.pantufa.interactions.components.utils.TransactionType
 import net.perfectdreams.pantufa.network.Databases
 import net.perfectdreams.pantufa.tables.Bans
 import net.perfectdreams.pantufa.tables.ChatUsers
+import net.perfectdreams.pantufa.tables.EconomyState
 import net.perfectdreams.pantufa.tables.SurvivalTrackedOnlineHours
 import net.perfectdreams.pantufa.utils.Constants
 import net.perfectdreams.pantufa.utils.CraftConomyUtils
@@ -34,6 +35,7 @@ import java.time.OffsetDateTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
+import java.util.*
 import java.util.concurrent.TimeUnit
 
 class LSXExecutor(pantufa: PantufaBot) : PantufaInteractionCommand(
@@ -157,6 +159,22 @@ class LSXExecutor(pantufa: PantufaBot) : PantufaInteractionCommand(
         } else {
             if (arg1 != null) {
                 LSXCommand.mutex.withLock {
+                    val isEconomyDisabled = transaction(Databases.loritta) {
+                        EconomyState.select {
+                            EconomyState.id eq LSXCommand.DISABLED_ECONOMY_ID
+                        }.count() == 1L
+                    }
+
+                    if (isEconomyDisabled) {
+                        context.reply(
+                            PantufaReply(
+                                "A economia da Loritta está temporariamente desativada, tente novamente mais tarde.",
+                                Constants.ERROR
+                            )
+                        )
+                        return@withLock
+                    }
+
                     // Get the profile again within the mutex, to get the updated money value (if the user spammed the command)
                     val profile = getLorittaProfile(context.senderId.toLong())
 

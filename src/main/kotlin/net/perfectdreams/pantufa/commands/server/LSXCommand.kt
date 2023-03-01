@@ -30,6 +30,7 @@ class LSXCommand : AbstractCommand("transferir", listOf("transfer", "lsx", "llsx
 	companion object {
 		val mutex = Mutex()
 		var loriToSparklyExchangeRate = 2L
+		val DISABLED_ECONOMY_ID = UUID.fromString("3da6d95b-edb4-4ae9-aa56-4b13e91f3844")
 
 		private fun getLorittaProfile(context: CommandContext): Profile {
 			return transaction(Databases.loritta) {
@@ -223,6 +224,22 @@ class LSXCommand : AbstractCommand("transferir", listOf("transfer", "lsx", "llsx
 			if (arg1 != null) {
 				runBlocking {
 					mutex.withLock {
+						val isEconomyDisabled = transaction(Databases.loritta) {
+							EconomyState.select {
+								EconomyState.id eq DISABLED_ECONOMY_ID
+							}.count() == 1L
+						}
+
+						if (isEconomyDisabled) {
+							context.reply(
+								PantufaReply(
+									"A economia da Loritta está temporariamente desativada, tente novamente mais tarde.",
+									Constants.ERROR
+								)
+							)
+							return@withLock
+						}
+
 						// Get the profile again within the mutex, to get the updated money value (if the user spammed the command)
 						val profile = getLorittaProfile(context)
 
