@@ -282,8 +282,7 @@ class PantufaBot(val config: PantufaConfig) {
 			)
 		}
 
-		// TODO: Disabled because Loritta's PSQL server seems a bit... wonky, reenable this after reinstalling PostgreSQL from scratch
-		/* Thread(
+		Thread(
 			null,
 			PostgreSQLNotificationListener(
 				Databases.dataSourceLoritta,
@@ -318,7 +317,7 @@ class PantufaBot(val config: PantufaConfig) {
 				)
 			),
 			"Loritta PostgreSQL Notification Listener"
-		).start() */
+		).start()
 	}
 
 	/**
