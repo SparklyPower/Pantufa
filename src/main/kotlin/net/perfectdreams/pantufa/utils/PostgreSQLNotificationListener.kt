@@ -27,6 +27,7 @@ class PostgreSQLNotificationListener(
 
     override fun run() {
         while (true) {
+            logger.info { "Querying for notifications..." }
             try {
                 hikariDataSource.connection
                     .use {
