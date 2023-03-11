@@ -295,15 +295,17 @@ class PantufaBot(val config: PantufaConfig) {
 		// https://stackoverflow.com/a/41206003/7271796
 		config.isAutoCommit = false
 
-		config.maximumPoolSize = 4
+		config.maximumPoolSize = 16
 		config.addDataSourceProperty("cachePrepStmts", "true")
 		config.addDataSourceProperty("prepStmtCacheSize", "250")
 		config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048")
 
+		val hikariDS = HikariDataSource(config)
+
 		Thread(
 			null,
 			PostgreSQLNotificationListener(
-				HikariDataSource(config),
+				hikariDS,
 				mapOf(
 					"loritta_lori_bans" to {
 						// Someone got banned, omg!
