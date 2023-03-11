@@ -283,61 +283,6 @@ class PantufaBot(val config: PantufaConfig) {
 				NotifyPlayersOnline
 			)
 		}
-
-		// This is a workaround because it seems that the Databases.dataSourceLoritta call is causing issues (why?)
-		val config = HikariConfig()
-		config.jdbcUrl = "jdbc:postgresql://${pantufa.config.postgreSqlLoritta.ip}:${pantufa.config.postgreSqlLoritta.port}/${pantufa.config.postgreSqlLoritta.databaseName}"
-		config.username = pantufa.config.postgreSqlLoritta.username
-		config.password = pantufa.config.postgreSqlLoritta.password
-		config.driverClassName = "org.postgresql.Driver"
-		// Exposed uses autoCommit = false, so we need to set this to false to avoid HikariCP resetting the connection to
-		// autoCommit = true when the transaction goes back to the pool, because resetting this has a "big performance impact"
-		// https://stackoverflow.com/a/41206003/7271796
-		config.isAutoCommit = false
-
-		config.maximumPoolSize = 16
-		config.addDataSourceProperty("cachePrepStmts", "true")
-		config.addDataSourceProperty("prepStmtCacheSize", "250")
-		config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048")
-
-		val hikariDS = HikariDataSource(config)
-
-		Thread(
-			null,
-			PostgreSQLNotificationListener(
-				hikariDS,
-				mapOf(
-					"loritta_lori_bans" to {
-						// Someone got banned, omg!
-						logger.info { "Received Loritta Ban for $it!" }
-
-						GlobalScope.launch {
-							val discordAccount = retrieveDiscordAccountFromUser(it.toLong())
-
-							if (discordAccount != null && discordAccount.isConnected) {
-								val userInfo = pantufa.getMinecraftUserFromUniqueId(discordAccount.minecraftId)
-
-								if (userInfo != null) {
-									logger.info { "Banning ${discordAccount.minecraftId} because their Discord account  ${discordAccount.discordId} is banned" }
-									Server.PERFECTDREAMS_BUNGEE.send(
-										jsonObject(
-											"type" to "executeCommand",
-											"player" to "Pantufinha",
-											"command" to "ban ${userInfo.username} Banido da Loritta | ID da Conta no Discord: ${discordAccount.discordId}"
-										)
-									)
-								} else {
-									logger.info { "Ignoring Loritta Ban notification because the user $it doesn't have an associated user info data... Minecraft ID: ${discordAccount.minecraftId}" }
-								}
-							} else {
-								logger.info { "Ignoring Loritta Ban notification because the user $it didn't connect an account..." }
-							}
-						}
-					}
-				)
-			),
-			"Loritta PostgreSQL Notification Listener"
-		).start()
 	}
 
 	/**
