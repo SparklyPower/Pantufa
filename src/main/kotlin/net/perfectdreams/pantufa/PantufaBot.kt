@@ -42,6 +42,7 @@ import net.perfectdreams.pantufa.utils.discord.DiscordCommandMap
 import net.perfectdreams.pantufa.utils.parallax.ParallaxEmbed
 import net.perfectdreams.pantufa.utils.socket.SocketHandler
 import net.perfectdreams.pantufa.utils.socket.SocketServer
+import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.Transaction
 import org.jetbrains.exposed.sql.statements.jdbc.JdbcConnectionImpl
@@ -285,7 +286,25 @@ class PantufaBot(val config: PantufaConfig) {
 			)
 		}
 
-		transaction(Databases.loritta) {
+		val config = HikariConfig()
+		config.jdbcUrl = "jdbc:postgresql://${this.config.postgreSqlLoritta.ip}:${this.config.postgreSqlLoritta.port}/${this.config.postgreSqlLoritta.databaseName}"
+		config.username = this.config.postgreSqlLoritta.username
+		config.password = this.config.postgreSqlLoritta.password
+		config.driverClassName = "org.postgresql.Driver"
+		// Exposed uses autoCommit = false, so we need to set this to false to avoid HikariCP resetting the connection to
+		// autoCommit = true when the transaction goes back to the pool, because resetting this has a "big performance impact"
+		// https://stackoverflow.com/a/41206003/7271796
+		config.isAutoCommit = false
+
+		config.maximumPoolSize = 4
+		config.addDataSourceProperty("cachePrepStmts", "true")
+		config.addDataSourceProperty("prepStmtCacheSize", "250")
+		config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048")
+
+		val dataSource = HikariDataSource(Databases.hikariConfigLoritta)
+		val loritta = Database.connect(dataSource)
+
+		transaction(loritta) {
 			SchemaUtils.createMissingTablesAndColumns(
 				EconomyState
 			)
