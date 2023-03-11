@@ -282,7 +282,7 @@ class PantufaBot(val config: PantufaConfig) {
 			)
 		}
 
-		GlobalScope.launch {
+		/* GlobalScope.launch {
 			Thread(
 				null,
 				PostgreSQLNotificationListener(
@@ -319,7 +319,7 @@ class PantufaBot(val config: PantufaConfig) {
 				),
 				"Loritta PostgreSQL Notification Listener"
 			).start()
-		}
+		} */
 	}
 
 	/**
