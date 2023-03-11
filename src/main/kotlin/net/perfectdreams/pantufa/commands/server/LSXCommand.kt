@@ -224,7 +224,7 @@ class LSXCommand : AbstractCommand("transferir", listOf("transfer", "lsx", "llsx
 			if (arg1 != null) {
 				runBlocking {
 					mutex.withLock {
-						val isEconomyDisabled = transaction(Databases.loritta) {
+						/* val isEconomyDisabled = transaction(Databases.loritta) {
 							EconomyState.select {
 								EconomyState.id eq DISABLED_ECONOMY_ID
 							}.count() == 1L
@@ -238,7 +238,7 @@ class LSXCommand : AbstractCommand("transferir", listOf("transfer", "lsx", "llsx
 								)
 							)
 							return@withLock
-						}
+						} */
 
 						// Get the profile again within the mutex, to get the updated money value (if the user spammed the command)
 						val profile = getLorittaProfile(context)

@@ -159,7 +159,7 @@ class LSXExecutor(pantufa: PantufaBot) : PantufaInteractionCommand(
         } else {
             if (arg1 != null) {
                 LSXCommand.mutex.withLock {
-                    val isEconomyDisabled = transaction(Databases.loritta) {
+                    /* val isEconomyDisabled = transaction(Databases.loritta) {
                         EconomyState.select {
                             EconomyState.id eq LSXCommand.DISABLED_ECONOMY_ID
                         }.count() == 1L
@@ -173,7 +173,7 @@ class LSXExecutor(pantufa: PantufaBot) : PantufaInteractionCommand(
                             )
                         )
                         return@withLock
-                    }
+                    } */
 
                     // Get the profile again within the mutex, to get the updated money value (if the user spammed the command)
                     val profile = getLorittaProfile(context.senderId.toLong())
