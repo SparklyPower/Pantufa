@@ -33,6 +33,7 @@ import net.perfectdreams.pantufa.listeners.DiscordListener
 import net.perfectdreams.pantufa.listeners.InteractionListener
 import net.perfectdreams.pantufa.network.Databases
 import net.perfectdreams.pantufa.tables.DiscordAccounts
+import net.perfectdreams.pantufa.tables.EconomyState
 import net.perfectdreams.pantufa.tables.NotifyPlayersOnline
 import net.perfectdreams.pantufa.tables.Users
 import net.perfectdreams.pantufa.utils.*
@@ -281,6 +282,12 @@ class PantufaBot(val config: PantufaConfig) {
 				DiscordAccounts,
 				Users,
 				NotifyPlayersOnline
+			)
+		}
+
+		transaction(Databases.loritta) {
+			SchemaUtils.createMissingTablesAndColumns(
+				EconomyState
 			)
 		}
 	}
