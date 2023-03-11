@@ -4,6 +4,8 @@ import com.github.salomonbrys.kotson.*
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
+import com.zaxxer.hikari.HikariConfig
+import com.zaxxer.hikari.HikariDataSource
 import dev.kord.common.entity.Snowflake
 import dev.kord.rest.service.RestClient
 import dev.minn.jda.ktx.interactions.commands.updateCommands
@@ -282,44 +284,58 @@ class PantufaBot(val config: PantufaConfig) {
 			)
 		}
 
-		/* GlobalScope.launch {
-			Thread(
-				null,
-				PostgreSQLNotificationListener(
-					Databases.dataSourceLoritta,
-					mapOf(
-						"loritta_lori_bans" to {
-							// Someone got banned, omg!
-							logger.info { "Received Loritta Ban for $it!" }
+		// This is a workaround because it seems that the Databases.dataSourceLoritta call is causing issues (why?)
+		val config = HikariConfig()
+		config.jdbcUrl = "jdbc:postgresql://${pantufa.config.postgreSqlLoritta.ip}:${pantufa.config.postgreSqlLoritta.port}/${pantufa.config.postgreSqlLoritta.databaseName}"
+		config.username = pantufa.config.postgreSqlLoritta.username
+		config.password = pantufa.config.postgreSqlLoritta.password
+		config.driverClassName = "org.postgresql.Driver"
+		// Exposed uses autoCommit = false, so we need to set this to false to avoid HikariCP resetting the connection to
+		// autoCommit = true when the transaction goes back to the pool, because resetting this has a "big performance impact"
+		// https://stackoverflow.com/a/41206003/7271796
+		config.isAutoCommit = false
 
-							GlobalScope.launch {
-								val discordAccount = retrieveDiscordAccountFromUser(it.toLong())
+		config.maximumPoolSize = 4
+		config.addDataSourceProperty("cachePrepStmts", "true")
+		config.addDataSourceProperty("prepStmtCacheSize", "250")
+		config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048")
 
-								if (discordAccount != null && discordAccount.isConnected) {
-									val userInfo = pantufa.getMinecraftUserFromUniqueId(discordAccount.minecraftId)
+		Thread(
+			null,
+			PostgreSQLNotificationListener(
+				HikariDataSource(config),
+				mapOf(
+					"loritta_lori_bans" to {
+						// Someone got banned, omg!
+						logger.info { "Received Loritta Ban for $it!" }
 
-									if (userInfo != null) {
-										logger.info { "Banning ${discordAccount.minecraftId} because their Discord account  ${discordAccount.discordId} is banned" }
-										Server.PERFECTDREAMS_BUNGEE.send(
-											jsonObject(
-												"type" to "executeCommand",
-												"player" to "Pantufinha",
-												"command" to "ban ${userInfo.username} Banido da Loritta | ID da Conta no Discord: ${discordAccount.discordId}"
-											)
+						GlobalScope.launch {
+							val discordAccount = retrieveDiscordAccountFromUser(it.toLong())
+
+							if (discordAccount != null && discordAccount.isConnected) {
+								val userInfo = pantufa.getMinecraftUserFromUniqueId(discordAccount.minecraftId)
+
+								if (userInfo != null) {
+									logger.info { "Banning ${discordAccount.minecraftId} because their Discord account  ${discordAccount.discordId} is banned" }
+									Server.PERFECTDREAMS_BUNGEE.send(
+										jsonObject(
+											"type" to "executeCommand",
+											"player" to "Pantufinha",
+											"command" to "ban ${userInfo.username} Banido da Loritta | ID da Conta no Discord: ${discordAccount.discordId}"
 										)
-									} else {
-										logger.info { "Ignoring Loritta Ban notification because the user $it doesn't have an associated user info data... Minecraft ID: ${discordAccount.minecraftId}" }
-									}
+									)
 								} else {
-									logger.info { "Ignoring Loritta Ban notification because the user $it didn't connect an account..." }
+									logger.info { "Ignoring Loritta Ban notification because the user $it doesn't have an associated user info data... Minecraft ID: ${discordAccount.minecraftId}" }
 								}
+							} else {
+								logger.info { "Ignoring Loritta Ban notification because the user $it didn't connect an account..." }
 							}
 						}
-					)
-				),
-				"Loritta PostgreSQL Notification Listener"
-			).start()
-		} */
+					}
+				)
+			),
+			"Loritta PostgreSQL Notification Listener"
+		).start()
 	}
 
 	/**
