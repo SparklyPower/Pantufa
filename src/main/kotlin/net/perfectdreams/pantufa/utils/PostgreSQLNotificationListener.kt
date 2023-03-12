@@ -28,7 +28,7 @@ class PostgreSQLNotificationListener(
     override fun run() {
         logger.info { "Starting notification listener..." }
         while (true) {
-            logger.info { "Querying for notifications..." }
+            logger.info { "Within the while (true) for notifications loop..." }
             try {
                 hikariDataSource.connection
                     .use {
@@ -43,6 +43,7 @@ class PostgreSQLNotificationListener(
                         pgConnection.commit()
 
                         while (pgConnection.isValid(validationTimeout.inWholeSeconds.toInt())) { // Validate if the connection is still alive to avoid network issues - https://github.com/pgjdbc/pgjdbc/issues/1144#issuecomment-1219818764
+                            logger.info { "Querying for notifications..." }
                             // 0 == blocks forever
                             val notifications = pgConnection.getNotifications(notificationsTimeout?.inWholeMilliseconds?.toInt() ?: 0)
 
