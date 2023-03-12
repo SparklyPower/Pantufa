@@ -26,6 +26,7 @@ class PostgreSQLNotificationListener(
     }
 
     override fun run() {
+        logger.info { "Starting notification listener..." }
         while (true) {
             logger.info { "Querying for notifications..." }
             try {

@@ -282,6 +282,7 @@ class PantufaBot(val config: PantufaConfig) {
 			)
 		}
 
+		logger.info { "Staring PostgreSQL Notification Listener..." }
 		Thread(
 			null,
 			PostgreSQLNotificationListener(
