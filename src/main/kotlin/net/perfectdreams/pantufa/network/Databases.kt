@@ -8,7 +8,7 @@ import org.jetbrains.exposed.sql.Database
 object Databases {
     val hikariConfigPantufa by lazy {
         val config = HikariConfig()
-        config.jdbcUrl = "jdbc:postgresql://${pantufa.config.postgreSqlSparklyPower.ip}:${pantufa.config.postgreSqlSparklyPower.port}/${pantufa.config.postgreSqlSparklyPower.databaseName}"
+        config.jdbcUrl = "jdbc:postgresql://${pantufa.config.postgreSqlSparklyPower.ip}:${pantufa.config.postgreSqlSparklyPower.port}/${pantufa.config.postgreSqlSparklyPower.databaseName}?ApplicationName=PantufaSparkly"
         config.username = pantufa.config.postgreSqlSparklyPower.username
         config.password = pantufa.config.postgreSqlSparklyPower.password
         config.driverClassName = "org.postgresql.Driver"
@@ -29,7 +29,7 @@ object Databases {
 
     val hikariConfigLuckPerms by lazy {
         val config = HikariConfig()
-        config.jdbcUrl = "jdbc:postgresql://${pantufa.config.postgreSqlLuckPerms.ip}:${pantufa.config.postgreSqlLuckPerms.port}/${pantufa.config.postgreSqlLuckPerms.databaseName}"
+        config.jdbcUrl = "jdbc:postgresql://${pantufa.config.postgreSqlLuckPerms.ip}:${pantufa.config.postgreSqlLuckPerms.port}/${pantufa.config.postgreSqlLuckPerms.databaseName}?ApplicationName=PantufaLuckPerms"
         config.username = pantufa.config.postgreSqlLuckPerms.username
         config.password = pantufa.config.postgreSqlLuckPerms.password
         config.driverClassName = "org.postgresql.Driver"
@@ -50,7 +50,7 @@ object Databases {
 
     val hikariConfigLoritta by lazy {
         val config = HikariConfig()
-        config.jdbcUrl = "jdbc:postgresql://${pantufa.config.postgreSqlLoritta.ip}:${pantufa.config.postgreSqlLoritta.port}/${pantufa.config.postgreSqlLoritta.databaseName}"
+        config.jdbcUrl = "jdbc:postgresql://${pantufa.config.postgreSqlLoritta.ip}:${pantufa.config.postgreSqlLoritta.port}/${pantufa.config.postgreSqlLoritta.databaseName}?ApplicationName=PantufaLori"
         config.username = pantufa.config.postgreSqlLoritta.username
         config.password = pantufa.config.postgreSqlLoritta.password
         config.driverClassName = "org.postgresql.Driver"
