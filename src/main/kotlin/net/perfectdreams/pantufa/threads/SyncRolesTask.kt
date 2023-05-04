@@ -121,7 +121,8 @@ class SyncRolesTask : Runnable {
 				val builders = getPlayersWithGroup("construtor")
 				val developers = getPlayersWithGroup("developer")
 				val vips = getPlayersWithGroup("vip", "vip+", "vip++", "sonhador", "sonhador+", "sonhador++")
-				val youtubers = getPlayersWithGroup("youtuber")
+				val influencer = getPlayersWithGroup("influencer")
+				val estrelinha = getPlayersWithGroup("estrelinha")
 
 				syncRolesEligibleForUsers(guild, "333601725862641664", owners)
 				syncRolesEligibleForUsers(guild, "333602159998271489", admins)
@@ -132,7 +133,9 @@ class SyncRolesTask : Runnable {
 				syncRolesEligibleForUsers(guild, "1052266915810254908", developers)
 				syncRolesEligibleForUsers(guild, "332650495522897920", owners.toMutableList() + admins.toMutableList() + coordenadores.toMutableList() + moderators.toMutableList() + supports.toMutableList() + builders.toMutableList() + developers.toMutableList())
 				syncRolesEligibleForUsers(guild, "332652664544428044", vips)
-				syncRolesEligibleForUsers(guild, "373548131016507393", youtubers)
+				syncRolesEligibleForUsers(guild, "1086048553358606336", influencer)
+				syncRolesEligibleForUsers(guild, "1086048630663827477", estrelinha)
+
 			} else {
 				logger.warn { "Guild ${Constants.SPARKLYPOWER_GUILD_ID} does not exist or isn't loaded yet! Skipping role synchronization..." }
 			}
