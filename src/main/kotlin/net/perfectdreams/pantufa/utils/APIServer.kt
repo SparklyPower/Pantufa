@@ -1,5 +1,6 @@
 package net.perfectdreams.pantufa.utils
 
+import com.github.salomonbrys.kotson.jsonObject
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.engine.*
@@ -13,10 +14,9 @@ import kotlinx.serialization.json.Json
 import mu.KotlinLogging
 import net.dv8tion.jda.api.exceptions.ErrorResponseException
 import net.perfectdreams.pantufa.PantufaBot
-import net.perfectdreams.pantufa.rpc.GetDiscordUserRequest
-import net.perfectdreams.pantufa.rpc.GetDiscordUserResponse
-import net.perfectdreams.pantufa.rpc.PantufaRPCRequest
-import net.perfectdreams.pantufa.rpc.PantufaRPCResponse
+import net.perfectdreams.pantufa.pantufa
+import net.perfectdreams.pantufa.rpc.*
+import net.perfectdreams.pantufa.tables.Users
 import net.perfectdreams.pantufa.utils.extensions.await
 
 class APIServer(private val m: PantufaBot) {
@@ -54,6 +54,40 @@ class APIServer(private val m: PantufaBot) {
                             } else {
                                 GetDiscordUserResponse.NotFound
                             }
+                        }
+
+                        is BanSparklyPowerPlayerLorittaBannedRequest -> {
+                            val userId = request.userId
+                            logger.info { "Received Loritta Ban for $it!" }
+
+                            val discordAccount = m.retrieveDiscordAccountFromUser(userId)
+
+                            fun getResponse(): BanSparklyPowerPlayerLorittaBannedResponse {
+                                if (discordAccount != null && discordAccount.isConnected) {
+                                    val userInfo = pantufa.getMinecraftUserFromUniqueId(discordAccount.minecraftId)
+
+                                    if (userInfo != null) {
+                                        logger.info { "Banning ${discordAccount.minecraftId} because their Discord account  ${discordAccount.discordId} is banned" }
+                                        Server.PERFECTDREAMS_BUNGEE.send(
+                                            jsonObject(
+                                                "type" to "executeCommand",
+                                                "player" to "Pantufinha",
+                                                "command" to "ban ${userInfo.username} Banido da Loritta | ID da Conta no Discord: ${discordAccount.discordId} - ${request.reason}"
+                                            )
+                                        )
+                                        return BanSparklyPowerPlayerLorittaBannedResponse.Success(
+                                            userInfo.id.value.toString(),
+                                            userInfo.username
+                                        )
+                                    } else {
+                                        logger.info { "Ignoring Loritta Ban notification because the user $it doesn't have an associated user info data... Minecraft ID: ${discordAccount.minecraftId}" }
+                                    }
+                                } else {
+                                    logger.info { "Ignoring Loritta Ban notification because the user $it didn't connect an account..." }
+                                }
+                                return BanSparklyPowerPlayerLorittaBannedResponse.NotFound
+                            }
+                            getResponse()
                         }
                     }
 

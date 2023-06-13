@@ -20,3 +20,14 @@ sealed interface GetDiscordUserResponse : PantufaRPCResponse {
 
     object NotFound : GetDiscordUserResponse
 }
+
+@Serializable
+sealed interface BanSparklyPowerPlayerLorittaBannedResponse : PantufaRPCResponse {
+    @Serializable
+    class Success(
+        val uniqueId: String,
+        val userName: String
+    ) : BanSparklyPowerPlayerLorittaBannedResponse
+
+    object NotFound : BanSparklyPowerPlayerLorittaBannedResponse
+}
