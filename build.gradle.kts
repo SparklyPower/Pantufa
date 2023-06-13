@@ -1,8 +1,8 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    kotlin("jvm") version "1.7.10"
-    kotlin("plugin.serialization") version "1.7.10"
+    kotlin("jvm") version "1.8.20"
+    kotlin("plugin.serialization") version "1.8.20"
     id("com.google.cloud.tools.jib") version "3.1.4"
 }
 
@@ -24,7 +24,7 @@ dependencies {
     implementation("io.github.microutils:kotlin-logging:2.1.23")
 
     implementation("net.dv8tion:JDA:5.0.0-beta.3")
-    implementation("com.github.MinnDevelopment:jda-ktx:9fc90f616b")
+    implementation("com.github.MinnDevelopment:jda-ktx:9370cb13cc")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
     api("org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:1.6.4")
     implementation("com.github.ben-manes.caffeine:caffeine:3.1.1")
@@ -102,6 +102,5 @@ java {
 }
 
 tasks.withType<KotlinCompile> {
-    kotlinOptions.jvmTarget = "16"
     kotlinOptions.javaParameters = true
 }
