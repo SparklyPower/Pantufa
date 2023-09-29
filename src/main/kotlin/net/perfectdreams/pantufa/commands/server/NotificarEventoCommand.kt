@@ -22,7 +22,7 @@ object NotificarEventoCommand {
 		"fight" to 798697267312853002L,
 		"especial" to 798697126573506571L,
 		"mcmmo2x" to 798696876052185119L,
-		"enquete" to 1157110842815418408L
+		"enquetes" to 1157110842815418408L
 	)
 
 	fun create(pantufa: PantufaBot) = command(pantufa, "NotificarEventoCommand", listOf("notificar evento")) {
