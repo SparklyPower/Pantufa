@@ -19,17 +19,25 @@ object CraftConomyUtils {
 
 	fun getCraftConomyAccountId(minecraftId: UUID): Int? {
 		return transaction(Databases.craftConomy) {
-			CraftConomyAccounts.select {
-				CraftConomyAccounts.uuid eq minecraftId.toString()
-			}.firstOrNull()?.getOrNull(CraftConomyAccounts.id)
+			_getCraftConomyAccountId(minecraftId)
 		}
+	}
+
+	fun _getCraftConomyAccountId(minecraftId: UUID): Int? {
+		return CraftConomyAccounts.select {
+			CraftConomyAccounts.uuid eq minecraftId.toString()
+		}.firstOrNull()?.getOrNull(CraftConomyAccounts.id)
 	}
 
 	fun getCraftConomyBalance(accountId: Int): Double {
 		return transaction(Databases.craftConomy) {
-			CraftConomyBalance.select {
-				CraftConomyBalance.id eq accountId
-			}.firstOrNull()?.get(CraftConomyBalance.balance)
-		} ?: throw RuntimeException()
+			_getCraftConomyBalance(accountId)
+		}
+	}
+
+	fun _getCraftConomyBalance(accountId: Int): Double {
+		return CraftConomyBalance.select {
+			CraftConomyBalance.id eq accountId
+		}.firstOrNull()?.get(CraftConomyBalance.balance) ?: throw RuntimeException()
 	}
 }

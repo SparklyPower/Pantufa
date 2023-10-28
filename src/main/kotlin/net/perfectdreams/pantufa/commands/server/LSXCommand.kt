@@ -39,52 +39,55 @@ class LSXCommand : AbstractCommand("transferir", listOf("transfer", "lsx", "llsx
 		}
 
 		fun withdrawFromLoritta(profile: Profile, playerName: String, playerUniqueId: UUID, quantity: Long, sparklyPowerQuantity: Long): Boolean {
-			return if (quantity > profile.money)
-				false
-			else {
-				transaction(Databases.loritta) {
-					Profiles.update({ Profiles.id eq profile.userId }) {
-						with (SqlExpressionBuilder) {
-							it.update(Profiles.money, Profiles.money - quantity)
-						}
-					}
+			return transaction(Databases.loritta) {
+				// Refresh the entity to get if they have money or not
+				profile.refresh()
 
-					val now = Instant.now()
+				if (quantity > profile.money)
+					return@transaction false
 
-					val timestampLogId = SonhosTransactionsLog.insertAndGetId {
-						it[SonhosTransactionsLog.user] = profile.id
-						it[SonhosTransactionsLog.timestamp] = now
-					}
-
-					SparklyPowerLSXSonhosTransactionsLog.insert {
-						it[SparklyPowerLSXSonhosTransactionsLog.timestampLog] = timestampLogId
-						it[SparklyPowerLSXSonhosTransactionsLog.action] = SparklyPowerLSXTransactionEntryAction.EXCHANGED_TO_SPARKLYPOWER
-						it[SparklyPowerLSXSonhosTransactionsLog.sonhos] = quantity
-						it[SparklyPowerLSXSonhosTransactionsLog.sparklyPowerSonhos] = sparklyPowerQuantity
-						it[SparklyPowerLSXSonhosTransactionsLog.playerName] = playerName
-						it[SparklyPowerLSXSonhosTransactionsLog.playerUniqueId] = playerUniqueId
-						it[SparklyPowerLSXSonhosTransactionsLog.exchangeRate] = loriToSparklyExchangeRate.toDouble()
+				Profiles.update({ Profiles.id eq profile.userId }) {
+					with (SqlExpressionBuilder) {
+						it.update(Profiles.money, Profiles.money - quantity)
 					}
 				}
-				true
+
+				val now = Instant.now()
+
+				val timestampLogId = SonhosTransactionsLog.insertAndGetId {
+					it[SonhosTransactionsLog.user] = profile.id
+					it[SonhosTransactionsLog.timestamp] = now
+				}
+
+				SparklyPowerLSXSonhosTransactionsLog.insert {
+					it[SparklyPowerLSXSonhosTransactionsLog.timestampLog] = timestampLogId
+					it[SparklyPowerLSXSonhosTransactionsLog.action] = SparklyPowerLSXTransactionEntryAction.EXCHANGED_TO_SPARKLYPOWER
+					it[SparklyPowerLSXSonhosTransactionsLog.sonhos] = quantity
+					it[SparklyPowerLSXSonhosTransactionsLog.sparklyPowerSonhos] = sparklyPowerQuantity
+					it[SparklyPowerLSXSonhosTransactionsLog.playerName] = playerName
+					it[SparklyPowerLSXSonhosTransactionsLog.playerUniqueId] = playerUniqueId
+					it[SparklyPowerLSXSonhosTransactionsLog.exchangeRate] = loriToSparklyExchangeRate.toDouble()
+				}
+
+				return@transaction true
 			}
 		}
 
 		fun withdrawFromSparklyPower(playerUniqueId: UUID, quantity: Long): Boolean {
-			val serverAccountId = CraftConomyUtils.getCraftConomyAccountId(playerUniqueId)!!
-			val ccBalance = CraftConomyUtils.getCraftConomyBalance(serverAccountId)
+			return transaction(Databases.craftConomy) {
+				val serverAccountId = CraftConomyUtils._getCraftConomyAccountId(playerUniqueId)!!
+				val ccBalance = CraftConomyUtils._getCraftConomyBalance(serverAccountId)
 
-			return if (quantity > ccBalance)
-				false
-			else {
-				transaction(Databases.craftConomy) {
-					CraftConomyBalance.update({ CraftConomyBalance.id eq serverAccountId }) {
-						with(SqlExpressionBuilder) {
-							it.update(balance, balance - quantity.toDouble())
-						}
+				if (quantity > ccBalance)
+					return@transaction false
+
+				CraftConomyBalance.update({ CraftConomyBalance.id eq serverAccountId }) {
+					with(SqlExpressionBuilder) {
+						it.update(balance, balance - quantity.toDouble())
 					}
 				}
-				true
+
+				return@transaction true
 			}
 		}
 
@@ -117,9 +120,9 @@ class LSXCommand : AbstractCommand("transferir", listOf("transfer", "lsx", "llsx
 		}
 
 		fun giveToSparklyPower(playerUniqueId: UUID, quantity: Long): Boolean {
-			val serverAccountId = CraftConomyUtils.getCraftConomyAccountId(playerUniqueId)!!
-
 			transaction(Databases.craftConomy) {
+				val serverAccountId = CraftConomyUtils._getCraftConomyAccountId(playerUniqueId)!!
+
 				CraftConomyBalance.update({ CraftConomyBalance.id eq serverAccountId }) {
 					with(SqlExpressionBuilder) {
 						it.update(balance, balance + quantity.toDouble())
@@ -153,11 +156,11 @@ class LSXCommand : AbstractCommand("transferir", listOf("transfer", "lsx", "llsx
 				Bans.player eq context.minecraftAccountInfo!!.uniqueId and
 						(
 								Bans.temporary eq false or (
-								Bans.temporary eq true and
-										(Bans.expiresAt.isNotNull()) and
-										(Bans.expiresAt greaterEq System.currentTimeMillis())
+										Bans.temporary eq true and
+												(Bans.expiresAt.isNotNull()) and
+												(Bans.expiresAt greaterEq System.currentTimeMillis())
+										)
 								)
-						)
 			}.firstOrNull()
 		}
 
