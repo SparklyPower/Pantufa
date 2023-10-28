@@ -65,6 +65,8 @@ dependencies {
 
     api("com.github.salomonbrys.kotson:kotson:2.5.0")
 
+    implementation("com.github.luben:zstd-jni:1.5.5-6")
+
     testImplementation("org.junit.jupiter:junit-jupiter:5.4.2")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.4.2")
 }
