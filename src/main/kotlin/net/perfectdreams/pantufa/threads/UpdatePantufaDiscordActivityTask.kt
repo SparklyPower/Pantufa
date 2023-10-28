@@ -132,7 +132,7 @@ class UpdatePantufaDiscordActivityTask(val m: PantufaBot, val jda: JDA) : Runnab
 
 			jda.presence.setPresence(
 				status,
-				Activity.watching(
+				Activity.customStatus(
 					"$prefix ${response["players"].array.size()} player$plural online no SparklyPower! | \uD83C\uDFAE mc.sparklypower.net | TPS: ${
 						"%.2f".format(
 							currentTps
@@ -143,7 +143,7 @@ class UpdatePantufaDiscordActivityTask(val m: PantufaBot, val jda: JDA) : Runnab
 		} catch (e: Exception) {
 			e.printStackTrace()
 
-			jda.presence.activity = Activity.playing("\uD83D\uDEAB SparklyPower está offline \uD83D\uDE2D | \uD83C\uDFAE mc.sparklypower.net")
+			jda.presence.activity = Activity.customStatus("\uD83D\uDEAB SparklyPower está offline \uD83D\uDE2D | \uD83C\uDFAE mc.sparklypower.net")
 		}
 	}
 }
