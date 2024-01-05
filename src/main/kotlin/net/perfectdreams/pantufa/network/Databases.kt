@@ -4,7 +4,6 @@ import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import com.zaxxer.hikari.util.IsolationLevel
 import net.perfectdreams.pantufa.pantufa
-import org.jetbrains.exposed.sql.DEFAULT_REPETITION_ATTEMPTS
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.DatabaseConfig
 
@@ -40,7 +39,7 @@ object Databases {
         Database.connect(
             dataSourcePantufa,
             databaseConfig = DatabaseConfig {
-                defaultRepetitionAttempts = DEFAULT_REPETITION_ATTEMPTS
+                defaultRepetitionAttempts = 5
                 defaultIsolationLevel = ISOLATION_LEVEL.levelId // Change our default isolation level
             }
         )
@@ -74,7 +73,7 @@ object Databases {
         Database.connect(
             dataSourceLuckPerms,
             databaseConfig = DatabaseConfig {
-                defaultRepetitionAttempts = DEFAULT_REPETITION_ATTEMPTS
+                defaultRepetitionAttempts = 5
                 defaultIsolationLevel = ISOLATION_LEVEL.levelId // Change our default isolation level
             }
         )
@@ -108,7 +107,7 @@ object Databases {
         Database.connect(
             dataSourceLoritta,
             databaseConfig = DatabaseConfig {
-                defaultRepetitionAttempts = DEFAULT_REPETITION_ATTEMPTS
+                defaultRepetitionAttempts = 5
                 defaultIsolationLevel = ISOLATION_LEVEL.levelId // Change our default isolation level
             }
         )
@@ -141,7 +140,7 @@ object Databases {
         Database.connect(
             dataSourceCraftConomy,
             databaseConfig = DatabaseConfig {
-                defaultRepetitionAttempts = DEFAULT_REPETITION_ATTEMPTS
+                defaultRepetitionAttempts = 5
                 defaultIsolationLevel = ISOLATION_LEVEL.levelId // Change our default isolation level
             }
         )

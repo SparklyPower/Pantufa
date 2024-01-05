@@ -6,6 +6,7 @@ import net.perfectdreams.pantufa.network.Databases
 import net.perfectdreams.pantufa.tables.NotifyPlayersOnline
 import net.perfectdreams.pantufa.utils.PantufaReply
 import net.perfectdreams.pantufa.utils.extensions.await
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insert

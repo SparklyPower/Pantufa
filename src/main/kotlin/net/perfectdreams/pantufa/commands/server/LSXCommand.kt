@@ -6,9 +6,12 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.datetime.toKotlinInstant
-import net.perfectdreams.loritta.cinnamon.utils.SparklyPowerLSXTransactionEntryAction
 import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosTransactionsLog
+import net.perfectdreams.loritta.cinnamon.pudding.tables.simpletransactions.SimpleSonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.SparklyPowerLSXSonhosTransactionsLog
+import net.perfectdreams.loritta.cinnamon.pudding.utils.SimpleSonhosTransactionsLogUtils
+import net.perfectdreams.loritta.common.utils.SparklyPowerLSXTransactionEntryAction
+import net.perfectdreams.loritta.serializable.StoredSparklyPowerLSXSonhosTransaction
 import net.perfectdreams.pantufa.commands.AbstractCommand
 import net.perfectdreams.pantufa.commands.CommandContext
 import net.perfectdreams.pantufa.dao.Ban
@@ -54,20 +57,19 @@ class LSXCommand : AbstractCommand("transferir", listOf("transfer", "lsx", "llsx
 
 				val now = Instant.now()
 
-				val timestampLogId = SonhosTransactionsLog.insertAndGetId {
-					it[SonhosTransactionsLog.user] = profile.id
-					it[SonhosTransactionsLog.timestamp] = now
-				}
-
-				SparklyPowerLSXSonhosTransactionsLog.insert {
-					it[SparklyPowerLSXSonhosTransactionsLog.timestampLog] = timestampLogId
-					it[SparklyPowerLSXSonhosTransactionsLog.action] = SparklyPowerLSXTransactionEntryAction.EXCHANGED_TO_SPARKLYPOWER
-					it[SparklyPowerLSXSonhosTransactionsLog.sonhos] = quantity
-					it[SparklyPowerLSXSonhosTransactionsLog.sparklyPowerSonhos] = sparklyPowerQuantity
-					it[SparklyPowerLSXSonhosTransactionsLog.playerName] = playerName
-					it[SparklyPowerLSXSonhosTransactionsLog.playerUniqueId] = playerUniqueId
-					it[SparklyPowerLSXSonhosTransactionsLog.exchangeRate] = loriToSparklyExchangeRate.toDouble()
-				}
+				SimpleSonhosTransactionsLogUtils.insert(
+					profile.userId,
+					now,
+					net.perfectdreams.loritta.common.utils.TransactionType.SPARKLYPOWER_LSX,
+					quantity,
+					StoredSparklyPowerLSXSonhosTransaction(
+						SparklyPowerLSXTransactionEntryAction.EXCHANGED_TO_SPARKLYPOWER,
+						sparklyPowerQuantity,
+						playerName,
+						playerUniqueId.toString(),
+						loriToSparklyExchangeRate.toDouble()
+					)
+				)
 
 				return@transaction true
 			}
@@ -101,20 +103,19 @@ class LSXCommand : AbstractCommand("transferir", listOf("transfer", "lsx", "llsx
 
 				val now = Instant.now()
 
-				val timestampLogId = SonhosTransactionsLog.insertAndGetId {
-					it[SonhosTransactionsLog.user] = profile.id
-					it[SonhosTransactionsLog.timestamp] = now
-				}
-
-				SparklyPowerLSXSonhosTransactionsLog.insert {
-					it[SparklyPowerLSXSonhosTransactionsLog.timestampLog] = timestampLogId
-					it[SparklyPowerLSXSonhosTransactionsLog.action] = SparklyPowerLSXTransactionEntryAction.EXCHANGED_FROM_SPARKLYPOWER
-					it[SparklyPowerLSXSonhosTransactionsLog.sonhos] = quantity
-					it[SparklyPowerLSXSonhosTransactionsLog.sparklyPowerSonhos] = sparklyPowerQuantity
-					it[SparklyPowerLSXSonhosTransactionsLog.playerName] = playerName
-					it[SparklyPowerLSXSonhosTransactionsLog.playerUniqueId] = playerUniqueId
-					it[SparklyPowerLSXSonhosTransactionsLog.exchangeRate] = loriToSparklyExchangeRate.toDouble()
-				}
+				SimpleSonhosTransactionsLogUtils.insert(
+					profile.userId,
+					now,
+					net.perfectdreams.loritta.common.utils.TransactionType.SPARKLYPOWER_LSX,
+					quantity,
+					StoredSparklyPowerLSXSonhosTransaction(
+						SparklyPowerLSXTransactionEntryAction.EXCHANGED_TO_SPARKLYPOWER,
+						sparklyPowerQuantity,
+						playerName,
+						playerUniqueId.toString(),
+						loriToSparklyExchangeRate.toDouble()
+					)
+				)
 			}
 			return true
 		}
